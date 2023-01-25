@@ -414,3 +414,11 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+*.Development.json
+package-lock.json
+.angular/*
+ClientApp/**/*.js.map
+ClientApp/**/*.js
+ClientApp/*.js
+node_modules/
+typings/
