@@ -1,0 +1,9 @@
+﻿// для MSSQL (необходимо указать MSSQL в качестве SQLServerProvider в appsettings.json/appsettings.Development.Json)
+add-migration InitialMigration -p NewHabr.MSSQL -s NewHabr.WebApi
+Drop-Database -p NewHabr.MSSQL -s TwitchBot.WebAPI
+
+// для PostgreSQL (необходимо указать PostgreSQL в качестве SQLServerProvider в appsettings.json/appsettings.Development.Json)
+add-migration InitialMigration -p NewHabr.PostgreSQL -s NewHabr.WebApi
+Drop-Database -p NewHabr.PostgreSQL -s TwitchBot.WebAPI
+
+update-database

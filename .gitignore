@@ -416,9 +416,9 @@ testem.log
 Thumbs.db
 *.Development.json
 package-lock.json
-.angular/*
 ClientApp/**/*.js.map
 ClientApp/**/*.js
 ClientApp/*.js
 node_modules/
 typings/
+/01. Presentation/NewHabr.WebUI/ClientApp/.angular/*
