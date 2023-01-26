@@ -1,0 +1,13 @@
+﻿namespace NewHabr.Domain.Dto;
+
+public class UserDto
+{
+    public Guid Id { get; set; }
+    public string Login { get; set; } = null!;
+    public string FirstName { get; set; } = null!;
+    public string LastName { get; set; } = null!;
+    public string Patronymic { get; set; } = null!;
+    public string Role { get; set; } = null!;
+    public int Age { get; set; }
+    public string Description { get; set; } = null!;
+}
