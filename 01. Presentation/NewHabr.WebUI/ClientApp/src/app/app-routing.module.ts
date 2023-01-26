@@ -13,7 +13,7 @@ const rootRoutes: Routes = [
     imports: [
         RouterModule.forRoot(
             rootRoutes,
-            { enableTracing: true, relativeLinkResolution: 'legacy', scrollPositionRestoration: 'enabled' }
+            { enableTracing: false, relativeLinkResolution: 'legacy', scrollPositionRestoration: 'enabled' }
         )
     ],
     exports: [

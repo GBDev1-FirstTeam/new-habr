@@ -67,13 +67,17 @@
                 },
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
+                    "options": {
+                        "browserTarget": "NewHabr.WebUI:build:build",
+                        "proxyConfig": "scr/proxy.conf.json"
+                    },
                     "configurations": {
                         "production": {
                             "browserTarget": "NewHabr.WebUI:build:production"
                         },
                         "development": {
                             "browserTarget": "NewHabr.WebUI:build:development",
-                            "proxyConfig": "proxy.conf.js"
+                            "proxyConfig": "proxy.conf.json"
                         }
                     },
                     "defaultConfiguration": "development"

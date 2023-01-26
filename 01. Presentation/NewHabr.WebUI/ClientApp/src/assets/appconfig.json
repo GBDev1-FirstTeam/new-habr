@@ -1,0 +1,8 @@
+{
+    "backend": {
+        "baseURL": "/api",
+        "children": {
+            "publications": "/publications"
+        }
+    }
+}

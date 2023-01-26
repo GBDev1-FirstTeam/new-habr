@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
@@ -7,6 +7,9 @@ import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
 import { AppRoutingModule } from './app-routing.module';
+import '../app/core/extensions/prototypes';
+import { ConfigurationService } from './core/services/ConfigurationService';
+import { tap } from 'rxjs';
 
 @NgModule({
     declarations: [
@@ -20,7 +23,20 @@ import { AppRoutingModule } from './app-routing.module';
         FormsModule,
         AppRoutingModule
     ],
-    providers: [],
+    providers: [
+        {
+            provide: APP_INITIALIZER,
+            multi: true,
+            deps: [ConfigurationService],
+            useFactory: (config: ConfigurationService) => {
+                return () => {
+                    return config.getConfigAsync().pipe(
+                        tap(cfg => config.configuration = cfg)
+                    );
+                };
+            }
+        }
+    ],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
