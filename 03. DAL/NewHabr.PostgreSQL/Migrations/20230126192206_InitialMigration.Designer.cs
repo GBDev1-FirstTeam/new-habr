@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NewHabr.PostgreSQL.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20230126162210_InitialMigration")]
+    [Migration("20230126192206_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -108,7 +108,7 @@ namespace NewHabr.PostgreSQL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Text")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -215,9 +215,10 @@ namespace NewHabr.PostgreSQL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Text")
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
@@ -230,16 +231,20 @@ namespace NewHabr.PostgreSQL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int?>("Age")
-                        .HasColumnType("integer");
-
                     b.Property<DateTimeOffset?>("BanExpiratonDate")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("BanReason")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<bool>("Banned")
                         .HasColumnType("boolean");
 
                     b.Property<DateTimeOffset?>("BannedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("BirthDay")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("Deleted")

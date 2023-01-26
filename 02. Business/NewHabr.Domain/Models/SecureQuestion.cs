@@ -1,6 +1,10 @@
-﻿namespace NewHabr.Domain.Models;
+﻿#nullable disable
+using System.ComponentModel.DataAnnotations;
+
+namespace NewHabr.Domain.Models;
 
 public class SecureQuestion : BaseEntity<int>
 {
-    public string Question { get; set; } = string.Empty;
+    [Required]
+    public string Question { get; set; }
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#nullable disable
+using System.ComponentModel.DataAnnotations;
 
 namespace NewHabr.Domain.Models;
 
@@ -8,38 +9,38 @@ public class User // при внедрении аутентификации эт
     public Guid Id { get; set; }
 
     [Required, MaxLength(30), MinLength(2)]
-    public string Login { get; set; } = string.Empty;
+    public string Login { get; set; }
 
     [MaxLength(30)]
-    public string? FirstName { get; set; }
+    public string FirstName { get; set; }
 
     [MaxLength(30)]
-    public string? LastName { get; set; }
+    public string LastName { get; set; }
 
     [MaxLength(30)]
-    public string? Patronymic { get; set; }
+    public string Patronymic { get; set; }
 
-    [Range(0, 120)]
-    public int? Age { get; set; }
+    public DateTime? BirthDay { get; set; }
 
     [MaxLength(200)]
-    public string? Description { get; set; }
+    public string Description { get; set; }
 
+    public ICollection<Comment> Comments { get; set; }
 
-    public ICollection<Comment> Comments { get; set; } = null!;
+    public ICollection<UserNotification> Notifications { get; set; }
 
-    public ICollection<UserNotification> Notifications { get; set; } = null!;
+    public ICollection<LikedArticle> LikedArticles { get; set; }
 
-    public ICollection<LikedArticle> LikedArticles { get; set; } = null!;
+    public ICollection<LikedComment> LikedComments { get; set; }
 
-    public ICollection<LikedComment> LikedComments { get; set; } = null!;
+    public ICollection<LikedUser> LikedUsers { get; set; }
 
-    public ICollection<LikedUser> LikedUsers { get; set; } = null!;
-
-    public ICollection<LikedUser> ReceivedLikes { get; set; } = null!;
-
+    public ICollection<LikedUser> ReceivedLikes { get; set; }
 
     public bool Banned { get; set; }
+
+    [MaxLength(200)]
+    public string BanReason { get; set; }
 
     public bool Deleted { get; set; }
 
@@ -48,8 +49,10 @@ public class User // при внедрении аутентификации эт
     public DateTimeOffset? BannedAt { get; set; }
 
     [Required]
-    public SecureQuestion SecureQuestion { get; set; } = null!;
+    public int SecureQuestionId { get; set; }
+
+    public SecureQuestion SecureQuestion { get; set; }
 
     [Required]
-    public string SecureAnswer { get; set; } = string.Empty;
+    public string SecureAnswer { get; set; }
 }

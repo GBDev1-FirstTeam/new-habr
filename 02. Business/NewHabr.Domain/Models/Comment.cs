@@ -1,20 +1,25 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#nullable disable
+using System.ComponentModel.DataAnnotations;
 
 namespace NewHabr.Domain.Models;
 
 public class Comment : BaseEntity<Guid>
 {
     [Required]
-    public User User { get; set; } = null!;
+    public Guid UserId { get; set; }
+
+    public User User { get; set; }
 
     [Required]
-    public Article Article { get; set; } = null!;
+    public Guid ArticleId { get; set; }
+
+    public Article Article { get; set; }
 
     [Required]
-    public string Text { get; set; } = string.Empty;
+    public string Text { get; set; }
 
     [Required]
     public DateTimeOffset CreatedAt { get; set; }
 
-    public ICollection<LikedComment> Likes { get; set; } = null!;
+    public ICollection<LikedComment> Likes { get; set; }
 }

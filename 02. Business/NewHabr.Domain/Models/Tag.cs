@@ -1,11 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#nullable disable
+using System.ComponentModel.DataAnnotations;
 
 namespace NewHabr.Domain.Models;
 
 public class Tag : BaseEntity<int>
 {
-    [Required]
-    public string Text { get; set; } = string.Empty;
+    [Required, MaxLength(50)]
+    public string Name { get; set; }
 
-    public ICollection<Article> Articles { get; set; } = null!;
+    public ICollection<Article> Articles { get; set; }
 }

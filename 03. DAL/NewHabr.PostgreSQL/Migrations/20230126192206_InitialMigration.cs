@@ -16,7 +16,7 @@ namespace NewHabr.PostgreSQL.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Text = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -42,7 +42,7 @@ namespace NewHabr.PostgreSQL.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Text = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -58,9 +58,10 @@ namespace NewHabr.PostgreSQL.Migrations
                     FirstName = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: true),
                     LastName = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: true),
                     Patronymic = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: true),
-                    Age = table.Column<int>(type: "integer", nullable: true),
+                    BirthDay = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Description = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
                     Banned = table.Column<bool>(type: "boolean", nullable: false),
+                    BanReason = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
                     Deleted = table.Column<bool>(type: "boolean", nullable: false),
                     BanExpiratonDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     BannedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
