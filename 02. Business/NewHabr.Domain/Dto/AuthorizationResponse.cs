@@ -1,7 +1,8 @@
 ﻿namespace NewHabr.Domain.Dto;
 
+#nullable disable
 public class AuthorizationResponse
 {
-    public string Token { get; set; } = null!;
-    public UserDto User { get; set; } = null!;
+    public string Token { get; set; }
+    public UserDto User { get; set; }
 }

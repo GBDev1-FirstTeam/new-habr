@@ -1,7 +1,8 @@
 ﻿namespace NewHabr.Domain.Dto;
 
+#nullable disable
 public class AuthorizationRequest
 {
-    public string Login { get; set; } = null!;
-    public string Password { get; set; } = null!;
+    public string Login { get; set; }
+    public string Password { get; set; }
 }
