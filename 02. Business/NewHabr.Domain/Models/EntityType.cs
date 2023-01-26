@@ -1,8 +1,8 @@
-﻿namespace NewHabr.Domain.Models;
+﻿//namespace NewHabr.Domain.Models;
 
-public enum EntityType
-{
-    Article = 1,
-    Author,
-    Comment
-}
+//public enum EntityType
+//{
+//    Article = 1,
+//    Author,
+//    Comment
+//}
