@@ -4,24 +4,22 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
-import { NavMenuComponent } from './nav-menu/nav-menu.component';
-import { HomeComponent } from './home/home.component';
-import { AppRoutingModule } from './app-routing.module';
 import '../app/core/extensions/prototypes';
 import { ConfigurationService } from './core/services/ConfigurationService';
 import { tap } from 'rxjs';
+import { MainModule } from './pages/main/main.module';
+import { PublicationsModule } from './pages/publications/publications.module';
 
 @NgModule({
     declarations: [
-        AppComponent,
-        NavMenuComponent,
-        HomeComponent
+        AppComponent
     ],
     imports: [
         BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
         HttpClientModule,
         FormsModule,
-        AppRoutingModule
+        MainModule,
+        PublicationsModule
     ],
     providers: [
         {

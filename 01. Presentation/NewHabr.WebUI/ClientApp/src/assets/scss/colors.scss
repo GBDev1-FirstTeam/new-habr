@@ -1,0 +1,9 @@
+$global-colors: (
+    "light-grey": #F8F8F8
+);
+
+@each $name, $color in $global-colors {
+    :root {
+        --color-#{$name}: #{$color};
+    };
+}

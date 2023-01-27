@@ -1,0 +1,30 @@
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    &-grid {
+        width: 80vw;
+    }
+}
+
+.nav-container {
+    border-bottom: 1px solid lightgray;
+    width: 100%;
+    position: sticky;
+    top: 0px;
+    background-color: white;
+
+    &-nav {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 45px;
+        
+        a {
+            color: black;
+        }
+    }
+}

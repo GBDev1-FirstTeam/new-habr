@@ -1,12 +1,12 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
-import { HomeComponent } from "./home/home.component";
 
-const defaultRoutePath = "home";
 const rootRoutes: Routes = [
-    { path: "home", component: HomeComponent },
-
-    { path: "**", redirectTo: defaultRoutePath }
+    {
+        path: 'publications',
+        loadChildren: () => import('./pages/publications/publications.module').then(m => m.PublicationsModule)
+    },
+    { path: "**", redirectTo: '/' }
 ];
 
 @NgModule({
@@ -20,8 +20,4 @@ const rootRoutes: Routes = [
         RouterModule
     ]
 })
-export class AppRoutingModule {
-    getDefaultRoutePath() {
-        return defaultRoutePath;
-    }
-}
+export class AppRoutingModule { }
