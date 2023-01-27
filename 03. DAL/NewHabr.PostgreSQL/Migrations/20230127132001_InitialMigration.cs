@@ -94,7 +94,7 @@ namespace NewHabr.PostgreSQL.Migrations
                     PublishedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     Deleted = table.Column<bool>(type: "boolean", nullable: false),
                     DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    ApproveState = table.Column<int>(type: "integer", nullable: false)
+                    ApproveState = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {

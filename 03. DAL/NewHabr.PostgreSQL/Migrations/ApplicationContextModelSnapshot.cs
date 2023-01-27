@@ -58,8 +58,9 @@ namespace NewHabr.PostgreSQL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("ApproveState")
-                        .HasColumnType("integer");
+                    b.Property<string>("ApproveState")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Content")
                         .IsRequired()

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NewHabr.PostgreSQL.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20230126192206_InitialMigration")]
+    [Migration("20230127132001_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -60,8 +60,9 @@ namespace NewHabr.PostgreSQL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("ApproveState")
-                        .HasColumnType("integer");
+                    b.Property<string>("ApproveState")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Content")
                         .IsRequired()
