@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <Folder Include="Controllers\" />
+    <Folder Include="Extensions\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,4 +25,7 @@
     <ProjectReference Include="..\..\03. DAL\NewHabr.PostgreSQL\NewHabr.PostgreSQL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Extensions\" />
+  </ItemGroup>
 </Project>
