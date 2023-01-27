@@ -18,10 +18,4 @@
     <ProjectReference Include="..\..\02. Business\NewHabr.Domain\NewHabr.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="EF\Configurations\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="EF\Configurations\" />
-  </ItemGroup>
 </Project>

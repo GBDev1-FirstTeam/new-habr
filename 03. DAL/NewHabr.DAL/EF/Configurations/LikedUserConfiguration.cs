@@ -13,7 +13,8 @@ public class LikedUserConfiguration : IEntityTypeConfiguration<LikedUser>
         builder
             .HasOne<User>(lu => lu.User)
             .WithMany(user => user.LikedUsers)
-            .HasForeignKey(k => k.UserId);
+            .HasForeignKey(k => k.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder
             .HasOne<User>(lu => lu.Author)

@@ -11,10 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Microsoft.EntityFrameworkCore.Design" />
-    <None Remove="Npgsql.EntityFrameworkCore.PostgreSQL" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.8" />
   </ItemGroup>
 </Project>
