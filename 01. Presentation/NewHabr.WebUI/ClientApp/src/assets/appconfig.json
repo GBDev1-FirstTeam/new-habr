@@ -2,7 +2,8 @@
     "backend": {
         "baseURL": "/api",
         "children": {
-            "publications": "/publications"
+            "publications": "/publications",
+            "publication": "/publications/{0}"
         }
     }
 }

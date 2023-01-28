@@ -6,7 +6,7 @@ const rootRoutes: Routes = [
         path: 'publications',
         loadChildren: () => import('./pages/publications/publications.module').then(m => m.PublicationsModule)
     },
-    { path: "**", redirectTo: '/' }
+    { path: "**", redirectTo: '/publications' }
 ];
 
 @NgModule({

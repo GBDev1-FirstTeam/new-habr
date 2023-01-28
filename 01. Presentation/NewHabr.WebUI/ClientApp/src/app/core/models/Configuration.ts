@@ -6,5 +6,6 @@ export interface Backend {
     baseURL: string;
     children: {
         publications: string;
+        publication: string;
     }
 }

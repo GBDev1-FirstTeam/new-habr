@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Publication } from 'src/app/core/models/Publication';
 import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
 
@@ -11,7 +12,7 @@ export class PublicationsComponent implements OnInit {
 
   publications: Array<Publication>;
 
-  constructor(private http: HttpRequestService) { }
+  constructor(private http: HttpRequestService, private router: Router) { }
 
   ngOnInit(): void {
     const publicationsSubscribtion = this.http.getPublications().subscribe(publications => {
@@ -22,7 +23,7 @@ export class PublicationsComponent implements OnInit {
     });
   }
 
-  getTime(utc: number): string {
-    return new Date(utc).toLocaleString();
-  }
+  getTime = (utc: number): string => new Date(utc).toLocaleString();
+
+  navigate = (id: string) => this.router.navigate(['publications', id]);
 }

@@ -25,4 +25,9 @@ export class HttpRequestService {
     const url = this.backend.baseURL + this.backend.children.publications;
     return this.get<Array<Publication>>(url);
   }
+  
+  getPostById(id: string): Observable<Publication> {
+    const url = this.backend.baseURL + this.backend.children.publication.format(id);
+    return this.get<Publication>(url);
+  }
 }

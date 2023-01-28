@@ -3,7 +3,7 @@
         <nav class="nav-container-nav">
             <ul class="nav" *ngFor="let item of menu">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">{{ item.name }}</a>
+                    <a class="nav-link active" aria-current="page" routerLink="item.url">{{ item.name }}</a>
                 </li>
             </ul>
         </nav>

@@ -1,17 +1,8 @@
-<div class="publication-container" *ngFor="let publication of publications">
-    <div class="author">
-        <span>{{ publication.UserId }}</span> опубликовал <span>{{ getTime(publication.PublishedAt) }}</span>
-    </div>
-    <div class="title">
-        <h3>{{ publication.Title }}</h3>
-    </div>
-    <div class="image">
-        <img src="https://random.imagecdn.app/500/150">
-    </div>
-    <div class="preview">
-        <p>{{ publication.Content }}</p>
-    </div>
+<app-post-container
+    *ngFor="let post of publications"
+    [post]="post"
+    >
     <div class="link">
-        <button type="button" class="btn btn-outline-dark">Читать далее...</button>
+        <button type="button" class="btn btn-outline-dark" (click)="navigate(post.Id)">Читать далее...</button>
     </div>
-</div>
+</app-post-container>
