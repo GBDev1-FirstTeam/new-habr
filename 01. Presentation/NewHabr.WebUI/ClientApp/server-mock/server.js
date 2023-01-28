@@ -108,6 +108,77 @@ server.on({
     }
 });
 
+server.on({
+    method: 'GET',
+    path: '/api/comments/1454687c-fb03-4308-b3ba-7dcf62a2abd5',
+    reply: {
+        status:  200,
+        headers: { "content-type": "application/json" },
+        body:    JSON.stringify([
+            {
+                Id: '0004687c-fb03-4308-b3ba-7dcf62a2abd5',
+                UserId: '3458687c-fb03-4308-b3ba-7dcf62a2abc7',
+                ArticleId: '2164687c-fb03-4308-b3ba-7dcf62a2abd5',
+                Text: 'О, боже, что я только что прочитал? Это же немыслимая дичь!',
+                CreatedAt: 1674788739
+            },
+            {
+                Id: '0014687c-fb03-4308-b3ba-7dcf62a2abd5',
+                UserId: '5678687c-fb03-4308-b3ba-7dcf62a2abc7',
+                ArticleId: '2164687c-fb03-4308-b3ba-7dcf62a2abd5',
+                Text: 'Сам ты дичь!',
+                CreatedAt: 1674955739
+            },
+            {
+                Id: '0024687c-fb03-4308-b3ba-7dcf62a2abd5',
+                UserId: '3458687c-fb03-4308-b3ba-7dcf62a2abc7',
+                ArticleId: '2164687c-fb03-4308-b3ba-7dcf62a2abd5',
+                Text: 'Больше не буду писать комменты!!!',
+                CreatedAt: 1679755739
+            }
+        ])
+    }
+});
+
+server.on({
+    method: 'GET',
+    path: '/api/comments/2164687c-fb03-4308-b3ba-7dcf62a2abd5',
+    reply: {
+        status:  200,
+        headers: { "content-type": "application/json" },
+        body:    JSON.stringify([
+            {
+                Id: '0214687c-fb03-4308-b3ba-7dcf62a2abd5',
+                UserId: '5678687c-fb03-4308-b3ba-7dcf62a2abc7',
+                ArticleId: '1454687c-fb03-4308-b3ba-7dcf62a2abd5',
+                Text: 'Капитан Джек Воробей!',
+                CreatedAt: 1674788739
+            },
+            {
+                Id: '0204687c-fb03-4308-b3ba-7dcf62a2abd5',
+                UserId: '3458687c-fb03-4308-b3ba-7dcf62a2abc7',
+                ArticleId: '1454687c-fb03-4308-b3ba-7dcf62a2abd5',
+                Text: 'Я пришел чтобы отомстить на твоей странице!',
+                CreatedAt: 1674788900
+            },
+            {
+                Id: '0224687c-fb03-4308-b3ba-7dcf62a2abd5',
+                UserId: '5678687c-fb03-4308-b3ba-7dcf62a2abc7',
+                ArticleId: '1454687c-fb03-4308-b3ba-7dcf62a2abd5',
+                Text: 'Я тоже больше не буду писать комменты!!!',
+                CreatedAt: 1674789739
+            },
+            {
+                Id: '0264687c-fb03-4308-b3ba-7dcf62a2abd5',
+                UserId: '3458687c-fb03-4308-b3ba-7dcf62a2abc7',
+                ArticleId: '1454687c-fb03-4308-b3ba-7dcf62a2abd5',
+                Text: 'Никто и не просит!',
+                CreatedAt: 1674798900
+            },
+        ])
+    }
+});
+
 server.start(() => {
     console.log('Server succesfully started')
 });

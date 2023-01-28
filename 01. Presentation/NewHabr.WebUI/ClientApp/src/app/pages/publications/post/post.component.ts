@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Publication } from 'src/app/core/models/Publication';
+import { Commentary } from 'src/app/core/models/Commentary';
 import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
 
 @Component({
@@ -12,6 +13,9 @@ import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
 export class PostComponent implements OnInit {
 
   post$: Observable<Publication>;
+  postId: string;
+  comments: Array<Commentary>;
+  commentText: string;
 
   constructor(
     private http: HttpRequestService,
@@ -20,7 +24,28 @@ export class PostComponent implements OnInit {
 
   ngOnInit(): void {
     this.activeRoute.params.subscribe(params => {
-      this.post$ = this.http.getPostById(params.id);
+      this.postId = params.id;
+      this.post$ = this.http.getPostById(this.postId);
+      
+      const commentsSubscribtion = this.http.getCommentsByPostId(this.postId).subscribe(comments => {
+        if (comments) {
+          this.comments = comments;
+          commentsSubscribtion.unsubscribe();
+        }
+      })
     })
+  }
+
+  addComment() {
+    const comment: Commentary = {
+      Id: 'sdfsd',
+      UserId: 'sdvsvdvd',
+      ArticleId: this.postId,
+      Text: this.commentText,
+      CreatedAt: Date.now()
+    }
+
+    this.commentText = '';
+    this.comments.push(comment);
   }
 }

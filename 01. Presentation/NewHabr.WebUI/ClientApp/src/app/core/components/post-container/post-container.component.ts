@@ -14,7 +14,5 @@ export class PostContainerComponent {
 
   constructor(private router: Router) { }
 
-  getTime = (utc: number | undefined): string => new Date(utc || 0).toLocaleString();
-
   navigate = (id: string | undefined) => this.router.navigate(['users', id]);
 }

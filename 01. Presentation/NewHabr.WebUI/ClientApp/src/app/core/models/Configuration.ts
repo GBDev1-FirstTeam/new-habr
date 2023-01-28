@@ -8,5 +8,6 @@ export interface Backend {
         publications: string;
         publication: string;
         user: string;
+        comments: string;
     }
 }

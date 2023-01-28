@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Backend } from '../models/Configuration';
 import { Publication } from '../models/Publication';
+import { Commentary } from '../models/Commentary';
 import { User } from '../models/User';
 import { ConfigurationService } from './ConfigurationService';
 
@@ -35,5 +36,10 @@ export class HttpRequestService {
   getUserById(id: string): Observable<User> {
     const url = this.backend.baseURL + this.backend.children.user.format(id);
     return this.get<User>(url);
+  }
+  
+  getCommentsByPostId(id: string): Observable<Array<Commentary>> {
+    const url = this.backend.baseURL + this.backend.children.comments.format(id);
+    return this.get<Array<Commentary>>(url);
   }
 }

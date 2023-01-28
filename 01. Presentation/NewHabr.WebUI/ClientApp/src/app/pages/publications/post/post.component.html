@@ -1,3 +1,15 @@
 <app-post-container [post]="(post$ | async)">
-    <div>Комментарии</div>
+    <h6>Комментарии:</h6>
+    <app-comment *ngFor="let comment of comments" [comment]="comment"></app-comment>
+
+    <h6>Добавление нового комментарий:</h6>
+    <div class="comment-container">
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default">Текст</span>
+            </div>
+            <input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" [(ngModel)]="commentText">
+        </div>
+        <button type="button" class="btn btn-outline-dark" (click)="addComment()">Опубликовать</button>
+    </div>
 </app-post-container>

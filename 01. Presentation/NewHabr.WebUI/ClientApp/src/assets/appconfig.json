@@ -4,7 +4,8 @@
         "children": {
             "publications": "/publications",
             "publication": "/publications/{0}",
-            "user": "/users/{0}"
+            "user": "/users/{0}",
+            "comments": "/comments/{0}"
         }
     }
 }

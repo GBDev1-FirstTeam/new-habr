@@ -1,0 +1,9 @@
+<div class="comment-container">
+    <div class="author">
+        <span (click)="navigate(comment.UserId)">{{ comment.UserId }}&nbsp;</span>
+        <span>({{ (comment.CreatedAt || 0).toTime() }})</span>
+    </div>
+    <div class="text">
+        <span>{{ comment.Text }}</span>
+    </div>
+</div>

@@ -1,18 +1,21 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PostContainerComponent } from './post-container/post-container.component';
+import { CommentComponent } from './comment/comment.component';
 
 
 
 @NgModule({
   declarations: [
-    PostContainerComponent
+    PostContainerComponent,
+    CommentComponent
   ],
   imports: [
     CommonModule
   ],
   exports: [
-    PostContainerComponent
+    PostContainerComponent,
+    CommentComponent
   ]
 })
 export class ComponentsLibraryModule { }

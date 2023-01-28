@@ -1,0 +1,19 @@
+@import '/src/assets/scss/colors.scss';
+@import '/src/assets/scss/mixins.scss';
+
+.comment-container {
+    padding: 10px;
+    margin: 10px 0px;
+    background-color: get-color(light-grey);
+
+    .author {
+        span:first-child {
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        span:last-child {
+            font-size: 0.8em;
+        }
+    }
+}

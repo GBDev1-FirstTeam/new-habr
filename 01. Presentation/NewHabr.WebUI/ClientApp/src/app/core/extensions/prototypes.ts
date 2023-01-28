@@ -2,6 +2,10 @@ declare global {
     interface String {
         format(...parameters: any): string;
     }
+    
+    interface Number {
+        toTime(): string;
+    }
 }
 
 String.prototype.format = function (parameters) {
@@ -12,6 +16,11 @@ String.prototype.format = function (parameters) {
             ? args[number]
             : match
     })
+}
+
+Number.prototype.toTime = function () {
+    "use strict";
+    return new Date(this.valueOf()).toLocaleString();
 }
 
 export { }
