@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NewHabr.DAL.EF;
+using NewHabr.WebApi.Extensions;
 
 namespace NewHabr.WebApi;
 
@@ -10,6 +11,8 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
         var services = builder.Services;
 
+        services.ConfigureDbContext(builder.Configuration);
+
         services.AddControllers()
             .AddJsonOptions(options =>
             {
@@ -17,8 +20,6 @@ public class Program
             });
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
-
-        services.AddDbContext<ApplicationContext>(options => ApplicationContextHelper.ConfigureDbContextOptions(options, ApplicationContextHelper.GetConfiguration()));
 
         var app = builder.Build();
         UpdateDatabase(app);
