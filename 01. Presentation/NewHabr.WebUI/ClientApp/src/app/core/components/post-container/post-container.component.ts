@@ -9,7 +9,7 @@ import { Publication } from 'src/app/core/models/Publication';
 })
 export class PostContainerComponent {
 
-  @Input() post: Publication;
+  @Input() post: Publication | null;
 
-  getTime = (utc: number): string => new Date(utc).toLocaleString();
+  getTime = (utc: number | undefined): string => new Date(utc || 0).toLocaleString();
 }

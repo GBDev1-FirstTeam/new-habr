@@ -9,6 +9,7 @@ import { ConfigurationService } from './core/services/ConfigurationService';
 import { tap } from 'rxjs';
 import { MainModule } from './pages/main/main.module';
 import { PublicationsModule } from './pages/publications/publications.module';
+import { AppStoreProvider } from './core/store/store';
 
 @NgModule({
     declarations: [
@@ -33,7 +34,8 @@ import { PublicationsModule } from './pages/publications/publications.module';
                     );
                 };
             }
-        }
+        },
+        AppStoreProvider
     ],
     bootstrap: [AppComponent]
 })

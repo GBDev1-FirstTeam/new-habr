@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Observable } from 'rxjs';
 import { Publication } from 'src/app/core/models/Publication';
 import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
 
@@ -10,7 +11,7 @@ import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
 })
 export class PostComponent implements OnInit {
 
-  post: Publication;
+  post$: Observable<Publication>;
 
   constructor(
     private http: HttpRequestService,
@@ -19,12 +20,7 @@ export class PostComponent implements OnInit {
 
   ngOnInit(): void {
     this.activeRoute.params.subscribe(params => {
-      const postSubscribtion = this.http.getPostById(params.id).subscribe(post => {
-        if (post) {
-          this.post = post;
-          postSubscribtion.unsubscribe();
-        }
-      });
+      this.post$ = this.http.getPostById(params.id);
     })
   }
 }

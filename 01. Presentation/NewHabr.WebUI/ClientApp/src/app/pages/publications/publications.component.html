@@ -1,5 +1,5 @@
 <app-post-container
-    *ngFor="let post of publications"
+    *ngFor="let post of (publications$ | async)"
     [post]="post"
     >
     <div class="link">
