@@ -5,9 +5,9 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Presentation", "01. Presentation", "{EF82A9AA-15D9-4F91-A94A-622C76724CFD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewHabr.WebApi", "01. Presentation\NewHabr.WebApi\NewHabr.WebApi.csproj", "{12F6F30B-40A6-41A1-ACFA-B9DAE8D74856}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewHabr.WebApi", "01. Presentation\NewHabr.WebApi\NewHabr.WebApi.csproj", "{12F6F30B-40A6-41A1-ACFA-B9DAE8D74856}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewHabr.WebUI", "01. Presentation\NewHabr.WebUI\NewHabr.WebUI.csproj", "{FA310582-D642-44A1-A115-D6F8F4ECC346}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewHabr.WebUI", "01. Presentation\NewHabr.WebUI\NewHabr.WebUI.csproj", "{FA310582-D642-44A1-A115-D6F8F4ECC346}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. Business", "02. Business", "{37F73D16-9ADE-48A1-89FC-35C8F310145E}"
 EndProject
@@ -15,15 +15,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03. DAL", "03. DAL", "{14DE
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "04. Tests", "04. Tests", "{7DBBB6AE-4238-4BF1-8A63-444E6975D49B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewHabr.Domain", "02. Business\NewHabr.Domain\NewHabr.Domain.csproj", "{1EBAAEA6-A74C-4AEC-A53A-8F7901EF4E46}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewHabr.Domain", "02. Business\NewHabr.Domain\NewHabr.Domain.csproj", "{1EBAAEA6-A74C-4AEC-A53A-8F7901EF4E46}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewHabr.Business", "02. Business\NewHabr.Business\NewHabr.Business.csproj", "{5AF4D69D-CF0F-4CCD-AA66-53858BECE187}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewHabr.Business", "02. Business\NewHabr.Business\NewHabr.Business.csproj", "{5AF4D69D-CF0F-4CCD-AA66-53858BECE187}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewHabr.DAL", "03. DAL\NewHabr.DAL\NewHabr.DAL.csproj", "{92724DE5-BF1E-4529-B080-7D8A76F3F395}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewHabr.DAL", "03. DAL\NewHabr.DAL\NewHabr.DAL.csproj", "{92724DE5-BF1E-4529-B080-7D8A76F3F395}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewHabr.MSSQL", "03. DAL\NewHabr.MSSQL\NewHabr.MSSQL.csproj", "{8C60B0D5-7FBB-4380-B4D9-1539F4E4D169}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewHabr.MSSQL", "03. DAL\NewHabr.MSSQL\NewHabr.MSSQL.csproj", "{8C60B0D5-7FBB-4380-B4D9-1539F4E4D169}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewHabr.PostgreSQL", "03. DAL\NewHabr.PostgreSQL\NewHabr.PostgreSQL.csproj", "{7E67FE89-B49F-44E4-B0AD-7D35724F26CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewHabr.PostgreSQL", "03. DAL\NewHabr.PostgreSQL\NewHabr.PostgreSQL.csproj", "{7E67FE89-B49F-44E4-B0AD-7D35724F26CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
