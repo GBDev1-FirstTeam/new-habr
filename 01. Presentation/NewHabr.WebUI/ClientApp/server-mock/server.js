@@ -70,6 +70,44 @@ server.on({
     }
 });
 
+server.on({
+    method: 'GET',
+    path: '/api/users/3458687c-fb03-4308-b3ba-7dcf62a2abc7',
+    reply: {
+        status:  200,
+        headers: { "content-type": "application/json" },
+        body:    JSON.stringify({
+            Id: '3458687c-fb03-4308-b3ba-7dcf62a2abc7',
+            Login: 'big_dick25',
+            FirstName: 'Илон',
+            LastName: 'Маск',
+            Patronymic: 'Алексеевич',
+            Role: 'admin',
+            Age: 45,
+            Description: 'Миллиардер, мэтросексуал, филантроп',
+        })
+    }
+});
+
+server.on({
+    method: 'GET',
+    path: '/api/users/5678687c-fb03-4308-b3ba-7dcf62a2abc7',
+    reply: {
+        status:  200,
+        headers: { "content-type": "application/json" },
+        body:    JSON.stringify({
+            Id: '5678687c-fb03-4308-b3ba-7dcf62a2abc7',
+            Login: 'rybak74',
+            FirstName: 'Владимир',
+            LastName: 'Потанин',
+            Patronymic: 'Олегович',
+            Role: 'user',
+            Age: 62,
+            Description: 'Бизнесмен, предприниматель',
+        })
+    }
+});
+
 server.start(() => {
     console.log('Server succesfully started')
 });

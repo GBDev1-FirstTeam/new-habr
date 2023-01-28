@@ -7,5 +7,6 @@ export interface Backend {
     children: {
         publications: string;
         publication: string;
+        user: string;
     }
 }

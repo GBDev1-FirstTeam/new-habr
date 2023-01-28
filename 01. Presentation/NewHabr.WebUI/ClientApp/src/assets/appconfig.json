@@ -3,7 +3,8 @@
         "baseURL": "/api",
         "children": {
             "publications": "/publications",
-            "publication": "/publications/{0}"
+            "publication": "/publications/{0}",
+            "user": "/users/{0}"
         }
     }
 }

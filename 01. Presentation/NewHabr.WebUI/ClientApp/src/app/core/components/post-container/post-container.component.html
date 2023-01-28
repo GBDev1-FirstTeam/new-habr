@@ -1,6 +1,6 @@
 <div class="post-container">
     <div class="author">
-        <span>{{ post?.UserId }}</span> опубликовал <span>{{ getTime(post?.PublishedAt) }}</span>
+        <span (click)="navigate(post?.UserId)">{{ post?.UserId }}</span> опубликовал <span>{{ getTime(post?.PublishedAt) }}</span>
     </div>
     <div class="title">
         <h3>{{ post?.Title }}</h3>
