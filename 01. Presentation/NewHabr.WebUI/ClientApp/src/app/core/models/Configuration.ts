@@ -7,7 +7,11 @@ export interface Backend {
     children: {
         publications: string;
         publication: string;
+        addPublication: string;
         user: string;
+        userPublications: string;
         comments: string;
+        addComment: string;
+        login: string;
     }
 }

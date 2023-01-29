@@ -1,0 +1,47 @@
+@import '/src/assets/scss/mixins.scss';
+
+.post-container {
+    @include card-container;
+
+    .author {
+        span:first-child {
+            font-weight: bold;
+            cursor: pointer;
+        }
+    }
+}
+
+.form-control {
+    margin: 10px 0px;
+    padding: 5px !important;
+    line-height: unset !important;
+}
+
+.form-floating {
+
+    &-title {
+        textarea {
+            font-size: 1.5em;
+            height: 25px;
+        }
+    }
+
+    &-img {
+        height: 50vh;
+        overflow: hidden;
+
+        img {
+            width: 100%;
+        }
+
+        textarea {
+            height: 15px;
+        }
+    }
+
+    &-content {
+        textarea {
+            height: 50vh;
+        }
+    }
+}

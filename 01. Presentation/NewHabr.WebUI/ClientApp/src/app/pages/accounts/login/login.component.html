@@ -1,0 +1,16 @@
+<div class="login-container">
+    <h5>Введите учётные данные</h5>
+
+    <form>
+        <div class="form-group">
+            <label for="login">Логин</label>
+            <input type="text" class="form-control" id="login" placeholder="Логин" [(ngModel)]="login" name="login">
+        </div>
+        <div class="form-group">
+            <label for="password">Пароль</label>
+            <input type="password" class="form-control" id="password" placeholder="Пароль" [(ngModel)]="password" name="password">
+        </div>
+
+        <button type="submit" class="btn btn-outline-dark" (click)="authenticate()">Войти</button>
+    </form>
+</div>

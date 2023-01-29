@@ -1,9 +1,12 @@
 export interface Publication {
-    Id: string;
+    Id?: string;
     Title: string;
     Content: string;
-    UserId: string;
-    CreatedAt: number;
-    ModifyAt: number;
-    PublishedAt: number;
+    UserId?: string;
+    UserLogin?: string;
+    CreatedAt?: number;
+    ModifyAt?: number;
+    PublishedAt?: number;
+    ImgURL: string;
+    IsPublished: boolean;
 }

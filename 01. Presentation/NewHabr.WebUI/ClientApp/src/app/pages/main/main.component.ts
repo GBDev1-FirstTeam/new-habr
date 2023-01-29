@@ -14,7 +14,7 @@ export class MainComponent {
     },
     {
       name: 'Личный кабинет',
-      url: 'account'
+      url: 'accounts/login'
     },
     {
       name: 'Администрирование',

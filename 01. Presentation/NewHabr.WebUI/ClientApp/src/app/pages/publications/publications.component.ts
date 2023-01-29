@@ -22,5 +22,5 @@ export class PublicationsComponent implements OnInit {
 
   getTime = (utc: number): string => new Date(utc).toLocaleString();
 
-  navigate = (id: string) => this.router.navigate(['publications', id]);
+  navigate = (id: string | undefined) => this.router.navigate(['publications', id]);
 }

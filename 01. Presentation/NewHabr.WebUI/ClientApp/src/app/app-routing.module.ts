@@ -10,6 +10,10 @@ const rootRoutes: Routes = [
         path: 'users',
         loadChildren: () => import('./pages/users/users.module').then(m => m.UsersModule)
     },
+    {
+        path: 'accounts',
+        loadChildren: () => import('./pages/accounts/accounts.module').then(m => m.AccountsModule)
+    },
     { path: "**", redirectTo: '/publications' }
 ];
 
