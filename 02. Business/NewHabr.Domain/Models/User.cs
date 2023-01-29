@@ -55,4 +55,7 @@ public class User // при внедрении аутентификации эт
 
     [Required]
     public string SecureAnswer { get; set; }
+
+    [Required]
+    public int Role { get; set; }
 }
