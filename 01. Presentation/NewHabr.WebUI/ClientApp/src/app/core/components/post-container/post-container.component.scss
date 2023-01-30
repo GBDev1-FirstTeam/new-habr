@@ -1,0 +1,21 @@
+@import '/src/assets/scss/mixins.scss';
+
+.post-container {
+    @include card-container;
+
+    .author {
+        span:first-child {
+            font-weight: bold;
+            cursor: pointer;
+        }
+    }
+
+    .image {
+        height: 50vh;
+        overflow: hidden;
+
+        img {
+            width: 100%;
+        }
+    }
+}

@@ -1,0 +1,18 @@
+<div class="post-container">
+    <div class="author">
+        <span (click)="navigate(post?.UserId)">{{ post?.UserLogin }}&nbsp;</span>
+        <span *ngIf="post?.PublishedAt">опубликовано {{ (post?.PublishedAt || 0).toTime() }}</span>
+        <span style="color: red" *ngIf="!post?.PublishedAt">не опубликовано</span>
+    </div>
+    <div class="title">
+        <h3>{{ post?.Title }}</h3>
+    </div>
+    <div class="image">
+        <img [attr.src]="post?.ImgURL">
+    </div>
+    <div class="preview">
+        <p>{{ post?.Content }}</p>
+    </div>
+
+    <ng-content #name></ng-content>
+</div>

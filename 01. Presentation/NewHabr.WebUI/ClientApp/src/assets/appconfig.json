@@ -1,0 +1,15 @@
+{
+    "backend": {
+        "baseURL": "/api",
+        "children": {
+            "publications": "/publications",
+            "publication": "/publications/{0}",
+            "addPublication": "/publications/add",
+            "user": "/users/{0}",
+            "userPublications": "/users/{0}/publications",
+            "comments": "/comments/{0}",
+            "addComment": "/comments/add",
+            "login": "/login"
+        }
+    }
+}

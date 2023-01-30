@@ -1,0 +1,28 @@
+@import '/src/assets/scss/mixins.scss';
+@import '/src/assets/scss/colors.scss';
+
+.user-container {
+    @include card-container;
+
+    .login {
+        font-weight: bold;
+    }
+
+    .info {
+        span:nth-child(4),
+        span:nth-child(5) {
+            color: gray;
+        }
+    }
+
+    .description {
+        padding: 8px;
+        margin-top: 10px;
+        border-radius: 5px;
+        background-color: get-color(light-grey);
+
+        div {
+            font-weight: 500;
+        }
+    }
+}
