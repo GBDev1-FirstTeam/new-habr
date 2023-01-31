@@ -1,14 +1,10 @@
 ﻿using NewHabr.Domain.Models;
 
 namespace NewHabr.DAL.Repository;
-public interface IUserRepository : IRepository<User, Guid>
+public interface IUserRepository : IRepository<User>
 {
-    Task<User> GetUserByLogin(string login);
-    Task<IReadOnlyCollection<User>> GetByFirstName(string firstName);
-    Task<IReadOnlyCollection<User>> GetByLastName(string lastName);
-    Task<IReadOnlyCollection<User>> GetByPatronimyc(string patronimyc);
-    Task<IReadOnlyCollection<User>> GetByBirthday(DateTime birthDate);
-    Task<IReadOnlyCollection<User>> GetByRoleId(int roleId);
-    Task<IReadOnlyCollection<User>> GetDeletedUsers();
-    Task<IReadOnlyCollection<User>> GetBannedUsers();
+    Task<User?> GetUserByLoginAsync(string login, CancellationToken cancellationToken = default);
+    Task<IReadOnlyCollection<User>> GetByRoleIdAsync(int roleId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyCollection<User>> GetDeletedUsersAsync(CancellationToken cancellationToken = default);
+    Task<IReadOnlyCollection<User>> GetBannedUsersAsync(CancellationToken cancellationToken = default);
 }

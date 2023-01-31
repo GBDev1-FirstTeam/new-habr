@@ -1,13 +1,10 @@
 ﻿using NewHabr.Domain.Models;
 
 namespace NewHabr.DAL.Repository;
-public interface IArticleRepository : IRepository<Article, Guid>
+public interface IArticleRepository : IRepository<Article>
 {
-    Task<Article> GetByTitle(string title);
-    Task<IReadOnlyCollection<Article>> GetByUserId(Guid userId);
-    Task<IReadOnlyCollection<Article>> GetByCreatedTime(DateTime createdTime);
-    Task<IReadOnlyCollection<Article>> GetByModifiedTime(DateTime modifiedTime);
-    Task<IReadOnlyCollection<Article>> GetByPublishedTime(DateTime publishedTime);
-    Task<IReadOnlyCollection<Article>> GetPublished();
-    Task<IReadOnlyCollection<Article>> GetDeleted();
+    Task<IReadOnlyCollection<Article>> GetByTitleAsync(string title, CancellationToken cancellationToken = default);
+    Task<IReadOnlyCollection<Article>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);    
+    Task<IReadOnlyCollection<Article>> GetPublishedAsync(CancellationToken cancellationToken = default);
+    Task<IReadOnlyCollection<Article>> GetDeletedAsync(CancellationToken cancellationToken = default);
 }

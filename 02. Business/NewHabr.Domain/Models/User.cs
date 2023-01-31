@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NewHabr.Domain.Models;
 
-public class User // при внедрении аутентификации этот класс будет наследоваться от Identity<User>
+public class User : IEntity<Guid> // при внедрении аутентификации этот класс будет наследоваться от Identity<User>
 {
     [Key]
     public Guid Id { get; set; }
@@ -55,7 +55,5 @@ public class User // при внедрении аутентификации эт
 
     [Required]
     public string SecureAnswer { get; set; }
-
-    [Required]
-    public int Role { get; set; }
+    
 }
