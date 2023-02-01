@@ -1,7 +1,6 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using NewHabr.DAL.EF;
+﻿using Microsoft.EntityFrameworkCore;
 using NewHabr.Domain;
+using NewHabr.DAL.EF;
 
 namespace NewHabr.WebApi.Extensions;
 

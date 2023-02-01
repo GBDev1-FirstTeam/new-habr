@@ -1,5 +1,6 @@
 ﻿using NewHabr.DAL.EF;
 using NewHabr.DAL.Repository.Impl;
+using NewHabr.Domain.Contracts;
 
 namespace NewHabr.DAL.Repository;
 public class RepositoryManager : IRepositoryManager
@@ -15,7 +16,7 @@ public class RepositoryManager : IRepositoryManager
         CommentRepository = new CommentRepository(_context);
         UserRepository = new UserRepository(_context);
     }
-    
+
     public async Task SaveAsync(CancellationToken cancellationToken = default)
     {
         await _context.SaveChangesAsync(cancellationToken);

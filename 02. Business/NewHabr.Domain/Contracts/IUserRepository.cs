@@ -1,6 +1,7 @@
 ﻿using NewHabr.Domain.Models;
 
-namespace NewHabr.DAL.Repository;
+namespace NewHabr.Domain.Contracts;
+
 public interface IUserRepository : IRepository<User>
 {
     Task<User?> GetUserByLoginAsync(string login, CancellationToken cancellationToken = default);

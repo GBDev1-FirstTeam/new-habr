@@ -1,6 +1,7 @@
 ﻿using NewHabr.Domain.Models;
 
-namespace NewHabr.DAL.Repository;
+namespace NewHabr.Domain.Contracts;
+
 public interface ICommentRepository : IRepository<Comment>
 {
     Task<IReadOnlyCollection<Comment>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
