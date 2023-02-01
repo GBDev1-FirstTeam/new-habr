@@ -11,10 +11,12 @@ public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity>
 {
 
     private readonly ApplicationContext _context;
+    protected DbSet<TEntity> Set;
 
     public ReporitoryBase(ApplicationContext context)
     {
         _context = context;
+        Set = _context.Set<TEntity>();
     }
     public void Create(TEntity data)
     {
@@ -29,17 +31,17 @@ public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity>
 
     public IQueryable<TEntity> FindAll(bool trackChanges = false)
     {
-        return trackChanges ? _context.Set<TEntity>() : _context.Set<TEntity>().AsNoTracking();
+        return trackChanges ? Set : Set.AsNoTracking();
     }
 
     public IQueryable<TEntity> FindByCondition(Expression<Func<TEntity, bool>> expression, bool trackChanges = false)
     {
-        return trackChanges ? _context.Set<TEntity>().Where(expression) : _context.Set<TEntity>().Where(expression).AsNoTracking();
+        return FindAll(trackChanges).Where(expression);
     }
 
     public async Task<ICollection<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await FindAll().ToListAsync();
+        return await FindAll().ToListAsync(cancellationToken);
     }
 
     public void Update(TEntity data)
