@@ -1,10 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using NewHabr.DAL.EF;
+﻿using NewHabr.DAL.EF;
+using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Models;
 
-namespace NewHabr.DAL.Repository.Impl;
-public class ArticleRepository : ReporitoryBase<Article,Guid>, IArticleRepository
+namespace NewHabr.DAL.Repository;
+
+public class ArticleRepository : ReporitoryBase<Article, Guid>, IArticleRepository
 {
 
     public ArticleRepository(ApplicationContext context, CancellationToken cancellationToken = default) : base(context)

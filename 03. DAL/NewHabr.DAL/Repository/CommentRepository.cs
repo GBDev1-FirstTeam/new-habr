@@ -1,10 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using NewHabr.DAL.EF;
+﻿using NewHabr.DAL.EF;
+using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Models;
 
 namespace NewHabr.DAL.Repository.Impl;
-public class CommentRepository : ReporitoryBase<Comment,Guid>, ICommentRepository
+public class CommentRepository : ReporitoryBase<Comment, Guid>, ICommentRepository
 {
 
     public CommentRepository(ApplicationContext context) : base(context)

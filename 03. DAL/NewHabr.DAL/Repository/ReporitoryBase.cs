@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using NewHabr.DAL.EF;
+using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Models;
 
 namespace NewHabr.DAL.Repository;
@@ -20,7 +21,7 @@ public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity>
     }
     public void Create(TEntity data)
     {
-       Set.Add(data);        
+        Set.Add(data);
     }
 
     public void Delete(TEntity data)
