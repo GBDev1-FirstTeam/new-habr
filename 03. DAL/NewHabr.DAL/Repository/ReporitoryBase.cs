@@ -20,7 +20,7 @@ public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity>
     }
     public void Create(TEntity data)
     {
-       _context.Set<TEntity>().Add(data);        
+       Set.Add(data);        
     }
 
     public void Delete(TEntity data)
@@ -46,6 +46,6 @@ public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity>
 
     public void Update(TEntity data)
     {
-        _context.Set<TEntity>().Update(data);
+        Set.Update(data);
     }
 }
