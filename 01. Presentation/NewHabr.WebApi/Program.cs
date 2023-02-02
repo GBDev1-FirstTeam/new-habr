@@ -13,6 +13,14 @@ public class Program
 
         services.ConfigureDbContext(builder.Configuration);
 
+        #region Configure Identity
+
+        builder.Services.AddAuthentication();
+        builder.Services.ConfigureIdentity();
+
+        #endregion
+
+
         services.AddControllers()
             .AddJsonOptions(options =>
             {
@@ -31,7 +39,8 @@ public class Program
             app.UseSwaggerUI();
         }
 
-        //app.UseAuthorization();
+        app.UseAuthentication();
+        app.UseAuthorization();
 
 
         app.MapControllers();

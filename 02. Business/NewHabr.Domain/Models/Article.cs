@@ -32,7 +32,7 @@ public class Article : BaseEntity<Guid>
 
     public DateTimeOffset? PublishedAt { get; set; }
 
-    public bool Deleted { get; set; }
+    //public bool Deleted { get; set; }
 
     public DateTimeOffset? DeletedAt { get; set; }
 
