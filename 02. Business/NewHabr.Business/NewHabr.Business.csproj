@@ -9,4 +9,9 @@
   <ItemGroup>
     <ProjectReference Include="..\NewHabr.Domain\NewHabr.Domain.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="AutoMapperProfiles\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
 </Project>
