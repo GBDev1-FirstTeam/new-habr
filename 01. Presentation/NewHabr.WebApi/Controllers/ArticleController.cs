@@ -17,7 +17,7 @@ public class ArticleController : Controller
     }
 
     [HttpGet("{title}")]
-    public async Task<ActionResult<IReadOnlyCollection<ArticleDto>>> GetByTitleAsync(
+    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetByTitleAsync(
         [FromRoute] string title,
         CancellationToken cancellationToken = default)
     {
@@ -29,6 +29,50 @@ public class ArticleController : Controller
         try
         {
             var result = await _articleService.GetByTitleAsync(title, cancellationToken);
+            return result is null ? NoContent() : Ok(result);
+        }
+        catch
+        {
+            return StatusCode((int)HttpStatusCode.InternalServerError);
+        }
+    }
+
+    [HttpGet("{userId}")]
+    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetByUserIdAsync(
+    [FromRoute] Guid userId,
+    CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var result = await _articleService.GetByUserIdAsync(userId, cancellationToken);
+            return result is null ? NoContent() : Ok(result);
+        }
+        catch
+        {
+            return StatusCode((int)HttpStatusCode.InternalServerError);
+        }
+    }
+
+    [HttpGet("published")]
+    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetPublishedAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var result = await _articleService.GetPublishedAsync(cancellationToken);
+            return result is null ? NoContent() : Ok(result);
+        }
+        catch
+        {
+            return StatusCode((int)HttpStatusCode.InternalServerError);
+        }
+    }
+
+    [HttpGet("deleted")]
+    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetDeletedAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var result = await _articleService.GetDeletedAsync(cancellationToken);
             return result is null ? NoContent() : Ok(result);
         }
         catch
