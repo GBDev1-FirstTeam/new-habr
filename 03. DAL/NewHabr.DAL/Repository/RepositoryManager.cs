@@ -9,12 +9,17 @@ public class RepositoryManager : IRepositoryManager
     public IArticleRepository ArticleRepository { get; }
     public ICommentRepository CommentRepository { get; }
     public IUserRepository UserRepository { get; }
+    public ICategoryRepository CategoryRepository { get; }
+    public ITagRepository TagRepository { get; }
+
     public RepositoryManager(ApplicationContext context)
     {
         _context = context;
         ArticleRepository = new ArticleRepository(_context);
         CommentRepository = new CommentRepository(_context);
         UserRepository = new UserRepository(_context);
+        CategoryRepository = new CategoryRepository(_context);
+        TagRepository = new TagRepository(_context);
     }
 
     public async Task SaveAsync(CancellationToken cancellationToken = default)
@@ -22,5 +27,3 @@ public class RepositoryManager : IRepositoryManager
         await _context.SaveChangesAsync(cancellationToken);
     }
 }
-
-

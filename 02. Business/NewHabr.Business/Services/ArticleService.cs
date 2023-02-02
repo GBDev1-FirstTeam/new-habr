@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Dto;
+using NewHabr.Domain.Models;
 
 namespace NewHabr.Business.Services;
 
@@ -70,5 +71,26 @@ public class ArticleService : IArticleService
         ArgumentNullException.ThrowIfNull(articlesDto, nameof(articlesDto));
 
         return articlesDto;
+    }
+
+    public async Task CreateAsync(CreateArticleRequest request, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request, nameof(request));
+
+        var article = _mapper.Map<Article>(request);
+
+        ArgumentNullException.ThrowIfNull(article, nameof(article));
+
+        _repositoryManager.ArticleRepository.Create(article);
+    }
+
+    public Task UpdateAsync(ArticleDto updatedArticle, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
     }
 }
