@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -7,11 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NewHabr.Domain\NewHabr.Domain.csproj" />
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="AutoMapperProfiles\" />
-    <Folder Include="Services\" />
+    <ProjectReference Include="..\NewHabr.Domain\NewHabr.Domain.csproj" />
   </ItemGroup>
 </Project>

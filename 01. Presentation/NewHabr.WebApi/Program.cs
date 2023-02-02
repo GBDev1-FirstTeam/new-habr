@@ -1,5 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using NewHabr.Business.AutoMapperProfiles;
+using NewHabr.Business.Services;
 using NewHabr.DAL.EF;
+using NewHabr.DAL.Repository;
+using NewHabr.Domain.Contracts;
 using NewHabr.WebApi.Extensions;
 
 namespace NewHabr.WebApi;
@@ -13,6 +18,10 @@ public class Program
 
         services.ConfigureDbContext(builder.Configuration);
 
+        var mapperConfigurations = new MapperConfiguration(mp => mp.AddProfile<ArticleProfile>());
+        var mapper = mapperConfigurations.CreateMapper();
+        services.AddSingleton(mapper);
+
         services.AddControllers()
             .AddJsonOptions(options =>
             {
@@ -20,6 +29,9 @@ public class Program
             });
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
+
+        services.AddScoped<IRepositoryManager, RepositoryManager>();
+        services.AddTransient<IArticleService, ArticleService>();
 
         var app = builder.Build();
         UpdateDatabase(app);
