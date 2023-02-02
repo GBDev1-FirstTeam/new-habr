@@ -1,4 +1,5 @@
-﻿using NewHabr.DAL.EF;
+﻿using Microsoft.EntityFrameworkCore;
+using NewHabr.DAL.EF;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Models;
 
@@ -6,28 +7,32 @@ namespace NewHabr.DAL.Repository;
 
 public class ArticleRepository : ReporitoryBase<Article, Guid>, IArticleRepository
 {
-
     public ArticleRepository(ApplicationContext context, CancellationToken cancellationToken = default) : base(context)
     {
     }
 
-    public Task<IReadOnlyCollection<Article>> GetByTitleAsync(string title, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<Article>> GetByTitleAsync(string title, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrEmpty(title))
+        {
+            throw new ArgumentException(nameof(title));
+        }
+
+        return await FindByCondition(a => a.Title.ToLower() == title.ToLower() && !a.Deleted).ToListAsync(cancellationToken);
     }
 
-    public Task<IReadOnlyCollection<Article>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<Article>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await FindByCondition(a => a.UserId == userId && !a.Deleted).ToListAsync(cancellationToken);
     }
 
-    public Task<IReadOnlyCollection<Article>> GetDeletedAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<Article>> GetDeletedAsync(CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await FindByCondition(a => a.Deleted).ToListAsync(cancellationToken);
     }
 
-    public Task<IReadOnlyCollection<Article>> GetPublishedAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<Article>> GetPublishedAsync(CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await FindByCondition(a => a.Published && !a.Deleted).ToListAsync(cancellationToken);
     }
 }
