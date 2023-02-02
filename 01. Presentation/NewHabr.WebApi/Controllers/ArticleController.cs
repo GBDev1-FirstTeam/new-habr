@@ -28,8 +28,7 @@ public class ArticleController : Controller
 
         try
         {
-            var result = await _articleService.GetByTitleAsync(title, cancellationToken);
-            return result is null ? NoContent() : Ok(result);
+            return Ok(await _articleService.GetByTitleAsync(title, cancellationToken));
         }
         catch
         {
@@ -44,8 +43,7 @@ public class ArticleController : Controller
     {
         try
         {
-            var result = await _articleService.GetByUserIdAsync(userId, cancellationToken);
-            return result is null ? NoContent() : Ok(result);
+            return Ok(await _articleService.GetByUserIdAsync(userId, cancellationToken));
         }
         catch
         {
@@ -58,8 +56,7 @@ public class ArticleController : Controller
     {
         try
         {
-            var result = await _articleService.GetPublishedAsync(cancellationToken);
-            return result is null ? NoContent() : Ok(result);
+            return Ok(await _articleService.GetPublishedAsync(cancellationToken));
         }
         catch
         {
@@ -72,8 +69,7 @@ public class ArticleController : Controller
     {
         try
         {
-            var result = await _articleService.GetDeletedAsync(cancellationToken);
-            return result is null ? NoContent() : Ok(result);
+            return Ok(await _articleService.GetDeletedAsync(cancellationToken));
         }
         catch
         {

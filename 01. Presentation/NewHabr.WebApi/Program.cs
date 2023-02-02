@@ -31,7 +31,9 @@ public class Program
         services.AddSwaggerGen();
 
         services.AddScoped<IRepositoryManager, RepositoryManager>();
-        services.AddTransient<IArticleService, ArticleService>();
+        services.AddScoped<IArticleService, ArticleService>();
+        services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<ITagService, TagService>();
 
         var app = builder.Build();
         UpdateDatabase(app);
