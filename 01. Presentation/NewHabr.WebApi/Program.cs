@@ -18,15 +18,6 @@ public class Program
 
         services.ConfigureDbContext(builder.Configuration);
 
-        var mapperConfigurations = new MapperConfiguration(mp =>
-        {
-            mp.AddProfile<ArticleProfile>();
-            mp.AddProfile<CategoryProfile>();
-            mp.AddProfile<TagProfile>();
-        });
-        var mapper = mapperConfigurations.CreateMapper();
-        services.AddSingleton(mapper);
-
         services.AddControllers()
             .AddJsonOptions(options =>
             {
@@ -34,6 +25,10 @@ public class Program
             });
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
+
+        var mapperConfigurations = new MapperConfiguration(config => config.AddMaps(typeof(ArticleProfile).Assembly));
+        var mapper = mapperConfigurations.CreateMapper();
+        services.AddSingleton(mapper);
 
         services.AddScoped<IRepositoryManager, RepositoryManager>();
         services.AddScoped<IArticleService, ArticleService>();
@@ -50,7 +45,7 @@ public class Program
             app.UseSwaggerUI();
         }
 
-        app.UseRouting();
+        //app.UseRouting();
         //app.UseAuthorization();
 
 
