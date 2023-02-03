@@ -18,7 +18,12 @@ public class Program
 
         services.ConfigureDbContext(builder.Configuration);
 
-        var mapperConfigurations = new MapperConfiguration(mp => mp.AddProfile<ArticleProfile>());
+        var mapperConfigurations = new MapperConfiguration(mp =>
+        {
+            mp.AddProfile<ArticleProfile>();
+            mp.AddProfile<CategoryProfile>();
+            mp.AddProfile<TagProfile>();
+        });
         var mapper = mapperConfigurations.CreateMapper();
         services.AddSingleton(mapper);
 
@@ -45,6 +50,7 @@ public class Program
             app.UseSwaggerUI();
         }
 
+        app.UseRouting();
         //app.UseAuthorization();
 
 
