@@ -2,13 +2,6 @@
 
 namespace NewHabr.Domain.Contracts;
 
-public interface ITagRepository : IRepository<Tag>
+public interface ITagRepository : IRepository<Tag, int>
 {
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="OperationCanceledException"></exception>
-    Task DeleteByIdAsync(int id, CancellationToken cancellationToken = default);
-
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="OperationCanceledException"></exception>
-    new Task<IReadOnlyCollection<Tag>> GetAllAsync(CancellationToken cancellationToken = default);
 }

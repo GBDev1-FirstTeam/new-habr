@@ -6,7 +6,7 @@ using NewHabr.Domain.Models;
 
 namespace NewHabr.DAL.Repository;
 
-public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity>
+public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity, TKey>
     where TEntity : class, IEntity<TKey>
     where TKey : struct
 {
@@ -40,7 +40,7 @@ public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity>
         return FindAll(trackChanges).Where(expression);
     }
 
-    public async Task<ICollection<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
+    public virtual async Task<IReadOnlyCollection<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await FindAll().ToListAsync(cancellationToken);
     }
@@ -48,5 +48,10 @@ public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity>
     public void Update(TEntity data)
     {
         Set.Update(data);
+    }
+
+    public virtual async Task<TEntity?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
+    {
+        return await Set.FirstOrDefaultAsync(e => e.Id.Equals(id) && !e.Deleted);
     }
 }

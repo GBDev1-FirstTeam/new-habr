@@ -1,11 +1,10 @@
-﻿using System.Net;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Dto;
 
 namespace NewHabr.WebApi.Controllers;
 
-[Route("[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class TagsController : ControllerBase
 {
@@ -25,26 +24,26 @@ public class TagsController : ControllerBase
         }
         catch
         {
-            return StatusCode((int)HttpStatusCode.InternalServerError);
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
-    [HttpPost("{name}")]
-    public async Task<ActionResult> Create([FromBody] string name, CancellationToken cancellationToken)
+    [HttpPost]
+    public async Task<ActionResult> Create([FromBody] CreateTagRequest request, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(name))
+        if (request is null)
         {
             return BadRequest();
         }
 
         try
         {
-            await _tagService.CreateAsync(name, cancellationToken);
+            await _tagService.CreateAsync(request, cancellationToken);
             return Ok();
         }
         catch
         {
-            return StatusCode((int)HttpStatusCode.InternalServerError);
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
@@ -63,7 +62,7 @@ public class TagsController : ControllerBase
         }
         catch
         {
-            return StatusCode((int)HttpStatusCode.InternalServerError);
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
@@ -81,7 +80,7 @@ public class TagsController : ControllerBase
         }
         catch
         {
-            return StatusCode((int)HttpStatusCode.InternalServerError);
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 }

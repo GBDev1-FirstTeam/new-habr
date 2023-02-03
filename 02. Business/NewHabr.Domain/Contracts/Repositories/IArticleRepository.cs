@@ -2,7 +2,7 @@
 
 namespace NewHabr.Domain.Contracts;
 
-public interface IArticleRepository : IRepository<Article>
+public interface IArticleRepository : IRepository<Article, Guid>
 {
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
@@ -20,8 +20,4 @@ public interface IArticleRepository : IRepository<Article>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="OperationCanceledException"></exception>
     Task<IReadOnlyCollection<Article>> GetDeletedAsync(CancellationToken cancellationToken = default);
-
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="OperationCanceledException"></exception>
-    Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default);
 }

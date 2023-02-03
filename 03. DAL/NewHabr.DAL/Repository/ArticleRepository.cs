@@ -11,25 +11,8 @@ public class ArticleRepository : ReporitoryBase<Article, Guid>, IArticleReposito
     {
     }
 
-    public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        var article = await Set.FirstOrDefaultAsync(a => a.Id == id && !a.Deleted, cancellationToken);
-
-        if (article is null)
-        {
-            throw new Exception("Article is not found.");
-        }
-
-        Delete(article);
-    }
-
     public async Task<IReadOnlyCollection<Article>> GetByTitleAsync(string title, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(title))
-        {
-            throw new ArgumentException(nameof(title));
-        }
-
         return await FindByCondition(a => a.Title.ToLower() == title.ToLower() && !a.Deleted).ToListAsync(cancellationToken);
     }
 

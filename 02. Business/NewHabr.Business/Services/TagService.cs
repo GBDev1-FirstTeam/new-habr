@@ -16,48 +16,49 @@ public class TagService : ITagService
         _mapper = mapper;
     }
 
-    public async Task CreateAsync(string name, CancellationToken cancellationToken = default)
+    public async Task CreateAsync(CreateTagRequest request, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(name, nameof(name));
+        var tag = _repositoryManager.TagRepository.FindByCondition(c => c.Name == request.Name && !c.Deleted).FirstOrDefault();
 
-        _repositoryManager.TagRepository.Create(new()
+        if (tag is not null)
         {
-            Name = name,
-        });
+            throw new Exception("Entity already exists.");
+        }
 
+        var newTag = _mapper.Map<Tag>(request);
+        _repositoryManager.TagRepository.Create(newTag);
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
     public async Task DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        await _repositoryManager.TagRepository.DeleteByIdAsync(id, cancellationToken);
+        var tag = await _repositoryManager.TagRepository.GetByIdAsync(id, cancellationToken);
+
+        if (tag is null)
+        {
+            throw new Exception("Entity not found.");
+        }
+
+        _repositoryManager.TagRepository.Delete(tag);
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyCollection<TagDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         var tags = await _repositoryManager.TagRepository.GetAllAsync(cancellationToken);
-
-        if (tags is null)
-        {
-            return new List<TagDto>();
-        }
-
-        var tagsDto = _mapper.Map<List<TagDto>>(tags);
-
-        return tagsDto ?? new List<TagDto>();
+        return _mapper.Map<List<TagDto>>(tags);
     }
 
     public async Task UpdateAsync(TagDto tagToUpdate, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(tagToUpdate, nameof(tagToUpdate));
+        var tag = await _repositoryManager.TagRepository.GetByIdAsync(tagToUpdate.Id, cancellationToken);
 
-        var tag = _mapper.Map<Tag>(tagToUpdate);
-
-        if (tag == null)
+        if (tag is null)
         {
-            throw new AutoMapperMappingException();
+            throw new Exception("Entity not found.");
         }
+
+        _mapper.Map(tagToUpdate, tag);
 
         _repositoryManager.TagRepository.Update(tag);
         await _repositoryManager.SaveAsync(cancellationToken);

@@ -16,41 +16,46 @@ public class CategoryService : ICategoryService
         _mapper = mapper;
     }
 
-    public async Task CreateAsync(string name, CancellationToken cancellationToken = default)
+    public async Task CreateAsync(CreateCategoryRequest request, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(name, nameof(name));
+        var category = _repositoryManager.CategoryRepository.FindByCondition(c => c.Name == request.Name && !c.Deleted).FirstOrDefault();
 
-        _repositoryManager.CategoryRepository.Create(new()
+        if(category is not null)
         {
-            Name = name,
-        });
+            throw new Exception("Entity already exists.");
+        }
 
+        var newCategory = _mapper.Map<Category>(request);
+        _repositoryManager.CategoryRepository.Create(newCategory);
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
     public async Task DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        await _repositoryManager.CategoryRepository.DeleteByIdAsync(id, cancellationToken);
+        var category = await _repositoryManager.CategoryRepository.GetByIdAsync(id, cancellationToken);
+
+        if (category is null)
+        {
+            throw new Exception("Entity is not found.");
+        }
+
+        _repositoryManager.CategoryRepository.Delete(category);
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyCollection<CategoryDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         var categories = await _repositoryManager.CategoryRepository.GetAllAsync(cancellationToken);
-
-        var categoriesDto = _mapper.Map<List<CategoryDto>>(categories);
-
-        return categoriesDto;
+        return _mapper.Map<List<CategoryDto>>(categories);
     }
 
     public async Task UpdateAsync(CategoryDto categoryToUpdate, CancellationToken cancellationToken = default)
     {
-        var category = _repositoryManager.CategoryRepository.FindByCondition(c => c.Id == categoryToUpdate.Id && !c.Deleted, true)
-            .SingleOrDefault();
+        var category = await _repositoryManager.CategoryRepository.GetByIdAsync(categoryToUpdate.Id, cancellationToken);
 
         if (category is null)
         {
-            throw new Exception();
+            throw new Exception("Entity not found.");
         }
 
         _mapper.Map(categoryToUpdate, category);

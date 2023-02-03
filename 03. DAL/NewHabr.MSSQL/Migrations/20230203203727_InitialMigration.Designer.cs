@@ -12,8 +12,8 @@ using NewHabr.DAL.EF;
 namespace NewHabr.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20230202222956_UpdateMigration")]
-    partial class UpdateMigration
+    [Migration("20230203203727_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -114,9 +114,12 @@ namespace NewHabr.MSSQL.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Categories");
                 });
@@ -234,6 +237,9 @@ namespace NewHabr.MSSQL.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Tags");
                 });

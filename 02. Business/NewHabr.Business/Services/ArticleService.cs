@@ -19,73 +19,62 @@ public class ArticleService : IArticleService
     public async Task<IReadOnlyCollection<ArticleDto>> GetByTitleAsync(string title, CancellationToken cancellationToken = default)
     {
         var articles = await _repositoryManager.ArticleRepository.GetByTitleAsync(title, cancellationToken);
-
         var articlesDto = _mapper.Map<List<ArticleDto>>(articles);
-
         return articlesDto;
     }
 
     public async Task<IReadOnlyCollection<ArticleDto>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var articles = await _repositoryManager.ArticleRepository.GetByUserIdAsync(userId, cancellationToken);
-
-        if (articles is null)
-        {
-            return new List<ArticleDto>();
-        }
-
         var articlesDto = _mapper.Map<List<ArticleDto>>(articles);
-
-        return articlesDto ?? new List<ArticleDto>();
+        return articlesDto;
     }
 
     public async Task<IReadOnlyCollection<ArticleDto>> GetPublishedAsync(CancellationToken cancellationToken = default)
     {
         var articles = await _repositoryManager.ArticleRepository.GetPublishedAsync(cancellationToken);
-
-        if (articles is null)
-        {
-            return new List<ArticleDto>();
-        }
-
         var articlesDto = _mapper.Map<List<ArticleDto>>(articles);
-
-        return articlesDto ?? new List<ArticleDto>();
+        return articlesDto;
     }
 
     public async Task<IReadOnlyCollection<ArticleDto>> GetDeletedAsync(CancellationToken cancellationToken = default)
     {
         var articles = await _repositoryManager.ArticleRepository.GetDeletedAsync(cancellationToken);
-
-        if (articles is null)
-        {
-            return new List<ArticleDto>();
-        }
-
         var articlesDto = _mapper.Map<List<ArticleDto>>(articles);
-
-        return articlesDto ?? new List<ArticleDto>();
+        return articlesDto;
     }
 
     public async Task CreateAsync(CreateArticleRequest request, CancellationToken cancellationToken = default)
     {
         var article = _mapper.Map<Article>(request);
-
         _repositoryManager.ArticleRepository.Create(article);
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task UpdateAsync(ArticleDto updatedArticle, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(ArticleDto articleToUpdate, CancellationToken cancellationToken = default)
     {
-        var article = _mapper.Map<Article>(updatedArticle);
+        var article = await _repositoryManager.ArticleRepository.GetByIdAsync(articleToUpdate.Id);
 
+        if (article is null)
+        {
+            throw new Exception("Entity not found.");
+        }
+
+        article = _mapper.Map<Article>(articleToUpdate);
         _repositoryManager.ArticleRepository.Update(article);
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
     public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        await _repositoryManager.ArticleRepository.DeleteByIdAsync(id, cancellationToken);
+        var article = await _repositoryManager.ArticleRepository.GetByIdAsync(id, cancellationToken);
+
+        if (article is null)
+        {
+            throw new Exception("Entity not found..");
+        }
+
+        _repositoryManager.ArticleRepository.Delete(article);
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 }

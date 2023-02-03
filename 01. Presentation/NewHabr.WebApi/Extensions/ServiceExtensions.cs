@@ -26,11 +26,10 @@ public static class ServiceExtensions
         }
     }
 
-    public static void ConfigureAutoMapper(this IServiceCollection services, Assembly profilesAssembly)
+    public static void ConfigureAutoMapper(this IServiceCollection services, params Assembly[] profileAssemblies)
     {
-        var mapperConfigurations = new MapperConfiguration(config => config.AddMaps(profilesAssembly.GetType().Assembly));
+        var mapperConfigurations = new MapperConfiguration(config => config.AddMaps(profileAssemblies));
         var mapper = mapperConfigurations.CreateMapper();
         services.AddSingleton(mapper);
     }
 }
-

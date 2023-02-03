@@ -12,7 +12,7 @@ public interface ITagService
 
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="OperationCanceledException"></exception>
-    Task CreateAsync(string name, CancellationToken cancellationToken = default);
+    Task CreateAsync(CreateTagRequest request, CancellationToken cancellationToken = default);
 
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="ArgumentNullException"></exception>

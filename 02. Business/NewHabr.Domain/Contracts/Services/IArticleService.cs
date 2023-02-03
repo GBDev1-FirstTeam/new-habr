@@ -34,7 +34,7 @@ public interface IArticleService
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="AutoMapperMappingException"></exception>
     /// <exception cref="OperationCanceledException"></exception>
-    Task UpdateAsync(ArticleDto updatedArticle, CancellationToken cancellationToken = default);
+    Task UpdateAsync(ArticleDto articleToUpdate, CancellationToken cancellationToken = default);
 
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="AutoMapperMappingException"></exception>

@@ -1,5 +1,4 @@
-﻿using System.Net;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Dto;
 
@@ -17,7 +16,7 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetByTitle([FromQuery] string title, CancellationToken cancellationToken)
+    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetByTitle([FromBody] string title, CancellationToken cancellationToken)
     {
         try
         {
@@ -25,7 +24,7 @@ public class ArticlesController : ControllerBase
         }
         catch
         {
-            return StatusCode((int)HttpStatusCode.InternalServerError);
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
@@ -38,7 +37,7 @@ public class ArticlesController : ControllerBase
         }
         catch
         {
-            return StatusCode((int)HttpStatusCode.InternalServerError);
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
@@ -51,7 +50,7 @@ public class ArticlesController : ControllerBase
         }
         catch
         {
-            return StatusCode((int)HttpStatusCode.InternalServerError);
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
@@ -78,7 +77,7 @@ public class ArticlesController : ControllerBase
         }
         catch
         {
-            return StatusCode((int)HttpStatusCode.InternalServerError);
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
@@ -105,7 +104,7 @@ public class ArticlesController : ControllerBase
         }
         catch
         {
-            return StatusCode((int)HttpStatusCode.InternalServerError);
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
@@ -127,7 +126,7 @@ public class ArticlesController : ControllerBase
         }
         catch
         {
-            return StatusCode((int)HttpStatusCode.InternalServerError);
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 }

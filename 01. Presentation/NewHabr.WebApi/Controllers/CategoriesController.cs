@@ -1,12 +1,10 @@
-﻿using System.Net;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
+﻿using Microsoft.AspNetCore.Mvc;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Dto;
 
 namespace NewHabr.WebApi.Controllers;
 
-[Route("[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class CategoriesController : ControllerBase
 {
@@ -24,23 +22,23 @@ public class CategoriesController : ControllerBase
         {
             return Ok(await _categoryService.GetAllAsync(cancellationToken));
         }
-        catch (OperationCanceledException)
+        catch
         {
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
-    [HttpPost("{name}")]
-    public async Task<ActionResult> Create([FromBody] string name, CancellationToken cancellationToken)
+    [HttpPost]
+    public async Task<ActionResult> Create([FromBody] CreateCategoryRequest request, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(name))
+        if (request is null)
         {
             return BadRequest();
         }
 
         try
         {
-            await _categoryService.CreateAsync(name, cancellationToken);
+            await _categoryService.CreateAsync(request, cancellationToken);
             return Ok();
         }
         catch
@@ -52,7 +50,7 @@ public class CategoriesController : ControllerBase
     [HttpPut]
     public async Task<ActionResult> Update([FromBody] CategoryDto categoryToUpdate, CancellationToken cancellationToken)
     {
-        if(categoryToUpdate is null)
+        if (categoryToUpdate is null)
         {
             return BadRequest();
         }
@@ -68,7 +66,7 @@ public class CategoriesController : ControllerBase
         }
         catch
         {
-            return StatusCode((int)HttpStatusCode.InternalServerError);
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
@@ -86,7 +84,7 @@ public class CategoriesController : ControllerBase
         }
         catch
         {
-            return StatusCode((int)HttpStatusCode.InternalServerError);
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 }
