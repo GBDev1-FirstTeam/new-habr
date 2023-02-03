@@ -16,9 +16,9 @@ public class ArticleController : Controller
         _articleService = articleService;
     }
 
-    [HttpGet("{title}")]
+    [HttpGet]
     public async Task<ActionResult<IEnumerable<ArticleDto>>> GetByTitleAsync(
-        [FromRoute] string title,
+        [FromQuery] string title,
         CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(title))
@@ -70,6 +70,82 @@ public class ArticleController : Controller
         try
         {
             return Ok(await _articleService.GetDeletedAsync(cancellationToken));
+        }
+        catch
+        {
+            return StatusCode((int)HttpStatusCode.InternalServerError);
+        }
+    }
+
+    [HttpPost]
+    public async Task<ActionResult> CreateAsync([FromQuery] CreateArticleRequest request, CancellationToken cancellationToken = default)
+    {
+        if (request is null)
+        {
+            return BadRequest();
+        }
+
+        try
+        {
+            await _articleService.CreateAsync(request, cancellationToken);
+            return Ok();
+        }
+        catch (OperationCanceledException)
+        {
+            return Ok();
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+        catch
+        {
+            return StatusCode((int)HttpStatusCode.InternalServerError);
+        }
+    }
+
+    [HttpPut]
+    public async Task<ActionResult> UpdateAsync([FromQuery] ArticleDto articleToUpdate, CancellationToken cancellationToken = default)
+    {
+        if (articleToUpdate is null)
+        {
+            return BadRequest();
+        }
+
+        try
+        {
+            await _articleService.UpdateAsync(articleToUpdate, cancellationToken);
+            return Ok();
+        }
+        catch (OperationCanceledException)
+        {
+            return Ok();
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+        catch
+        {
+            return StatusCode((int)HttpStatusCode.InternalServerError);
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteAsync([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await _articleService.DeleteByIdAsync(id, cancellationToken);
+            return Ok();
+        }
+        catch (OperationCanceledException)
+        {
+            return Ok();
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
         }
         catch
         {
