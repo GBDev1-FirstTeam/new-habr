@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using NewHabr.Domain;
+﻿using System.Reflection;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using NewHabr.DAL.EF;
+using NewHabr.Domain;
 
 namespace NewHabr.WebApi.Extensions;
 
@@ -23,5 +25,11 @@ public static class ServiceExtensions
                 break;
         }
     }
-}
 
+    public static void ConfigureAutoMapper(this IServiceCollection services, params Assembly[] profilesAssembly)
+    {
+        var mapperConfigurations = new MapperConfiguration(config => config.AddMaps(profilesAssembly));
+        var mapper = mapperConfigurations.CreateMapper();
+        services.AddSingleton(mapper);
+    }
+}
