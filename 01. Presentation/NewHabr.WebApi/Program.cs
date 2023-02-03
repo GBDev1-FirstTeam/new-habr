@@ -1,11 +1,9 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using NewHabr.Business.AutoMapperProfiles;
 using NewHabr.Business.Services;
 using NewHabr.DAL.EF;
 using NewHabr.DAL.Repository;
 using NewHabr.Domain.Contracts;
-using NewHabr.WebApi.Controllers;
 using NewHabr.WebApi.Extensions;
 
 namespace NewHabr.WebApi;

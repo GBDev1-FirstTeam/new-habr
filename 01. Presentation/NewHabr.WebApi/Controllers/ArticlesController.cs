@@ -5,7 +5,7 @@ using NewHabr.Domain.Dto;
 
 namespace NewHabr.WebApi.Controllers;
 
-[Route("[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class ArticlesController : ControllerBase
 {
@@ -17,13 +17,8 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetByTitle([FromBody] string title, CancellationToken cancellationToken)
+    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetByTitle([FromQuery] string title, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(title))
-        {
-            return BadRequest();
-        }
-
         try
         {
             return Ok(await _articleService.GetByTitleAsync(title, cancellationToken));
@@ -34,20 +29,7 @@ public class ArticlesController : ControllerBase
         }
     }
 
-    [HttpGet("{userId}")]
-    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetByUserId([FromRoute] Guid userId, CancellationToken cancellationToken)
-    {
-        try
-        {
-            return Ok(await _articleService.GetByUserIdAsync(userId, cancellationToken));
-        }
-        catch
-        {
-            return StatusCode((int)HttpStatusCode.InternalServerError);
-        }
-    }
-
-    [HttpGet("published")]
+    [HttpGet("unpublished")]
     public async Task<ActionResult<IEnumerable<ArticleDto>>> GetPublished(CancellationToken cancellationToken)
     {
         try

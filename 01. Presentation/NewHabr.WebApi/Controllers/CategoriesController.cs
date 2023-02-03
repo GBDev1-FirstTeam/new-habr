@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Dto;
 
@@ -23,9 +24,9 @@ public class CategoriesController : ControllerBase
         {
             return Ok(await _categoryService.GetAllAsync(cancellationToken));
         }
-        catch
+        catch (OperationCanceledException)
         {
-            return StatusCode((int)HttpStatusCode.InternalServerError);
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
@@ -44,7 +45,7 @@ public class CategoriesController : ControllerBase
         }
         catch
         {
-            return StatusCode((int)HttpStatusCode.InternalServerError);
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
@@ -81,7 +82,7 @@ public class CategoriesController : ControllerBase
         }
         catch (ArgumentNullException)
         {
-            return BadRequest();
+            return NotFound();
         }
         catch
         {

@@ -38,26 +38,22 @@ public class CategoryService : ICategoryService
     {
         var categories = await _repositoryManager.CategoryRepository.GetAllAsync(cancellationToken);
 
-        if (categories is null)
-        {
-            return new List<CategoryDto>();
-        }
-
         var categoriesDto = _mapper.Map<List<CategoryDto>>(categories);
 
-        return categoriesDto ?? new List<CategoryDto>();
+        return categoriesDto;
     }
 
     public async Task UpdateAsync(CategoryDto categoryToUpdate, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(categoryToUpdate, nameof(categoryToUpdate));
+        var category = _repositoryManager.CategoryRepository.FindByCondition(c => c.Id == categoryToUpdate.Id && !c.Deleted, true)
+            .SingleOrDefault();
 
-        var category = _mapper.Map<Category>(categoryToUpdate);
-
-        if (category == null)
+        if (category is null)
         {
-            throw new AutoMapperMappingException();
+            throw new Exception();
         }
+
+        _mapper.Map(categoryToUpdate, category);
 
         _repositoryManager.CategoryRepository.Update(category);
         await _repositoryManager.SaveAsync(cancellationToken);
