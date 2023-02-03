@@ -7,19 +7,17 @@ namespace NewHabr.WebApi.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class ArticleController : Controller
+public class ArticlesController : ControllerBase
 {
     private readonly IArticleService _articleService;
 
-    public ArticleController(IArticleService articleService)
+    public ArticlesController(IArticleService articleService)
     {
         _articleService = articleService;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetByTitleAsync(
-        [FromQuery] string title,
-        CancellationToken cancellationToken = default)
+    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetByTitle([FromBody] string title, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(title))
         {
@@ -37,9 +35,7 @@ public class ArticleController : Controller
     }
 
     [HttpGet("{userId}")]
-    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetByUserIdAsync(
-    [FromRoute] Guid userId,
-    CancellationToken cancellationToken = default)
+    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetByUserId([FromRoute] Guid userId, CancellationToken cancellationToken)
     {
         try
         {
@@ -52,7 +48,7 @@ public class ArticleController : Controller
     }
 
     [HttpGet("published")]
-    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetPublishedAsync(CancellationToken cancellationToken = default)
+    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetPublished(CancellationToken cancellationToken)
     {
         try
         {
@@ -65,7 +61,7 @@ public class ArticleController : Controller
     }
 
     [HttpGet("deleted")]
-    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetDeletedAsync(CancellationToken cancellationToken = default)
+    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetDeleted(CancellationToken cancellationToken)
     {
         try
         {
@@ -78,7 +74,7 @@ public class ArticleController : Controller
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateAsync([FromQuery] CreateArticleRequest request, CancellationToken cancellationToken = default)
+    public async Task<ActionResult> Create([FromBody] CreateArticleRequest request, CancellationToken cancellationToken)
     {
         if (request is null)
         {
@@ -105,7 +101,7 @@ public class ArticleController : Controller
     }
 
     [HttpPut]
-    public async Task<ActionResult> UpdateAsync([FromQuery] ArticleDto articleToUpdate, CancellationToken cancellationToken = default)
+    public async Task<ActionResult> Update([FromBody] ArticleDto articleToUpdate, CancellationToken cancellationToken)
     {
         if (articleToUpdate is null)
         {
@@ -132,7 +128,7 @@ public class ArticleController : Controller
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteAsync([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    public async Task<ActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         try
         {

@@ -14,22 +14,16 @@ public class TagRepository : ReporitoryBase<Tag, int>, ITagRepository
     public async Task DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         var tag = await Set.FirstOrDefaultAsync(c => c.Id == id && !c.Deleted);
-        ArgumentNullException.ThrowIfNull(tag, nameof(tag));
-        Delete(tag);
-    }
 
-    public async Task DeleteByNameAsync(string name, CancellationToken cancellationToken = default)
-    {
-        if (string.IsNullOrEmpty(name))
+        if (tag is null)
         {
-            throw new ArgumentException(name, nameof(name));
+            throw new Exception("Category is not found.");
         }
-        var tag = await Set.FirstOrDefaultAsync(c => c.Name == name && !c.Deleted);
-        ArgumentNullException.ThrowIfNull(tag, nameof(tag));
+
         Delete(tag);
     }
 
-    public new async Task<IReadOnlyCollection<Tag>> GetAllAsync(CancellationToken cancellationToken)
+    public new async Task<IReadOnlyCollection<Tag>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await FindByCondition(t => !t.Deleted).ToListAsync(cancellationToken);
     }

@@ -25,52 +25,56 @@ public class ArticleService : IArticleService
 
         var articles = await _repositoryManager.ArticleRepository.GetByTitleAsync(title, cancellationToken);
 
-        ArgumentNullException.ThrowIfNull(articles, nameof(articles));
+        if (articles is null)
+        {
+            return new List<ArticleDto>();
+        }
 
         var articlesDto = _mapper.Map<List<ArticleDto>>(articles);
 
-        ArgumentNullException.ThrowIfNull(articlesDto, nameof(articlesDto));
-
-        return articlesDto;
+        return articlesDto ?? new List<ArticleDto>();
     }
 
     public async Task<IReadOnlyCollection<ArticleDto>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var articles = await _repositoryManager.ArticleRepository.GetByUserIdAsync(userId, cancellationToken);
 
-        ArgumentNullException.ThrowIfNull(articles, nameof(articles));
+        if (articles is null)
+        {
+            return new List<ArticleDto>();
+        }
 
         var articlesDto = _mapper.Map<List<ArticleDto>>(articles);
 
-        ArgumentNullException.ThrowIfNull(articlesDto, nameof(articlesDto));
-
-        return articlesDto;
+        return articlesDto ?? new List<ArticleDto>();
     }
 
     public async Task<IReadOnlyCollection<ArticleDto>> GetPublishedAsync(CancellationToken cancellationToken = default)
     {
         var articles = await _repositoryManager.ArticleRepository.GetPublishedAsync(cancellationToken);
 
-        ArgumentNullException.ThrowIfNull(articles, nameof(articles));
+        if (articles is null)
+        {
+            return new List<ArticleDto>();
+        }
 
         var articlesDto = _mapper.Map<List<ArticleDto>>(articles);
 
-        ArgumentNullException.ThrowIfNull(articlesDto, nameof(articlesDto));
-
-        return articlesDto;
+        return articlesDto ?? new List<ArticleDto>();
     }
 
     public async Task<IReadOnlyCollection<ArticleDto>> GetDeletedAsync(CancellationToken cancellationToken = default)
     {
-        var articles = await _repositoryManager.ArticleRepository.GetPublishedAsync(cancellationToken);
+        var articles = await _repositoryManager.ArticleRepository.GetDeletedAsync(cancellationToken);
 
-        ArgumentNullException.ThrowIfNull(articles, nameof(articles));
+        if (articles is null)
+        {
+            return new List<ArticleDto>();
+        }
 
         var articlesDto = _mapper.Map<List<ArticleDto>>(articles);
 
-        ArgumentNullException.ThrowIfNull(articlesDto, nameof(articlesDto));
-
-        return articlesDto;
+        return articlesDto ?? new List<ArticleDto>();
     }
 
     public async Task CreateAsync(CreateArticleRequest request, CancellationToken cancellationToken = default)
@@ -79,7 +83,10 @@ public class ArticleService : IArticleService
 
         var article = _mapper.Map<Article>(request);
 
-        ArgumentNullException.ThrowIfNull(article, nameof(article));
+        if (article is null)
+        {
+            throw new AutoMapperMappingException();
+        }
 
         _repositoryManager.ArticleRepository.Create(article);
         await _repositoryManager.SaveAsync(cancellationToken);
@@ -91,7 +98,10 @@ public class ArticleService : IArticleService
 
         var article = _mapper.Map<Article>(updatedArticle);
 
-        ArgumentNullException.ThrowIfNull(article, nameof(article));
+        if (article is null)
+        {
+            throw new AutoMapperMappingException();
+        }
 
         _repositoryManager.ArticleRepository.Update(article);
         await _repositoryManager.SaveAsync(cancellationToken);

@@ -7,14 +7,19 @@ namespace NewHabr.DAL.Repository;
 
 public class ArticleRepository : ReporitoryBase<Article, Guid>, IArticleRepository
 {
-    public ArticleRepository(ApplicationContext context, CancellationToken cancellationToken = default) : base(context)
+    public ArticleRepository(ApplicationContext context) : base(context)
     {
     }
 
     public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var article = await Set.FirstOrDefaultAsync(a => a.Id == id && !a.Deleted, cancellationToken);
-        ArgumentNullException.ThrowIfNull(article, nameof(article));
+
+        if (article is null)
+        {
+            throw new Exception("Article is not found.");
+        }
+
         Delete(article);
     }
 

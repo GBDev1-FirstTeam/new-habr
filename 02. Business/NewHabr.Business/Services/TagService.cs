@@ -24,6 +24,7 @@ public class TagService : ITagService
         {
             Name = name,
         });
+
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
@@ -33,23 +34,18 @@ public class TagService : ITagService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task DeleteByNameAsync(string name, CancellationToken cancellationToken = default)
-    {
-        await _repositoryManager.TagRepository.DeleteByNameAsync(name, cancellationToken);
-        await _repositoryManager.SaveAsync(cancellationToken);
-    }
-
     public async Task<IReadOnlyCollection<TagDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         var tags = await _repositoryManager.TagRepository.GetAllAsync(cancellationToken);
 
-        ArgumentNullException.ThrowIfNull(tags, nameof(tags));
+        if (tags is null)
+        {
+            return new List<TagDto>();
+        }
 
         var tagsDto = _mapper.Map<List<TagDto>>(tags);
 
-        ArgumentNullException.ThrowIfNull(tagsDto, nameof(tagsDto));
-
-        return tagsDto;
+        return tagsDto ?? new List<TagDto>();
     }
 
     public async Task UpdateAsync(TagDto tagToUpdate, CancellationToken cancellationToken = default)
@@ -58,7 +54,10 @@ public class TagService : ITagService
 
         var tag = _mapper.Map<Tag>(tagToUpdate);
 
-        ArgumentNullException.ThrowIfNull(tag, nameof(tag));
+        if (tag == null)
+        {
+            throw new AutoMapperMappingException();
+        }
 
         _repositoryManager.TagRepository.Update(tag);
         await _repositoryManager.SaveAsync(cancellationToken);
