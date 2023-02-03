@@ -7,17 +7,17 @@ namespace NewHabr.WebApi.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class TagController : Controller
+public class TagsController : ControllerBase
 {
     private readonly ITagService _tagService;
 
-    public TagController(ITagService tagService)
+    public TagsController(ITagService tagService)
     {
         _tagService = tagService;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<TagDto>>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<ActionResult<IEnumerable<TagDto>>> GetAll(CancellationToken cancellationToken)
     {
         try
         {
@@ -30,7 +30,7 @@ public class TagController : Controller
     }
 
     [HttpPost("{name}")]
-    public async Task<ActionResult> CreateAsync([FromRoute] string name, CancellationToken cancellationToken = default)
+    public async Task<ActionResult> Create([FromBody] string name, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(name))
         {
@@ -49,7 +49,7 @@ public class TagController : Controller
     }
 
     [HttpPut]
-    public async Task<ActionResult> UpdateAsync([FromQuery] TagDto tagToUpdate, CancellationToken cancellationToken = default)
+    public async Task<ActionResult> Update([FromBody] TagDto tagToUpdate, CancellationToken cancellationToken)
     {
         if (tagToUpdate is null)
         {
@@ -68,34 +68,11 @@ public class TagController : Controller
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteByIdAsync([FromRoute] int id, CancellationToken cancellationToken = default)
+    public async Task<ActionResult> DeleteById([FromRoute] int id, CancellationToken cancellationToken)
     {
         try
         {
             await _tagService.DeleteByIdAsync(id, cancellationToken);
-            return Ok();
-        }
-        catch (ArgumentNullException)
-        {
-            return BadRequest();
-        }
-        catch
-        {
-            return StatusCode((int)HttpStatusCode.InternalServerError);
-        }
-    }
-
-    [HttpDelete()]
-    public async Task<ActionResult> DeleteByNameAsync([FromQuery] string name, CancellationToken cancellationToken = default)
-    {
-        if (string.IsNullOrEmpty(name))
-        {
-            return BadRequest();
-        }
-
-        try
-        {
-            await _tagService.DeleteByNameAsync(name, cancellationToken);
             return Ok();
         }
         catch (ArgumentNullException)

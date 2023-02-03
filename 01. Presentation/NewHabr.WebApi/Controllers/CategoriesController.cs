@@ -7,17 +7,17 @@ namespace NewHabr.WebApi.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class CategoryController : Controller
+public class CategoriesController : ControllerBase
 {
     private readonly ICategoryService _categoryService;
 
-    public CategoryController(ICategoryService categoryService)
+    public CategoriesController(ICategoryService categoryService)
     {
         _categoryService = categoryService;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAll(CancellationToken cancellationToken)
     {
         try
         {
@@ -30,7 +30,7 @@ public class CategoryController : Controller
     }
 
     [HttpPost("{name}")]
-    public async Task<ActionResult> CreateAsync([FromRoute] string name, CancellationToken cancellationToken = default)
+    public async Task<ActionResult> Create([FromBody] string name, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(name))
         {
@@ -49,7 +49,7 @@ public class CategoryController : Controller
     }
 
     [HttpPut]
-    public async Task<ActionResult> UpdateAsync([FromQuery] CategoryDto categoryToUpdate, CancellationToken cancellationToken = default)
+    public async Task<ActionResult> Update([FromBody] CategoryDto categoryToUpdate, CancellationToken cancellationToken)
     {
         if(categoryToUpdate is null)
         {
@@ -72,34 +72,11 @@ public class CategoryController : Controller
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteByIdAsync([FromRoute] int id, CancellationToken cancellationToken = default)
+    public async Task<ActionResult> DeleteById([FromRoute] int id, CancellationToken cancellationToken)
     {
         try
         {
             await _categoryService.DeleteByIdAsync(id, cancellationToken);
-            return Ok();
-        }
-        catch (ArgumentNullException)
-        {
-            return BadRequest();
-        }
-        catch
-        {
-            return StatusCode((int)HttpStatusCode.InternalServerError);
-        }
-    }
-
-    [HttpDelete]
-    public async Task<ActionResult> DeleteByNameAsync([FromQuery] string name, CancellationToken cancellationToken = default)
-    {
-        if (string.IsNullOrEmpty(name))
-        {
-            return BadRequest();
-        }
-
-        try
-        {
-            await _categoryService.DeleteByNameAsync(name, cancellationToken);
             return Ok();
         }
         catch (ArgumentNullException)

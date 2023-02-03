@@ -14,22 +14,16 @@ public class CategoryRepository : ReporitoryBase<Category, int>, ICategoryReposi
     public async Task DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         var category = await Set.FirstOrDefaultAsync(c => c.Id == id && !c.Deleted);
-        ArgumentNullException.ThrowIfNull(category, nameof(category));
-        Delete(category);
-    }
 
-    public async Task DeleteByNameAsync(string name, CancellationToken cancellationToken = default)
-    {
-        if (string.IsNullOrEmpty(name))
+        if (category is null)
         {
-            throw new ArgumentException(name, nameof(name));
+            throw new Exception("Category is not found.");
         }
-        var category = await Set.FirstOrDefaultAsync(c => c.Name == name && !c.Deleted);
-        ArgumentNullException.ThrowIfNull(category, nameof(category));
+
         Delete(category);
     }
 
-    public new async Task<IReadOnlyCollection<Category>> GetAllAsync(CancellationToken cancellationToken)
+    public new async Task<IReadOnlyCollection<Category>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await FindByCondition(c => !c.Deleted).ToListAsync(cancellationToken);
     }

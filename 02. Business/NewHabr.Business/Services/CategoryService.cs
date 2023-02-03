@@ -24,6 +24,7 @@ public class CategoryService : ICategoryService
         {
             Name = name,
         });
+
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
@@ -33,23 +34,18 @@ public class CategoryService : ICategoryService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task DeleteByNameAsync(string name, CancellationToken cancellationToken = default)
-    {
-        await _repositoryManager.CategoryRepository.DeleteByNameAsync(name, cancellationToken);
-        await _repositoryManager.SaveAsync(cancellationToken);
-    }
-
     public async Task<IReadOnlyCollection<CategoryDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         var categories = await _repositoryManager.CategoryRepository.GetAllAsync(cancellationToken);
 
-        ArgumentNullException.ThrowIfNull(categories, nameof(categories));
+        if (categories is null)
+        {
+            return new List<CategoryDto>();
+        }
 
         var categoriesDto = _mapper.Map<List<CategoryDto>>(categories);
 
-        ArgumentNullException.ThrowIfNull(categoriesDto, nameof(categoriesDto));
-
-        return categoriesDto;
+        return categoriesDto ?? new List<CategoryDto>();
     }
 
     public async Task UpdateAsync(CategoryDto categoryToUpdate, CancellationToken cancellationToken = default)
@@ -58,7 +54,10 @@ public class CategoryService : ICategoryService
 
         var category = _mapper.Map<Category>(categoryToUpdate);
 
-        ArgumentNullException.ThrowIfNull(category, nameof(category));
+        if (category == null)
+        {
+            throw new AutoMapperMappingException();
+        }
 
         _repositoryManager.CategoryRepository.Update(category);
         await _repositoryManager.SaveAsync(cancellationToken);

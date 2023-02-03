@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using NewHabr.Domain;
+﻿using System.Reflection;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using NewHabr.DAL.EF;
+using NewHabr.Domain;
 
 namespace NewHabr.WebApi.Extensions;
 
@@ -22,6 +24,13 @@ public static class ServiceExtensions
                     options.UseSqlServer(connectionString, options => options.MigrationsAssembly("NewHabr.MSSQL")));
                 break;
         }
+    }
+
+    public static void ConfigureAutoMapper(this IServiceCollection services, Assembly profilesAssembly)
+    {
+        var mapperConfigurations = new MapperConfiguration(config => config.AddMaps(profilesAssembly.GetType().Assembly));
+        var mapper = mapperConfigurations.CreateMapper();
+        services.AddSingleton(mapper);
     }
 }
 

@@ -5,6 +5,7 @@ using NewHabr.Business.Services;
 using NewHabr.DAL.EF;
 using NewHabr.DAL.Repository;
 using NewHabr.Domain.Contracts;
+using NewHabr.WebApi.Controllers;
 using NewHabr.WebApi.Extensions;
 
 namespace NewHabr.WebApi;
@@ -26,9 +27,7 @@ public class Program
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
 
-        var mapperConfigurations = new MapperConfiguration(config => config.AddMaps(typeof(ArticleProfile).Assembly));
-        var mapper = mapperConfigurations.CreateMapper();
-        services.AddSingleton(mapper);
+        services.ConfigureAutoMapper(typeof(ArticleProfile).Assembly);
 
         services.AddScoped<IRepositoryManager, RepositoryManager>();
         services.AddScoped<IArticleService, ArticleService>();
