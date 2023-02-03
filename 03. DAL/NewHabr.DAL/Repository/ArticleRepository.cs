@@ -11,6 +11,13 @@ public class ArticleRepository : ReporitoryBase<Article, Guid>, IArticleReposito
     {
     }
 
+    public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var article = await Set.FirstOrDefaultAsync(a => a.Id == id && !a.Deleted, cancellationToken);
+        ArgumentNullException.ThrowIfNull(article, nameof(article));
+        Delete(article);
+    }
+
     public async Task<IReadOnlyCollection<Article>> GetByTitleAsync(string title, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(title))

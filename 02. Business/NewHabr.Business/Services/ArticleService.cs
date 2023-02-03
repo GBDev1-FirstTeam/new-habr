@@ -82,15 +82,24 @@ public class ArticleService : IArticleService
         ArgumentNullException.ThrowIfNull(article, nameof(article));
 
         _repositoryManager.ArticleRepository.Create(article);
+        await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public Task UpdateAsync(ArticleDto updatedArticle, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(ArticleDto updatedArticle, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        ArgumentNullException.ThrowIfNull(updatedArticle, nameof(updatedArticle));
+
+        var article = _mapper.Map<Article>(updatedArticle);
+
+        ArgumentNullException.ThrowIfNull(article, nameof(article));
+
+        _repositoryManager.ArticleRepository.Update(article);
+        await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        await _repositoryManager.ArticleRepository.DeleteByIdAsync(id, cancellationToken);
+        await _repositoryManager.SaveAsync(cancellationToken);
     }
 }

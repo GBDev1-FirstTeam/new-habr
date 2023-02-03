@@ -28,4 +28,6 @@ public interface IArticleRepository : IRepository<Article>
     /// <exception cref="OperationCanceledException"></exception>
     /// <returns></returns>
     Task<IReadOnlyCollection<Article>> GetDeletedAsync(CancellationToken cancellationToken = default);
+
+    Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default);
 }

@@ -45,11 +45,7 @@ public class CategoryService : ICategoryService
 
         ArgumentNullException.ThrowIfNull(categories, nameof(categories));
 
-        var categoriesDto = new List<CategoryDto>();
-        foreach (var category in categories)
-        {
-            categoriesDto.Add(_mapper.Map<CategoryDto>(category));
-        }
+        var categoriesDto = _mapper.Map<List<CategoryDto>>(categories);
 
         ArgumentNullException.ThrowIfNull(categoriesDto, nameof(categoriesDto));
 
