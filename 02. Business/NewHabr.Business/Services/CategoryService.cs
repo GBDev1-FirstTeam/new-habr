@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Dto;
+using NewHabr.Domain.Exceptions;
 using NewHabr.Domain.Models;
 
 namespace NewHabr.Business.Services;
@@ -20,9 +21,9 @@ public class CategoryService : ICategoryService
     {
         var category = _repositoryManager.CategoryRepository.FindByCondition(c => c.Name == request.Name && !c.Deleted).FirstOrDefault();
 
-        if(category is not null)
+        if (category is not null)
         {
-            throw new Exception("Entity already exists.");
+            throw new CategoryAlreadyExistsException();
         }
 
         var newCategory = _mapper.Map<Category>(request);
@@ -36,7 +37,7 @@ public class CategoryService : ICategoryService
 
         if (category is null)
         {
-            throw new Exception("Entity is not found.");
+            throw new CategoryNotFoundException();
         }
 
         _repositoryManager.CategoryRepository.Delete(category);
@@ -51,16 +52,24 @@ public class CategoryService : ICategoryService
 
     public async Task UpdateAsync(CategoryDto categoryToUpdate, CancellationToken cancellationToken = default)
     {
-        var category = await _repositoryManager.CategoryRepository.GetByIdAsync(categoryToUpdate.Id, cancellationToken);
+        var targetCategory = await _repositoryManager.CategoryRepository.GetByIdAsync(categoryToUpdate.Id, cancellationToken);
 
-        if (category is null)
+        if (targetCategory is null)
         {
-            throw new Exception("Entity not found.");
+            throw new CategoryNotFoundException();
         }
 
-        _mapper.Map(categoryToUpdate, category);
+        var duplicateCategory = _repositoryManager.CategoryRepository
+            .FindByCondition(c => c.Name == categoryToUpdate.Name && !c.Deleted).FirstOrDefault();
 
-        _repositoryManager.CategoryRepository.Update(category);
+        if (duplicateCategory is not null)
+        {
+            throw new CategoryAlreadyExistsException();
+        }
+
+        _mapper.Map(categoryToUpdate, targetCategory);
+
+        _repositoryManager.CategoryRepository.Update(targetCategory);
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 }

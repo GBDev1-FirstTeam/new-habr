@@ -10,7 +10,6 @@ public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity, TKey>
     where TEntity : class, IEntity<TKey>
     where TKey : struct
 {
-
     private readonly ApplicationContext _context;
     protected DbSet<TEntity> Set;
 
@@ -19,6 +18,7 @@ public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity, TKey>
         _context = context;
         Set = _context.Set<TEntity>();
     }
+
     public void Create(TEntity data)
     {
         Set.Add(data);
@@ -28,6 +28,11 @@ public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity, TKey>
     {
         data.Deleted = true;
         Update(data);
+    }
+
+    public void Update(TEntity data)
+    {
+        Set.Update(data);
     }
 
     public IQueryable<TEntity> FindAll(bool trackChanges = false)
@@ -45,13 +50,13 @@ public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity, TKey>
         return await FindAll().ToListAsync(cancellationToken);
     }
 
-    public void Update(TEntity data)
-    {
-        Set.Update(data);
-    }
-
     public virtual async Task<TEntity?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
     {
         return await Set.FirstOrDefaultAsync(e => e.Id.Equals(id) && !e.Deleted);
+    }
+
+    public virtual async Task<IReadOnlyCollection<TEntity>> GetDeletedAsync(CancellationToken cancellationToken = default)
+    {
+        return await FindByCondition(a => a.Deleted).ToListAsync(cancellationToken);
     }
 }

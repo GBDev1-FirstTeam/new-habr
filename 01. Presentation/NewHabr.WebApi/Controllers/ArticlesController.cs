@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Dto;
+using NewHabr.Domain.Exceptions;
 
 namespace NewHabr.WebApi.Controllers;
 
@@ -15,12 +16,16 @@ public class ArticlesController : ControllerBase
         _articleService = articleService;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetByTitle([FromBody] string title, CancellationToken cancellationToken)
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ArticleDto>> GetById([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         try
         {
-            return Ok(await _articleService.GetByTitleAsync(title, cancellationToken));
+            return Ok(await _articleService.GetByIdAsync(id, cancellationToken));
+        }
+        catch (ArticleNotFoundException)
+        {
+            return NotFound();
         }
         catch
         {
@@ -29,11 +34,11 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet("unpublished")]
-    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetPublished(CancellationToken cancellationToken)
+    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetUnpublished(CancellationToken cancellationToken)
     {
         try
         {
-            return Ok(await _articleService.GetPublishedAsync(cancellationToken));
+            return Ok(await _articleService.GetUnpublishedAsync(cancellationToken));
         }
         catch
         {
@@ -57,23 +62,10 @@ public class ArticlesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> Create([FromBody] CreateArticleRequest request, CancellationToken cancellationToken)
     {
-        if (request is null)
-        {
-            return BadRequest();
-        }
-
         try
         {
             await _articleService.CreateAsync(request, cancellationToken);
             return Ok();
-        }
-        catch (OperationCanceledException)
-        {
-            return Ok();
-        }
-        catch (ArgumentNullException)
-        {
-            return BadRequest();
         }
         catch
         {
@@ -84,23 +76,14 @@ public class ArticlesController : ControllerBase
     [HttpPut]
     public async Task<ActionResult> Update([FromBody] ArticleDto articleToUpdate, CancellationToken cancellationToken)
     {
-        if (articleToUpdate is null)
-        {
-            return BadRequest();
-        }
-
         try
         {
             await _articleService.UpdateAsync(articleToUpdate, cancellationToken);
             return Ok();
         }
-        catch (OperationCanceledException)
+        catch (ArticleNotFoundException)
         {
-            return Ok();
-        }
-        catch (ArgumentNullException)
-        {
-            return BadRequest();
+            return NotFound();
         }
         catch
         {
@@ -116,13 +99,9 @@ public class ArticlesController : ControllerBase
             await _articleService.DeleteByIdAsync(id, cancellationToken);
             return Ok();
         }
-        catch (OperationCanceledException)
+        catch (ArticleNotFoundException)
         {
-            return Ok();
-        }
-        catch (ArgumentNullException)
-        {
-            return BadRequest();
+            return NotFound();
         }
         catch
         {

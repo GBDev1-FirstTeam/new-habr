@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Dto;
+using NewHabr.Domain.Exceptions;
 
 namespace NewHabr.WebApi.Controllers;
 
@@ -31,15 +33,14 @@ public class TagsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> Create([FromBody] CreateTagRequest request, CancellationToken cancellationToken)
     {
-        if (request is null)
-        {
-            return BadRequest();
-        }
-
         try
         {
             await _tagService.CreateAsync(request, cancellationToken);
             return Ok();
+        }
+        catch (TagAlreadyExistsException)
+        {
+            return BadRequest();
         }
         catch
         {
@@ -50,15 +51,18 @@ public class TagsController : ControllerBase
     [HttpPut]
     public async Task<ActionResult> Update([FromBody] TagDto tagToUpdate, CancellationToken cancellationToken)
     {
-        if (tagToUpdate is null)
-        {
-            return BadRequest();
-        }
-
         try
         {
             await _tagService.UpdateAsync(tagToUpdate, cancellationToken);
             return Ok();
+        }
+        catch (TagNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (TagAlreadyExistsException)
+        {
+            return BadRequest();
         }
         catch
         {
@@ -67,16 +71,16 @@ public class TagsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteById([FromRoute] int id, CancellationToken cancellationToken)
+    public async Task<ActionResult> DeleteById([FromRoute, Range(1, int.MaxValue)] int id, CancellationToken cancellationToken)
     {
         try
         {
             await _tagService.DeleteByIdAsync(id, cancellationToken);
             return Ok();
         }
-        catch (ArgumentNullException)
+        catch (TagNotFoundException)
         {
-            return BadRequest();
+            return NotFound();
         }
         catch
         {

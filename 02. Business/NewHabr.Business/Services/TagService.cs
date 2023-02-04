@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Dto;
+using NewHabr.Domain.Exceptions;
 using NewHabr.Domain.Models;
 
 namespace NewHabr.Business.Services;
@@ -22,7 +23,7 @@ public class TagService : ITagService
 
         if (tag is not null)
         {
-            throw new Exception("Entity already exists.");
+            throw new TagAlreadyExistsException();
         }
 
         var newTag = _mapper.Map<Tag>(request);
@@ -36,7 +37,7 @@ public class TagService : ITagService
 
         if (tag is null)
         {
-            throw new Exception("Entity not found.");
+            throw new TagNotFoundException();
         }
 
         _repositoryManager.TagRepository.Delete(tag);
@@ -51,16 +52,24 @@ public class TagService : ITagService
 
     public async Task UpdateAsync(TagDto tagToUpdate, CancellationToken cancellationToken = default)
     {
-        var tag = await _repositoryManager.TagRepository.GetByIdAsync(tagToUpdate.Id, cancellationToken);
+        var targetTag = await _repositoryManager.TagRepository.GetByIdAsync(tagToUpdate.Id, cancellationToken);
 
-        if (tag is null)
+        if (targetTag is null)
         {
-            throw new Exception("Entity not found.");
+            throw new TagNotFoundException();
         }
 
-        _mapper.Map(tagToUpdate, tag);
+        var duplicateTag = _repositoryManager.TagRepository
+            .FindByCondition(c => c.Name == tagToUpdate.Name && !c.Deleted).FirstOrDefault();
 
-        _repositoryManager.TagRepository.Update(tag);
+        if (duplicateTag is not null)
+        {
+            throw new TagAlreadyExistsException();
+        }
+
+        _mapper.Map(tagToUpdate, targetTag);
+
+        _repositoryManager.TagRepository.Update(targetTag);
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 }

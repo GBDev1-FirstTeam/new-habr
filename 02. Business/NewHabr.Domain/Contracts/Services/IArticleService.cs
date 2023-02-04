@@ -1,43 +1,22 @@
 ﻿using NewHabr.Domain.Dto;
-using AutoMapper;
+using NewHabr.Domain.Exceptions;
 
 namespace NewHabr.Domain.Contracts;
 
 public interface IArticleService
 {
-    /// <exception cref="ArgumentException"></exception>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="AutoMapperMappingException"></exception>
-    /// <exception cref="OperationCanceledException"></exception>
-    Task<IReadOnlyCollection<ArticleDto>> GetByTitleAsync(string title, CancellationToken cancellationToken = default);
+    /// <exception cref="ArticleNotFoundException"></exception>
+    Task<ArticleDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="AutoMapperMappingException"></exception>
-    /// <exception cref="OperationCanceledException"></exception>
-    Task<IReadOnlyCollection<ArticleDto>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyCollection<ArticleDto>> GetUnpublishedAsync(CancellationToken cancellationToken = default);
 
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="AutoMapperMappingException"></exception>
-    /// <exception cref="OperationCanceledException"></exception>
-    Task<IReadOnlyCollection<ArticleDto>> GetPublishedAsync(CancellationToken cancellationToken = default);
-
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="AutoMapperMappingException"></exception>
-    /// <exception cref="OperationCanceledException"></exception>
     Task<IReadOnlyCollection<ArticleDto>> GetDeletedAsync(CancellationToken cancellationToken = default);
 
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="AutoMapperMappingException"></exception>
-    /// <exception cref="OperationCanceledException"></exception>
     Task CreateAsync(CreateArticleRequest request, CancellationToken cancellationToken = default);
 
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="AutoMapperMappingException"></exception>
-    /// <exception cref="OperationCanceledException"></exception>
+    /// <exception cref="ArticleNotFoundException"></exception>
     Task UpdateAsync(ArticleDto articleToUpdate, CancellationToken cancellationToken = default);
 
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="AutoMapperMappingException"></exception>
-    /// <exception cref="OperationCanceledException"></exception>
+    /// <exception cref="ArticleNotFoundException"></exception>
     Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default);
 }

@@ -15,19 +15,12 @@ public class ArticleRepository : ReporitoryBase<Article, Guid>, IArticleReposito
     {
         return await FindByCondition(a => a.Title.ToLower() == title.ToLower() && !a.Deleted).ToListAsync(cancellationToken);
     }
-
     public async Task<IReadOnlyCollection<Article>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         return await FindByCondition(a => a.UserId == userId && !a.Deleted).ToListAsync(cancellationToken);
     }
-
-    public async Task<IReadOnlyCollection<Article>> GetDeletedAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<Article>> GetUnpublishedAsync(CancellationToken cancellationToken = default)
     {
-        return await FindByCondition(a => a.Deleted).ToListAsync(cancellationToken);
-    }
-
-    public async Task<IReadOnlyCollection<Article>> GetPublishedAsync(CancellationToken cancellationToken = default)
-    {
-        return await FindByCondition(a => a.Published && !a.Deleted).ToListAsync(cancellationToken);
+        return await FindByCondition(a => !a.Published && !a.Deleted).ToListAsync(cancellationToken);
     }
 }

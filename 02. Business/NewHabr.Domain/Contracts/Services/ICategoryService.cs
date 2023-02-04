@@ -1,26 +1,19 @@
 ﻿using NewHabr.Domain.Dto;
-using AutoMapper;
+using NewHabr.Domain.Exceptions;
 
 namespace NewHabr.Domain.Contracts;
 
 public interface ICategoryService
 {
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="AutoMapperMappingException"></exception>
-    /// <exception cref="OperationCanceledException"></exception>
     Task<IReadOnlyCollection<CategoryDto>> GetAllAsync(CancellationToken cancellationToken = default);
 
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="OperationCanceledException"></exception>
+    /// <exception cref="CategoryAlreadyExistsException"></exception>
     Task CreateAsync(CreateCategoryRequest request, CancellationToken cancellationToken = default);
 
-    /// <exception cref="ArgumentException"></exception>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="AutoMapperMappingException"></exception>
-    /// <exception cref="OperationCanceledException"></exception>
+    /// <exception cref="CategoryNotFoundException"></exception>
+    /// <exception cref="CategoryAlreadyExistsException"></exception>
     Task UpdateAsync(CategoryDto categoryToUpdate, CancellationToken cancellationToken = default);
 
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="OperationCanceledException"></exception>
+    /// <exception cref="CategoryNotFoundException"></exception>
     Task DeleteByIdAsync(int id, CancellationToken cancellationToken = default);
 }
