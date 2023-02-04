@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NewHabr.Business.Configurations;
+using NewHabr.Business.AutoMapperProfiles;
 using NewHabr.DAL.EF;
 using NewHabr.WebApi.Extensions;
 using Newtonsoft.Json;
@@ -33,6 +34,8 @@ public class Program
 
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
+
+        services.ConfigureAutoMapper(typeof(ArticleProfile).Assembly);
 
         var app = builder.Build();
         UpdateDatabase(app);
