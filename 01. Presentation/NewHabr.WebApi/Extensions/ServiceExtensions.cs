@@ -3,6 +3,10 @@ using NewHabr.Domain;
 using NewHabr.DAL.EF;
 using Microsoft.AspNetCore.Identity;
 using NewHabr.Domain.Models;
+using NewHabr.Domain.ConfigurationModels;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace NewHabr.WebApi.Extensions;
 
@@ -38,6 +42,32 @@ public static class ServiceExtensions
         })
         .AddEntityFrameworkStores<ApplicationContext>()
         .AddDefaultTokenProviders();
+    }
+
+    public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
+    {
+        var jwtConfiguration = new JwtConfiguration();
+        configuration.Bind(JwtConfiguration.Section, jwtConfiguration);
+
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidateAudience = false,
+                    ClockSkew = TimeSpan.Zero,
+
+                    ValidIssuer = jwtConfiguration.ValidIssuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration.Secret))
+                };
+            });
     }
 }
 

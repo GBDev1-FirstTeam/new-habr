@@ -9,8 +9,8 @@ public class User : IdentityUser<Guid>, IEntity<Guid>
     //[Key]
     //public Guid Id { get; set; }
 
-    [Required, MaxLength(30), MinLength(2)]
-    public string Login { get; set; }
+    //[Required, MaxLength(30), MinLength(2)]
+    //public string Login { get; set; }
 
     [MaxLength(30)]
     public string FirstName { get; set; }
@@ -56,5 +56,16 @@ public class User : IdentityUser<Guid>, IEntity<Guid>
 
     [Required]
     public string SecureAnswer { get; set; }
+
+    public int? Age
+    {
+        get
+        {
+            if (BirthDay is null || BirthDay > DateTime.Now)
+                return null;
+
+            return (DateTime.Now - BirthDay).Value.Days / 365;
+        }
+    }
 
 }

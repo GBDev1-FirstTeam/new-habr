@@ -1,5 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NewHabr.Business.Services;
 using NewHabr.DAL.EF;
+using NewHabr.Domain.ConfigurationModels;
+using NewHabr.Domain.Contracts;
 using NewHabr.WebApi.Extensions;
 
 namespace NewHabr.WebApi;
@@ -15,11 +18,23 @@ public class Program
 
         #region Configure Identity
 
-        builder.Services.AddAuthentication();
-        builder.Services.ConfigureIdentity();
+        services.AddAuthentication();
+        services.ConfigureIdentity();
 
         #endregion
 
+        #region Configure Jwt
+
+        services.Configure<JwtConfiguration>(builder.Configuration.GetSection(JwtConfiguration.Section));
+        services.ConfigureJWT(builder.Configuration);
+
+        #endregion
+
+        #region Register services in DI
+
+        services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+        #endregion
 
         services.AddControllers()
             .AddJsonOptions(options =>
