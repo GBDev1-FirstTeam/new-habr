@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Dto;
+using NewHabr.Domain.Exceptions;
 using NewHabr.Domain.Models;
 
 namespace NewHabr.Business.Services;
@@ -16,32 +17,28 @@ public class ArticleService : IArticleService
         _mapper = mapper;
     }
 
-    public async Task<IReadOnlyCollection<ArticleDto>> GetByTitleAsync(string title, CancellationToken cancellationToken = default)
+    public async Task<ArticleDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var articles = await _repositoryManager.ArticleRepository.GetByTitleAsync(title, cancellationToken);
-        var articlesDto = _mapper.Map<List<ArticleDto>>(articles);
-        return articlesDto;
+        var article = await _repositoryManager.ArticleRepository.GetByIdAsync(id, cancellationToken);
+
+        if (article is null)
+        {
+            throw new ArticleNotFoundException();
+        }
+
+        return _mapper.Map<ArticleDto>(article);
     }
 
-    public async Task<IReadOnlyCollection<ArticleDto>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<ArticleDto>> GetUnpublishedAsync(CancellationToken cancellationToken = default)
     {
-        var articles = await _repositoryManager.ArticleRepository.GetByUserIdAsync(userId, cancellationToken);
-        var articlesDto = _mapper.Map<List<ArticleDto>>(articles);
-        return articlesDto;
-    }
-
-    public async Task<IReadOnlyCollection<ArticleDto>> GetPublishedAsync(CancellationToken cancellationToken = default)
-    {
-        var articles = await _repositoryManager.ArticleRepository.GetPublishedAsync(cancellationToken);
-        var articlesDto = _mapper.Map<List<ArticleDto>>(articles);
-        return articlesDto;
+        var articles = await _repositoryManager.ArticleRepository.GetUnpublishedAsync(cancellationToken);
+        return _mapper.Map<List<ArticleDto>>(articles);
     }
 
     public async Task<IReadOnlyCollection<ArticleDto>> GetDeletedAsync(CancellationToken cancellationToken = default)
     {
         var articles = await _repositoryManager.ArticleRepository.GetDeletedAsync(cancellationToken);
-        var articlesDto = _mapper.Map<List<ArticleDto>>(articles);
-        return articlesDto;
+        return _mapper.Map<List<ArticleDto>>(articles);
     }
 
     public async Task CreateAsync(CreateArticleRequest request, CancellationToken cancellationToken = default)
@@ -57,7 +54,7 @@ public class ArticleService : IArticleService
 
         if (article is null)
         {
-            throw new Exception("Entity not found.");
+            throw new ArticleNotFoundException();
         }
 
         article = _mapper.Map<Article>(articleToUpdate);
@@ -71,7 +68,7 @@ public class ArticleService : IArticleService
 
         if (article is null)
         {
-            throw new Exception("Entity not found..");
+            throw new ArticleNotFoundException();
         }
 
         _repositoryManager.ArticleRepository.Delete(article);

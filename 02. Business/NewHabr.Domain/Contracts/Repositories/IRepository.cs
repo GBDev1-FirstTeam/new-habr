@@ -11,4 +11,5 @@ public interface IRepository<TEntity, TKey>
     void Delete(TEntity data);
     Task<IReadOnlyCollection<TEntity>> GetAllAsync(CancellationToken cancellationToken = default);
     Task<TEntity?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default);
+    Task<IReadOnlyCollection<TEntity>> GetDeletedAsync(CancellationToken cancellationToken = default);
 }

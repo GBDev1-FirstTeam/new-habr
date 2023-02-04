@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Dto;
+using NewHabr.Domain.Exceptions;
 
 namespace NewHabr.WebApi.Controllers;
 
@@ -26,20 +28,20 @@ public class CategoriesController : ControllerBase
         {
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
+
     }
 
     [HttpPost]
     public async Task<ActionResult> Create([FromBody] CreateCategoryRequest request, CancellationToken cancellationToken)
     {
-        if (request is null)
-        {
-            return BadRequest();
-        }
-
         try
         {
             await _categoryService.CreateAsync(request, cancellationToken);
             return Ok();
+        }
+        catch (CategoryAlreadyExistsException)
+        {
+            return BadRequest();
         }
         catch
         {
@@ -50,17 +52,16 @@ public class CategoriesController : ControllerBase
     [HttpPut]
     public async Task<ActionResult> Update([FromBody] CategoryDto categoryToUpdate, CancellationToken cancellationToken)
     {
-        if (categoryToUpdate is null)
-        {
-            return BadRequest();
-        }
-
         try
         {
             await _categoryService.UpdateAsync(categoryToUpdate, cancellationToken);
             return Ok();
         }
-        catch (ArgumentNullException)
+        catch (CategoryNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (CategoryAlreadyExistsException)
         {
             return BadRequest();
         }
@@ -71,14 +72,14 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteById([FromRoute] int id, CancellationToken cancellationToken)
+    public async Task<ActionResult> DeleteById([FromRoute, Range(1, int.MaxValue)] int id, CancellationToken cancellationToken)
     {
         try
         {
             await _categoryService.DeleteByIdAsync(id, cancellationToken);
             return Ok();
         }
-        catch (ArgumentNullException)
+        catch (CategoryNotFoundException)
         {
             return NotFound();
         }
