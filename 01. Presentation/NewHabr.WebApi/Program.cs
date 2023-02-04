@@ -1,7 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NewHabr.Business.Configurations;
 using NewHabr.Business.AutoMapperProfiles;
 using NewHabr.DAL.EF;
 using NewHabr.WebApi.Extensions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Serilog;
 
 namespace NewHabr.WebApi;
 
@@ -12,13 +16,22 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
         var services = builder.Services;
 
+        var logPath = builder.Configuration["Log:RestAPIPath"];
+        if (!string.IsNullOrEmpty(logPath))
+            builder.UseSerilog("api", logPath);
+
         services.ConfigureDbContext(builder.Configuration);
 
         services.AddControllers()
-            .AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.PropertyNamingPolicy = null;
-            });
+                .AddNewtonsoftJson(options =>
+                {
+                    options.UseMemberCasing();
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                    options.SerializerSettings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
+                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Unspecified;
+                });
+
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
 
@@ -35,7 +48,6 @@ public class Program
         }
 
         //app.UseAuthorization();
-
 
         app.MapControllers();
 
