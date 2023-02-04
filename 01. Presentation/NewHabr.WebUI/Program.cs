@@ -1,4 +1,8 @@
 ﻿using Microsoft.AspNetCore.SpaServices.AngularCli;
+using NewHabr.Business.Configurations;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Serilog;
 
 namespace NewHabr.WebUI;
 
@@ -7,12 +11,22 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-
-        // Add services to the container.
-
         var services = builder.Services;
 
-        services.AddControllersWithViews();
+        var logPath = builder.Configuration["Log:RestAPIPath"];
+        if (!string.IsNullOrEmpty(logPath))
+            builder.UseSerilog("ui", logPath);
+
+        services.AddControllers()
+                .AddNewtonsoftJson(options =>
+                {
+                    options.UseMemberCasing();
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                    options.SerializerSettings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
+                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Unspecified;
+                });
+
         services.AddSpaStaticFiles(configuration =>
         {
             configuration.RootPath = "ClientApp/dist";
