@@ -21,5 +21,5 @@ public interface IArticleService
     Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     /// <exception cref="ArticleNotFoundException"></exception>
-    Task SetPublicationStatusAsync(SetArticlePublicationStatusRequest request, CancellationToken cancellationToken = default);
+    Task SetPublicationStatusAsync(Guid id, bool publicationStatus, CancellationToken cancellationToken = default);
 }

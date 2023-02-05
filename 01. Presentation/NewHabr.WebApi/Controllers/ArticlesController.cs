@@ -91,12 +91,30 @@ public class ArticlesController : ControllerBase
         }
     }
 
-    [HttpPut]
-    public async Task<ActionResult> SetPublicationStatus([FromBody] SetArticlePublicationStatusRequest request, CancellationToken cancellationToken)
+    //[HttpPut]
+    //public async Task<ActionResult> SetPublicationStatus([FromBody] SetArticlePublicationStatusRequest request, CancellationToken cancellationToken)
+    //{
+    //    try
+    //    {
+    //        await _articleService.SetPublicationStatusAsync(request, cancellationToken);
+    //        return Ok();
+    //    }
+    //    catch (ArticleNotFoundException)
+    //    {
+    //        return NotFound();
+    //    }
+    //    catch
+    //    {
+    //        return StatusCode(StatusCodes.Status500InternalServerError);
+    //    }
+    //}
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         try
         {
-            await _articleService.SetPublicationStatusAsync(request, cancellationToken);
+            await _articleService.DeleteByIdAsync(id, cancellationToken);
             return Ok();
         }
         catch (ArticleNotFoundException)
@@ -109,12 +127,30 @@ public class ArticlesController : ControllerBase
         }
     }
 
-    [HttpDelete("{id}")]
-    public async Task<ActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
+    [HttpPut("publish/{id}")]
+    public async Task<ActionResult> Publish([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         try
         {
-            await _articleService.DeleteByIdAsync(id, cancellationToken);
+            await _articleService.SetPublicationStatusAsync(id, true, cancellationToken);
+            return Ok();
+        }
+        catch (ArticleNotFoundException)
+        {
+            return NotFound();
+        }
+        catch
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    [HttpPut("unpublish/{id}")]
+    public async Task<ActionResult> Unpublish([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _articleService.SetPublicationStatusAsync(id, false, cancellationToken);
             return Ok();
         }
         catch (ArticleNotFoundException)
