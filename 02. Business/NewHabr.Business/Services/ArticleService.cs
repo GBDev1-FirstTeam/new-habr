@@ -32,7 +32,7 @@ public class ArticleService : IArticleService
     public async Task<IReadOnlyCollection<ArticleDto>> GetUnpublishedAsync(CancellationToken cancellationToken = default)
     {
         var articles = (await _repositoryManager.ArticleRepository.GetUnpublishedAsync(cancellationToken))
-            .OrderByDescending(a => a.CreatedAt);
+            .OrderByDescending(a => a.CreatedAt).ToList();
         return _mapper.Map<List<ArticleDto>>(articles);
     }
 
@@ -62,7 +62,7 @@ public class ArticleService : IArticleService
             throw new ArticleNotFoundException();
         }
 
-        article = _mapper.Map<Article>(articleToUpdate);
+        _mapper.Map(articleToUpdate, article);
         article.ModifiedAt = DateTimeOffset.UtcNow;
         _repositoryManager.ArticleRepository.Update(article);
         await _repositoryManager.SaveAsync(cancellationToken);
@@ -82,15 +82,15 @@ public class ArticleService : IArticleService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task SetPublicationStatusAsync(SetArticlePublicationStatusRequest request, CancellationToken cancellationToken = default)
+    public async Task SetPublicationStatusAsync(Guid id, bool publicationStatus, CancellationToken cancellationToken = default)
     {
-        var article = await _repositoryManager.ArticleRepository.GetByIdAsync(request.Id, cancellationToken: cancellationToken);
+        var article = await _repositoryManager.ArticleRepository.GetByIdAsync(id, cancellationToken: cancellationToken);
 
         if (article is null)
         {
             throw new ArticleNotFoundException();
         }
-        else if (article.Published == request.PublicationStatus)
+        else if (article.Published == publicationStatus)
         {
             return;
         }
