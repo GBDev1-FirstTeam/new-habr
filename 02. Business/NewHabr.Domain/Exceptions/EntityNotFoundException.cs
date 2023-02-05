@@ -6,7 +6,7 @@ public abstract class EntityNotFoundException<TEntity, TId> : Exception
     where TEntity : IEntity<TId>
     where TId : struct
 {
-    public EntityNotFoundException() : base($"Entity type of {nameof(TEntity)} not found.")
+    public EntityNotFoundException() : base($"Entity type of {typeof(TEntity).Name} not found.")
     {
     }
 }

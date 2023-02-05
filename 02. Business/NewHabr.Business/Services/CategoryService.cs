@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Exceptions;
@@ -10,11 +11,16 @@ public class CategoryService : ICategoryService
 {
     private readonly IRepositoryManager _repositoryManager;
     private readonly IMapper _mapper;
+    private readonly ILogger _logger;
 
-    public CategoryService(IRepositoryManager repositoryManager, IMapper mapper)
+    public CategoryService(
+        IRepositoryManager repositoryManager,
+        IMapper mapper,
+        ILogger<CategoryService> logger)
     {
         _repositoryManager = repositoryManager;
         _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task CreateAsync(CreateCategoryRequest request, CancellationToken cancellationToken = default)
@@ -23,6 +29,7 @@ public class CategoryService : ICategoryService
 
         if (category is not null)
         {
+
             throw new CategoryAlreadyExistsException();
         }
 

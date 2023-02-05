@@ -11,10 +11,12 @@ namespace NewHabr.WebApi.Controllers;
 public class TagsController : ControllerBase
 {
     private readonly ITagService _tagService;
+    private readonly ILogger<TagsController> _logger;
 
-    public TagsController(ITagService tagService)
+    public TagsController(ITagService tagService, ILogger<TagsController> logger)
     {
         _tagService = tagService;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -24,8 +26,9 @@ public class TagsController : ControllerBase
         {
             return Ok(await _tagService.GetAllAsync(cancellationToken));
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError(ex, ex.Message);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
@@ -38,12 +41,14 @@ public class TagsController : ControllerBase
             await _tagService.CreateAsync(request, cancellationToken);
             return Ok();
         }
-        catch (TagAlreadyExistsException)
+        catch (TagAlreadyExistsException ex)
         {
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nrequest: {@request}:"), request);
             return BadRequest();
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError(ex, string.Concat(ex.Message, "\nrequest: {@request}:"), request);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
@@ -56,16 +61,19 @@ public class TagsController : ControllerBase
             await _tagService.UpdateAsync(tagToUpdate, cancellationToken);
             return Ok();
         }
-        catch (TagNotFoundException)
+        catch (TagNotFoundException ex)
         {
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\ntagToUpdate: {@tagToUpdate}:"), tagToUpdate);
             return NotFound();
         }
-        catch (TagAlreadyExistsException)
+        catch (TagAlreadyExistsException ex)
         {
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\ntagToUpdate: {@tagToUpdate}:"), tagToUpdate);
             return BadRequest();
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError(ex, string.Concat(ex.Message, "\ntagToUpdate: {@tagToUpdate}:"), tagToUpdate);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
@@ -78,12 +86,14 @@ public class TagsController : ControllerBase
             await _tagService.DeleteByIdAsync(id, cancellationToken);
             return Ok();
         }
-        catch (TagNotFoundException)
+        catch (TagNotFoundException ex)
         {
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return NotFound();
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }

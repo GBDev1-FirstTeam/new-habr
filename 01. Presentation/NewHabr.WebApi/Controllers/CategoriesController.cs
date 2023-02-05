@@ -11,10 +11,12 @@ namespace NewHabr.WebApi.Controllers;
 public class CategoriesController : ControllerBase
 {
     private readonly ICategoryService _categoryService;
+    private readonly ILogger<CategoriesController> _logger;
 
-    public CategoriesController(ICategoryService categoryService)
+    public CategoriesController(ICategoryService categoryService, ILogger<CategoriesController> logger)
     {
         _categoryService = categoryService;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -24,8 +26,9 @@ public class CategoriesController : ControllerBase
         {
             return Ok(await _categoryService.GetAllAsync(cancellationToken));
         }
-        catch
+        catch(Exception ex)
         {
+            _logger.LogError(ex, ex.Message);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
@@ -39,12 +42,14 @@ public class CategoriesController : ControllerBase
             await _categoryService.CreateAsync(request, cancellationToken);
             return Ok();
         }
-        catch (CategoryAlreadyExistsException)
+        catch (CategoryAlreadyExistsException ex)
         {
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nrequest: {@request}:"), request);
             return BadRequest();
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError(ex, string.Concat(ex.Message, "\nrequest: {@request}:"), request);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
@@ -57,16 +62,19 @@ public class CategoriesController : ControllerBase
             await _categoryService.UpdateAsync(categoryToUpdate, cancellationToken);
             return Ok();
         }
-        catch (CategoryNotFoundException)
+        catch (CategoryNotFoundException ex)
         {
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\ncategoryToUpdate: {@categoryToUpdate}:"), categoryToUpdate);
             return NotFound();
         }
-        catch (CategoryAlreadyExistsException)
+        catch (CategoryAlreadyExistsException ex)
         {
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\ncategoryToUpdate: {@categoryToUpdate}:"), categoryToUpdate);
             return BadRequest();
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError(ex, string.Concat(ex.Message, "\ncategoryToUpdate: {@categoryToUpdate}:"), categoryToUpdate);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
@@ -79,12 +87,14 @@ public class CategoriesController : ControllerBase
             await _categoryService.DeleteByIdAsync(id, cancellationToken);
             return Ok();
         }
-        catch (CategoryNotFoundException)
+        catch (CategoryNotFoundException ex)
         {
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return NotFound();
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }

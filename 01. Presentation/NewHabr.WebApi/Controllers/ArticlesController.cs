@@ -10,10 +10,12 @@ namespace NewHabr.WebApi.Controllers;
 public class ArticlesController : ControllerBase
 {
     private readonly IArticleService _articleService;
+    private readonly ILogger<ArticlesController> _logger;
 
-    public ArticlesController(IArticleService articleService)
+    public ArticlesController(IArticleService articleService, ILogger<ArticlesController> logger)
     {
         _articleService = articleService;
+        _logger = logger;
     }
 
     [HttpGet("{id}")]
@@ -23,12 +25,14 @@ public class ArticlesController : ControllerBase
         {
             return Ok(await _articleService.GetByIdAsync(id, cancellationToken));
         }
-        catch (ArticleNotFoundException)
+        catch (ArticleNotFoundException ex)
         {
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return NotFound();
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
@@ -40,8 +44,9 @@ public class ArticlesController : ControllerBase
         {
             return Ok(await _articleService.GetUnpublishedAsync(cancellationToken));
         }
-        catch
+        catch(Exception ex)
         {
+            _logger.LogError(ex, ex.Message);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
@@ -53,8 +58,9 @@ public class ArticlesController : ControllerBase
         {
             return Ok(await _articleService.GetDeletedAsync(cancellationToken));
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError(ex, ex.Message);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
@@ -67,8 +73,9 @@ public class ArticlesController : ControllerBase
             await _articleService.CreateAsync(request, cancellationToken);
             return Ok();
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError(ex, string.Concat(ex.Message, "\nrequest: {@request}:"), request);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
@@ -81,12 +88,14 @@ public class ArticlesController : ControllerBase
             await _articleService.UpdateAsync(request, cancellationToken);
             return Ok();
         }
-        catch (ArticleNotFoundException)
+        catch (ArticleNotFoundException ex)
         {
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nrequest: {@request}:"), request);
             return NotFound();
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError(ex, string.Concat(ex.Message, "\nrequest: {@request}:"), request);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
@@ -99,12 +108,14 @@ public class ArticlesController : ControllerBase
             await _articleService.DeleteByIdAsync(id, cancellationToken);
             return Ok();
         }
-        catch (ArticleNotFoundException)
+        catch (ArticleNotFoundException ex)
         {
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return NotFound();
         }
-        catch
+        catch(Exception ex)
         {
+            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
@@ -117,12 +128,14 @@ public class ArticlesController : ControllerBase
             await _articleService.SetPublicationStatusAsync(id, true, cancellationToken);
             return Ok();
         }
-        catch (ArticleNotFoundException)
+        catch (ArticleNotFoundException ex)
         {
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return NotFound();
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
@@ -135,12 +148,14 @@ public class ArticlesController : ControllerBase
             await _articleService.SetPublicationStatusAsync(id, false, cancellationToken);
             return Ok();
         }
-        catch (ArticleNotFoundException)
+        catch (ArticleNotFoundException ex)
         {
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return NotFound();
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
