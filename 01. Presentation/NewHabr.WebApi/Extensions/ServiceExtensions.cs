@@ -9,12 +9,26 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using NewHabr.Domain;
-
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json;
 
 namespace NewHabr.WebApi.Extensions;
 
 public static class ServiceExtensions
 {
+    public static void ConfigureControllers(this IServiceCollection services)
+    {
+        services.AddControllers()
+            .AddNewtonsoftJson(options =>
+            {
+                options.UseMemberCasing();
+                options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                options.SerializerSettings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
+                options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Unspecified;
+            });
+    }
+
     public static void ConfigureDbContext(this IServiceCollection services, IConfiguration configuration)
     {
         var dbProvider = configuration.GetValue<string>(Constants.SQLProvider.ConfigurationName, Constants.SQLProvider.PostgreSQL);
