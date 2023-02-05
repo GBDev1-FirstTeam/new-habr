@@ -1,0 +1,12 @@
+@import '/src/assets/scss/colors.scss';
+@import '/src/assets/scss/mixins.scss';
+
+.like-container {
+    text-align: right;
+    padding-right: 15px;
+    margin: 15px;
+
+    i {
+        cursor: pointer;
+    }
+}
