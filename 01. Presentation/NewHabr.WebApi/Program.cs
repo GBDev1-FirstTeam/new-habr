@@ -35,7 +35,7 @@ public class Program
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
 
-        services.ConfigureAutoMapper(typeof(ArticleProfile).Assembly);
+        services.ConfigureAutoMapper(typeof(ArticleProfile).Assembly, typeof(CommentProfile).Assembly);
 
         var app = builder.Build();
         UpdateDatabase(app);

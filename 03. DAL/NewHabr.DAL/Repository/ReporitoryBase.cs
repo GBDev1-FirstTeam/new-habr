@@ -40,6 +40,11 @@ public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity>
         return FindAll(trackChanges).Where(expression);
     }
 
+    public async Task<ICollection<TEntity>> GetAllAsync(bool trackChanges = false, CancellationToken cancellationToken = default)
+    {
+        return await FindAll(trackChanges).ToListAsync(cancellationToken);
+    }
+
     public async Task<ICollection<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await FindAll().ToListAsync(cancellationToken);

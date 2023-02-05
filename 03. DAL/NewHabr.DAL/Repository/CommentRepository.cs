@@ -1,4 +1,5 @@
-﻿using NewHabr.DAL.EF;
+﻿using Microsoft.EntityFrameworkCore;
+using NewHabr.DAL.EF;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Models;
 
@@ -10,13 +11,13 @@ public class CommentRepository : ReporitoryBase<Comment, Guid>, ICommentReposito
     {
     }
 
-    public Task<IReadOnlyCollection<Comment>> GetByArticleIdAsync(Guid articleId, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<Comment>> GetByArticleIdAsync(Guid articleId, bool trackChanges = false, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await FindByCondition(comment => comment.ArticleId == articleId, trackChanges).ToListAsync(cancellationToken);
     }
 
-    public Task<IReadOnlyCollection<Comment>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<Comment>> GetByUserIdAsync(Guid userId, bool trackChanges = false, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await FindByCondition(comment => comment.UserId == userId, trackChanges).ToListAsync(cancellationToken);
     }
 }

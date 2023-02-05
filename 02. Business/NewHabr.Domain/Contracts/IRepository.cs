@@ -9,5 +9,5 @@ public interface IRepository<TEntity>
     void Create(TEntity data);
     void Update(TEntity data);
     void Delete(TEntity data);
-    Task<ICollection<TEntity>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<ICollection<TEntity>> GetAllAsync(bool trackChanges, CancellationToken cancellationToken = default);
 }
