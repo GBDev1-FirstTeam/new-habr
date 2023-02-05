@@ -73,12 +73,30 @@ public class ArticlesController : ControllerBase
         }
     }
 
-    [HttpPut]
-    public async Task<ActionResult> Update([FromBody] ArticleDto articleToUpdate, CancellationToken cancellationToken)
+    [HttpPut("update")]
+    public async Task<ActionResult> Update([FromBody] UpdateArticleRequest request, CancellationToken cancellationToken)
     {
         try
         {
-            await _articleService.UpdateAsync(articleToUpdate, cancellationToken);
+            await _articleService.UpdateAsync(request, cancellationToken);
+            return Ok();
+        }
+        catch (ArticleNotFoundException)
+        {
+            return NotFound();
+        }
+        catch
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    [HttpPut]
+    public async Task<ActionResult> SetPublicationStatus([FromBody] SetArticlePublicationStatusRequest request, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _articleService.SetPublicationStatusAsync(request, cancellationToken);
             return Ok();
         }
         catch (ArticleNotFoundException)

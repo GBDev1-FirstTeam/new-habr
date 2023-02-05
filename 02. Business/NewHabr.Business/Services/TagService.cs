@@ -33,7 +33,7 @@ public class TagService : ITagService
 
     public async Task DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        var tag = await _repositoryManager.TagRepository.GetByIdAsync(id, cancellationToken);
+        var tag = await _repositoryManager.TagRepository.GetByIdAsync(id, cancellationToken: cancellationToken);
 
         if (tag is null)
         {
@@ -52,17 +52,17 @@ public class TagService : ITagService
 
     public async Task UpdateAsync(TagDto tagToUpdate, CancellationToken cancellationToken = default)
     {
-        var targetTag = await _repositoryManager.TagRepository.GetByIdAsync(tagToUpdate.Id, cancellationToken);
+        var targetTag = await _repositoryManager.TagRepository.GetByIdAsync(tagToUpdate.Id, cancellationToken: cancellationToken);
 
         if (targetTag is null)
         {
             throw new TagNotFoundException();
         }
 
-        var duplicateTag = _repositoryManager.TagRepository
+        var tagWithSameName = _repositoryManager.TagRepository
             .FindByCondition(c => c.Name == tagToUpdate.Name && !c.Deleted).FirstOrDefault();
 
-        if (duplicateTag is not null)
+        if (tagWithSameName is not null)
         {
             throw new TagAlreadyExistsException();
         }

@@ -9,7 +9,6 @@ public class TagConfiguration : IEntityTypeConfiguration<Tag>
     public void Configure(EntityTypeBuilder<Tag> builder)
     {
         builder
-            .HasIndex(e => e.Name)
-            .IsUnique();
+            .HasIndex(e => e.Name);
     }
 }

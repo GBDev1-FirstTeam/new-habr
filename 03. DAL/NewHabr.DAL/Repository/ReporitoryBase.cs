@@ -45,17 +45,17 @@ public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity, TKey>
         return FindAll(trackChanges).Where(expression);
     }
 
+    public async Task<TEntity?> GetByIdAsync(TKey id, bool trackChanges = false, CancellationToken cancellationToken = default)
+    {
+        return await FindByCondition(e => e.Id.Equals(id) && !e.Deleted, trackChanges).FirstOrDefaultAsync(cancellationToken);
+    }
+
     public virtual async Task<IReadOnlyCollection<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await FindAll().ToListAsync(cancellationToken);
     }
 
-    public virtual async Task<TEntity?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
-    {
-        return await Set.FirstOrDefaultAsync(e => e.Id.Equals(id) && !e.Deleted);
-    }
-
-    public virtual async Task<IReadOnlyCollection<TEntity>> GetDeletedAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<TEntity>> GetDeletedAsync(CancellationToken cancellationToken = default)
     {
         return await FindByCondition(a => a.Deleted).ToListAsync(cancellationToken);
     }

@@ -10,5 +10,6 @@ public class ArticleProfile : Profile
     {
         CreateMap<Article, ArticleDto>().ReverseMap();
         CreateMap<CreateArticleRequest, Article>();
+        CreateMap<UpdateArticleRequest, Article>();
     }
 }

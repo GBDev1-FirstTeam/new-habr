@@ -9,7 +9,6 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
     public void Configure(EntityTypeBuilder<Category> builder)
     {
         builder
-            .HasIndex(e => e.Name)
-            .IsUnique();
+            .HasIndex(e => e.Name);
     }
 }

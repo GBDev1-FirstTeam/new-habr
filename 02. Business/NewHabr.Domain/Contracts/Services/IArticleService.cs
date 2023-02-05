@@ -15,8 +15,11 @@ public interface IArticleService
     Task CreateAsync(CreateArticleRequest request, CancellationToken cancellationToken = default);
 
     /// <exception cref="ArticleNotFoundException"></exception>
-    Task UpdateAsync(ArticleDto articleToUpdate, CancellationToken cancellationToken = default);
+    Task UpdateAsync(UpdateArticleRequest articleToUpdate, CancellationToken cancellationToken = default);
 
     /// <exception cref="ArticleNotFoundException"></exception>
     Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default);
+
+    /// <exception cref="ArticleNotFoundException"></exception>
+    Task SetPublicationStatusAsync(SetArticlePublicationStatusRequest request, CancellationToken cancellationToken = default);
 }

@@ -33,7 +33,7 @@ public class CategoryService : ICategoryService
 
     public async Task DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        var category = await _repositoryManager.CategoryRepository.GetByIdAsync(id, cancellationToken);
+        var category = await _repositoryManager.CategoryRepository.GetByIdAsync(id, cancellationToken: cancellationToken);
 
         if (category is null)
         {
@@ -52,17 +52,17 @@ public class CategoryService : ICategoryService
 
     public async Task UpdateAsync(CategoryDto categoryToUpdate, CancellationToken cancellationToken = default)
     {
-        var targetCategory = await _repositoryManager.CategoryRepository.GetByIdAsync(categoryToUpdate.Id, cancellationToken);
+        var targetCategory = await _repositoryManager.CategoryRepository.GetByIdAsync(categoryToUpdate.Id, cancellationToken: cancellationToken);
 
         if (targetCategory is null)
         {
             throw new CategoryNotFoundException();
         }
 
-        var duplicateCategory = _repositoryManager.CategoryRepository
+        var categoryWithSameName = _repositoryManager.CategoryRepository
             .FindByCondition(c => c.Name == categoryToUpdate.Name && !c.Deleted).FirstOrDefault();
 
-        if (duplicateCategory is not null)
+        if (categoryWithSameName is not null)
         {
             throw new CategoryAlreadyExistsException();
         }
