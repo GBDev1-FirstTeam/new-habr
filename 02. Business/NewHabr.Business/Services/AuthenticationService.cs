@@ -79,7 +79,7 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<bool> ValidateUser(AuthorizationRequest authorizationRequest, CancellationToken cancellationToken)
     {
-        _user = await _userManager.FindByNameAsync(authorizationRequest.Login);
+        _user = await _userManager.FindByNameAsync(authorizationRequest.UserName);
 
         var result = (_user is not null && await _userManager.CheckPasswordAsync(_user, authorizationRequest.Password));
 

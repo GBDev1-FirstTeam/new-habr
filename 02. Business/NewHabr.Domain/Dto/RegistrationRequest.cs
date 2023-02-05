@@ -5,8 +5,8 @@ namespace NewHabr.Domain.Dto;
 #nullable disable
 public class RegistrationRequest
 {
-    [Required(ErrorMessage = "Login is required")]
-    public string Login { get; set; }
+    [Required(ErrorMessage = "UserName is required")]
+    public string UserName { get; set; }
 
     [Required(ErrorMessage = "Password is required")]
     public string Password { get; set; }
