@@ -1,9 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NewHabr.Business.Services;
+using NewHabr.Business.Configurations;
+using NewHabr.Business.AutoMapperProfiles;
 using NewHabr.DAL.EF;
 using NewHabr.Domain.ConfigurationModels;
 using NewHabr.Domain.Contracts;
 using NewHabr.WebApi.Extensions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Serilog;
 
 namespace NewHabr.WebApi;
 
@@ -13,6 +18,10 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         var services = builder.Services;
+
+        var logPath = builder.Configuration["Log:RestAPIPath"];
+        if (!string.IsNullOrEmpty(logPath))
+            builder.UseSerilog("api", logPath);
 
         services.ConfigureDbContext(builder.Configuration);
 
@@ -37,12 +46,19 @@ public class Program
         #endregion
 
         services.AddControllers()
-            .AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.PropertyNamingPolicy = null;
-            });
+                .AddNewtonsoftJson(options =>
+                {
+                    options.UseMemberCasing();
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                    options.SerializerSettings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
+                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Unspecified;
+                });
+
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
+
+        services.ConfigureAutoMapper(typeof(ArticleProfile).Assembly);
 
         var app = builder.Build();
         UpdateDatabase(app);
@@ -56,7 +72,6 @@ public class Program
 
         app.UseAuthentication();
         app.UseAuthorization();
-
 
         app.MapControllers();
 

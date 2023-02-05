@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using NewHabr.Domain;
+﻿using System.Reflection;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using NewHabr.DAL.EF;
 using Microsoft.AspNetCore.Identity;
 using NewHabr.Domain.Models;
@@ -7,6 +8,8 @@ using NewHabr.Domain.ConfigurationModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using NewHabr.Domain;
+
 
 namespace NewHabr.WebApi.Extensions;
 
@@ -69,5 +72,11 @@ public static class ServiceExtensions
                 };
             });
     }
-}
 
+    public static void ConfigureAutoMapper(this IServiceCollection services, params Assembly[] assembliesToScan)
+    {
+        var mapperConfigurations = new MapperConfiguration(config => config.AddMaps(assembliesToScan));
+        var mapper = mapperConfigurations.CreateMapper();
+        services.AddSingleton(mapper);
+    }
+}
