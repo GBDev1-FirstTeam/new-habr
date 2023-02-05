@@ -2,6 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -18,6 +19,7 @@ public class AuthenticationService : IAuthenticationService
 {
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<UserRole> _roleManager;
+    private readonly IMapper _mapper;
     private readonly ILogger<AuthenticationService> _logger;
     private readonly JwtConfiguration _jwtConfiguration;
     private User? _user;
@@ -27,10 +29,12 @@ public class AuthenticationService : IAuthenticationService
         UserManager<User> userManager,
         RoleManager<UserRole> roleManager,
         IOptions<JwtConfiguration> jwtConfiguration,
+        IMapper mapper,
         ILogger<AuthenticationService> logger)
     {
         _userManager = userManager;
         _roleManager = roleManager;
+        _mapper = mapper;
         _logger = logger;
         _jwtConfiguration = jwtConfiguration.Value;
     }
@@ -46,11 +50,7 @@ public class AuthenticationService : IAuthenticationService
             return result;
         }
 
-        var authRequest = new AuthorizationRequest
-        {
-            Login = request.Login,
-            Password = request.Password
-        };
+        var authRequest = _mapper.Map<AuthorizationRequest>(request);
 
         await ValidateUser(authRequest, cancellationToken);
 
@@ -68,12 +68,7 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<IdentityResult> RegisterUserAsync(RegistrationRequest request, CancellationToken cancellationToken)
     {
-        var newUser = new User()
-        {
-            UserName = request.Login,
-            SecureQuestionId = request.SecurityQuestionId,
-            SecureAnswer = request.SecurityQuestionAnswer
-        };
+        var newUser = _mapper.Map<User>(request);
         var result = await _userManager.CreateAsync(newUser, request.Password);
 
         if (result.Succeeded)
@@ -98,17 +93,8 @@ public class AuthenticationService : IAuthenticationService
     {
         var tokenAsString = await CreateTokenAsync();
 
-        var user = new UserDto
-        {
-            Id = _user.Id,
-            Age = _user?.Age,
-            Description = _user?.Description,
-            FirstName = _user?.FirstName,
-            LastName = _user?.LastName,
-            Patronymic = _user?.Patronymic,
-            Login = _user.UserName,
-            Roles = await _userManager.GetRolesAsync(_user)
-        };
+        var user = _mapper.Map<UserDto>(_user);
+        user.Roles = await _userManager.GetRolesAsync(_user);
 
         var response = new AuthorizationResponse
         {
