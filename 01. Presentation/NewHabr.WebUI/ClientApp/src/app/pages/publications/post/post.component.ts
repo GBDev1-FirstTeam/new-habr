@@ -21,7 +21,7 @@ export class PostComponent implements OnInit, OnDestroy {
   commentText: string;
   
   auth: Authorization | null;
-  isAuth: Authorization | null;
+  isAuth: boolean | null;
 
   constructor(
     private http: HttpRequestService,
@@ -43,7 +43,7 @@ export class PostComponent implements OnInit, OnDestroy {
     })
 
     const authSubscribtion = this.store.getAuth().subscribe(auth => this.auth = auth);
-    const isAuthSubscribtion = this.store.getAuth().subscribe(isAuth => this.isAuth = isAuth);
+    const isAuthSubscribtion = this.store.getIsAuth().subscribe(isAuth => this.isAuth = isAuth);
 
     this.subscribtions.push(authSubscribtion);
     this.subscribtions.push(isAuthSubscribtion);
@@ -59,7 +59,7 @@ export class PostComponent implements OnInit, OnDestroy {
       UserLogin: this.auth?.User.Login!,
       ArticleId: this.postId,
       Text: this.commentText,
-      CreatedAt: Date.now()
+      CreatedAt: Date.now(),
     }
     
     this.commentText = '';

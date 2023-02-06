@@ -1,3 +1,4 @@
+import { ComponentsLibraryModule } from 'src/app/core/components/components-library.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserComponent } from './user/user.component';
@@ -16,7 +17,8 @@ const routes: Routes = [
   ],
   imports: [
     CommonModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    ComponentsLibraryModule
   ]
 })
 export class UsersModule { }

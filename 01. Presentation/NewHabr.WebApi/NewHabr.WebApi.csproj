@@ -11,6 +11,7 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.13" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\03. DAL\NewHabr.MSSQL\NewHabr.MSSQL.csproj" />
@@ -22,5 +23,8 @@
 		<ProjectReference Include="..\..\03. DAL\NewHabr.DAL\NewHabr.DAL.csproj">
 		  <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
 		</ProjectReference>
+	</ItemGroup>
+	<ItemGroup>
+	  <None Remove="Microsoft.AspNetCore.Authentication.JwtBearer" />
 	</ItemGroup>
 </Project>

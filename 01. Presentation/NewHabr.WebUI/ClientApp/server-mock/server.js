@@ -23,7 +23,9 @@ server.on({
                 ModifyAt: 1674755729,
                 PublishedAt: 1674755729,
                 ImgURL: 'https://avatarko.ru/img/kartinka/33/multfilm_lyagushka_32117.jpg',
-                IsPublished: true
+                IsPublished: true,
+                LikesCount: 164,
+                IsLiked: true,
             },
             {
                 Id: '1454687c-fb03-4308-b3ba-7dcf62a2abd5',
@@ -35,7 +37,9 @@ server.on({
                 ModifyAt: 1674755739,
                 PublishedAt: 1674755739,
                 ImgURL: 'https://mirpozitiva.ru/wp-content/uploads/2019/11/1472042660_10.jpg',
-                IsPublished: true
+                IsPublished: true,
+                LikesCount: 15,
+                IsLiked: false,
             },
         ])
     }
@@ -57,7 +61,9 @@ server.on({
             ModifyAt: 1674755729,
             PublishedAt: 1674755729,
             ImgURL: 'https://avatarko.ru/img/kartinka/33/multfilm_lyagushka_32117.jpg',
-            IsPublished: true
+            IsPublished: true,
+            LikesCount: 35,
+            IsLiked: true,
         })
     }
 });
@@ -78,7 +84,9 @@ server.on({
             ModifyAt: 1674755739,
             PublishedAt: 1674755739,
             ImgURL: 'https://mirpozitiva.ru/wp-content/uploads/2019/11/1472042660_10.jpg',
-            IsPublished: true
+            IsPublished: true,
+            LikesCount: 35,
+            IsLiked: true,
         })
     }
 });
@@ -98,7 +106,9 @@ server.on({
             CreatedAt: 1679955729,
             ModifyAt: 1679955729,
             ImgURL: 'https://kartinkof.club/uploads/posts/2022-09/1662227267_1-kartinkof-club-p-novie-i-krasivie-kartinki-lyubie-1.jpg',
-            IsPublished: false
+            IsPublished: false,
+            LikesCount: 35,
+            IsLiked: true,
         })
     }
 });
@@ -118,6 +128,8 @@ server.on({
             Role: 'admin',
             Age: 45,
             Description: 'Миллиардер, мэтросексуал, филантроп',
+            LikesCount: 35,
+            IsLiked: true,
         })
     }
 });
@@ -137,6 +149,8 @@ server.on({
             Role: 'user',
             Age: 62,
             Description: 'Бизнесмен, предприниматель',
+            LikesCount: 35,
+            IsLiked: true,
         })
     }
 });
@@ -154,7 +168,9 @@ server.on({
                 UserLogin: 'big_dick25',
                 ArticleId: '2164687c-fb03-4308-b3ba-7dcf62a2abd5',
                 Text: 'О, боже, что я только что прочитал? Это же немыслимая дичь!',
-                CreatedAt: 1674788739
+                CreatedAt: 1674788739,
+                LikesCount: 35,
+                IsLiked: true,
             },
             {
                 Id: '0014687c-fb03-4308-b3ba-7dcf62a2abd5',
@@ -162,7 +178,9 @@ server.on({
                 UserLogin: 'rybak74',
                 ArticleId: '2164687c-fb03-4308-b3ba-7dcf62a2abd5',
                 Text: 'Сам ты дичь!',
-                CreatedAt: 1674955739
+                CreatedAt: 1674955739,
+                LikesCount: 35,
+                IsLiked: true,
             },
             {
                 Id: '0024687c-fb03-4308-b3ba-7dcf62a2abd5',
@@ -170,7 +188,9 @@ server.on({
                 UserLogin: 'big_dick25',
                 ArticleId: '2164687c-fb03-4308-b3ba-7dcf62a2abd5',
                 Text: 'Больше не буду писать комменты!!!',
-                CreatedAt: 1679755739
+                CreatedAt: 1679755739,
+                LikesCount: 35,
+                IsLiked: true,
             }
         ])
     }
@@ -189,7 +209,9 @@ server.on({
                 UserLogin: 'rybak74',
                 ArticleId: '1454687c-fb03-4308-b3ba-7dcf62a2abd5',
                 Text: 'Капитан Джек Воробей!',
-                CreatedAt: 1674788739
+                CreatedAt: 1674788739,
+                LikesCount: 35,
+                IsLiked: true,
             },
             {
                 Id: '0204687c-fb03-4308-b3ba-7dcf62a2abd5',
@@ -197,7 +219,9 @@ server.on({
                 UserLogin: 'big_dick25',
                 ArticleId: '1454687c-fb03-4308-b3ba-7dcf62a2abd5',
                 Text: 'Я пришел чтобы отомстить на твоей странице!',
-                CreatedAt: 1674788900
+                CreatedAt: 1674788900,
+                LikesCount: 35,
+                IsLiked: false,
             },
             {
                 Id: '0224687c-fb03-4308-b3ba-7dcf62a2abd5',
@@ -205,7 +229,9 @@ server.on({
                 UserLogin: 'rybak74',
                 ArticleId: '1454687c-fb03-4308-b3ba-7dcf62a2abd5',
                 Text: 'Я тоже больше не буду писать комменты!!!',
-                CreatedAt: 1674789739
+                CreatedAt: 1674789739,
+                LikesCount: 35,
+                IsLiked: false,
             },
             {
                 Id: '0264687c-fb03-4308-b3ba-7dcf62a2abd5',
@@ -213,7 +239,9 @@ server.on({
                 UserLogin: 'big_dick25',
                 ArticleId: '1454687c-fb03-4308-b3ba-7dcf62a2abd5',
                 Text: 'Никто и не просит!',
-                CreatedAt: 1674798900
+                CreatedAt: 1674798900,
+                LikesCount: 35,
+                IsLiked: true,
             },
         ])
     }
@@ -243,6 +271,8 @@ server.on({
                 Role: 'admin',
                 Age: 45,
                 Description: 'Миллиардер, мэтросексуал, филантроп',
+                LikesCount: 35,
+                IsLiked: true,
             }
         })
     }
@@ -272,6 +302,8 @@ server.on({
                 Role: 'user',
                 Age: 62,
                 Description: 'Бизнесмен, предприниматель',
+                LikesCount: 35,
+                IsLiked: true,
             }
         })
     }
@@ -294,7 +326,9 @@ server.on({
                 ModifyAt: 1674755729,
                 PublishedAt: 1674755729,
                 ImgURL: 'https://avatarko.ru/img/kartinka/33/multfilm_lyagushka_32117.jpg',
-                IsPublished: true
+                IsPublished: true,
+                LikesCount: 35,
+                IsLiked: true,
             },
             {
                 Id: '9994687c-fb03-4308-b3ba-7dcf62a2abd5',
@@ -305,7 +339,9 @@ server.on({
                 CreatedAt: 1679955729,
                 ModifyAt: 1679955729,
                 ImgURL: 'https://kartinkof.club/uploads/posts/2022-09/1662227267_1-kartinkof-club-p-novie-i-krasivie-kartinki-lyubie-1.jpg',
-                IsPublished: false
+                IsPublished: false,
+                LikesCount: 35,
+                IsLiked: true,
             }
         ])
     }
@@ -328,7 +364,9 @@ server.on({
                 ModifyAt: 1674755739,
                 PublishedAt: 1674755739,
                 ImgURL: 'https://mirpozitiva.ru/wp-content/uploads/2019/11/1472042660_10.jpg',
-                IsPublished: true
+                IsPublished: true,
+                LikesCount: 35,
+                IsLiked: true,
             }
         ])
     }
@@ -350,6 +388,45 @@ server.on({
 server.on({
     method: 'POST',
     path: '/api/publications/add',
+    filter: function(request) {
+        console.log(request)
+        return true;
+    },
+    reply: {
+        status:  200,
+        headers: { "content-type": "application/json" }
+    }
+});
+
+server.on({
+    method: 'POST',
+    path: '/api/publications/like',
+    filter: function(request) {
+        console.log(request)
+        return true;
+    },
+    reply: {
+        status:  200,
+        headers: { "content-type": "application/json" }
+    }
+});
+
+server.on({
+    method: 'POST',
+    path: '/api/users/like',
+    filter: function(request) {
+        console.log(request)
+        return true;
+    },
+    reply: {
+        status:  200,
+        headers: { "content-type": "application/json" }
+    }
+});
+
+server.on({
+    method: 'POST',
+    path: '/api/comments/like',
     filter: function(request) {
         console.log(request)
         return true;

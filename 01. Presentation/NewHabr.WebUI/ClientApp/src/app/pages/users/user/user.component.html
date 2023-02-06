@@ -1,18 +1,19 @@
 <div class="user-container">
     <div class="login">
-        <span>{{ user.Login }}</span>
+        <span>{{ user?.Login }}</span>
     </div>
     <div class="info">
-        <span>{{ user.LastName }}&nbsp;</span>
-        <span>{{ user.FirstName }}&nbsp;</span>
-        <span>{{ user.Patronymic }}&nbsp;</span>
-        <span>({{ user.Age }} лет),&nbsp;</span>
-        <span>{{ user.Role }}</span>
+        <span>{{ user?.LastName }}&nbsp;</span>
+        <span>{{ user?.FirstName }}&nbsp;</span>
+        <span>{{ user?.Patronymic }}&nbsp;</span>
+        <span>({{ user?.Age }} лет),&nbsp;</span>
+        <span>{{ user?.Role }}</span>
     </div>
     <div class="description">
         <div>
             Об авторе:
         </div>
-        <span>{{ user.Description }}</span>
+        <span>{{ user?.Description }}</span>
     </div>
+    <app-like [likeData]="user" [path]="'users'"></app-like>
 </div>
