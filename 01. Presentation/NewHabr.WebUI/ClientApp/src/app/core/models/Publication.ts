@@ -1,4 +1,6 @@
-export interface Publication {
+import { Like } from "./Like";
+
+export interface Publication extends Like {
     Id?: string;
     Title: string;
     Content: string;
@@ -9,4 +11,6 @@ export interface Publication {
     PublishedAt?: number;
     ImgURL: string;
     IsPublished: boolean;
+    LikesCount?: number;
+    IsLiked?: boolean;
 }
