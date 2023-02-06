@@ -15,9 +15,11 @@ public class ArticleDto
     [NotNull, MinLength(3), MaxLength(500)]
     public string Title { get; set; }
 
-    public CategoryDto[] Categories { get; set; }
+    [NotNull]
+    public CategoryDto[] Categories { get; set; } = Array.Empty<CategoryDto>();
 
-    public TagDto[] Tags { get; set; }
+    [NotNull]
+    public TagDto[] Tags { get; set; } = Array.Empty<TagDto>();
 
     [NotNull]
     public string Content { get; set; }

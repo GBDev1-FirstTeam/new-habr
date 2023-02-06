@@ -11,27 +11,64 @@ public class ArticleRepository : ReporitoryBase<Article, Guid>, IArticleReposito
     {
     }
 
-    public async Task<IReadOnlyCollection<Article>> GetByTitleAsync(string title, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<Article>> GetByTitleIncludeAsync(
+        string title,
+        bool trackChanges = false,
+        CancellationToken cancellationToken = default)
     {
-        return await FindByCondition(a => a.Title.ToLower() == title.ToLower() && !a.Deleted)
+        return await FindByCondition(a => a.Title.ToLower() == title.ToLower() && !a.Deleted, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<Article>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<Article>> GetByUserIdIncludeAsync(
+        Guid userId,
+        bool trackChanges = false,
+        CancellationToken cancellationToken = default)
     {
-        return await FindByCondition(a => a.UserId == userId && !a.Deleted)
+        return await FindByCondition(a => a.UserId == userId && !a.Deleted, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<Article>> GetUnpublishedAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<Article>> GetUnpublishedIncludeAsync(
+        bool trackChanges = false,
+        CancellationToken cancellationToken = default)
     {
-        return await FindByCondition(a => !a.Published && !a.Deleted)
+        return await FindByCondition(a => !a.Published && !a.Deleted, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyCollection<Article>> GetDeletedIncludeAsync(
+        bool trackChanges = false,
+        CancellationToken cancellationToken = default)
+    {
+        return await GetDeleted(trackChanges)
+            .Include(a => a.Categories)
+            .Include(a => a.Tags)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<Article?> GetByIdAsync(
+        Guid id,
+        bool trackChanges = false,
+        CancellationToken cancellationToken = default)
+    {
+        return await GetById(id, trackChanges).FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<Article?> GetByIdIncludeAsync(
+        Guid id,
+        bool trackChanges = false,
+        CancellationToken cancellationToken = default)
+    {
+        return await FindByCondition(a => a.Id == id && !a.Deleted, trackChanges)
+            .Include(a => a.Categories)
+            .Include(a => a.Tags)
+            .FirstOrDefaultAsync(cancellationToken);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.Extensions.Logging;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Exceptions;
@@ -11,16 +10,11 @@ public class CategoryService : ICategoryService
 {
     private readonly IRepositoryManager _repositoryManager;
     private readonly IMapper _mapper;
-    private readonly ILogger _logger;
 
-    public CategoryService(
-        IRepositoryManager repositoryManager,
-        IMapper mapper,
-        ILogger<CategoryService> logger)
+    public CategoryService(IRepositoryManager repositoryManager, IMapper mapper)
     {
         _repositoryManager = repositoryManager;
         _mapper = mapper;
-        _logger = logger;
     }
 
     public async Task CreateAsync(CreateCategoryRequest request, CancellationToken cancellationToken = default)
@@ -29,7 +23,6 @@ public class CategoryService : ICategoryService
 
         if (category is not null)
         {
-
             throw new CategoryAlreadyExistsException();
         }
 
@@ -37,10 +30,9 @@ public class CategoryService : ICategoryService
         _repositoryManager.CategoryRepository.Create(newCategory);
         await _repositoryManager.SaveAsync(cancellationToken);
     }
-
     public async Task DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        var category = await _repositoryManager.CategoryRepository.GetByIdAsync(id, cancellationToken: cancellationToken);
+        var category = await _repositoryManager.CategoryRepository.GetByIdIncludeAsync(id, cancellationToken: cancellationToken);
 
         if (category is null)
         {
@@ -50,13 +42,11 @@ public class CategoryService : ICategoryService
         _repositoryManager.CategoryRepository.Delete(category);
         await _repositoryManager.SaveAsync(cancellationToken);
     }
-
     public async Task<IReadOnlyCollection<CategoryDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var categories = await _repositoryManager.CategoryRepository.GetAllAsync(cancellationToken);
+        var categories = await _repositoryManager.CategoryRepository.GetAvaliableAsync(cancellationToken: cancellationToken);
         return _mapper.Map<List<CategoryDto>>(categories);
     }
-
     public async Task UpdateAsync(CategoryDto categoryToUpdate, CancellationToken cancellationToken = default)
     {
         var targetCategory = await _repositoryManager.CategoryRepository.GetByIdAsync(categoryToUpdate.Id, cancellationToken: cancellationToken);

@@ -2,6 +2,7 @@
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Exceptions;
+using NewHabr.Domain.Models;
 
 namespace NewHabr.WebApi.Controllers;
 
@@ -25,7 +26,7 @@ public class ArticlesController : ControllerBase
         {
             return Ok(await _articleService.GetByIdAsync(id, cancellationToken));
         }
-        catch (ArticleNotFoundException ex)
+        catch (EntityNotFoundException ex)
         {
             _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return NotFound();
@@ -44,7 +45,7 @@ public class ArticlesController : ControllerBase
         {
             return Ok(await _articleService.GetUnpublishedAsync(cancellationToken));
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             _logger.LogError(ex, ex.Message);
             return StatusCode(StatusCodes.Status500InternalServerError);
@@ -73,6 +74,11 @@ public class ArticlesController : ControllerBase
             await _articleService.CreateAsync(request, cancellationToken);
             return Ok();
         }
+        catch (EntityNotFoundException ex)
+        {
+            _logger.LogError(ex, string.Concat(ex.Message, "\nrequest: {@request}:"), request);
+            return BadRequest();
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, string.Concat(ex.Message, "\nrequest: {@request}:"), request);
@@ -88,7 +94,7 @@ public class ArticlesController : ControllerBase
             await _articleService.UpdateAsync(request, cancellationToken);
             return Ok();
         }
-        catch (ArticleNotFoundException ex)
+        catch (EntityNotFoundException ex)
         {
             _logger.LogInformation(ex, string.Concat(ex.Message, "\nrequest: {@request}:"), request);
             return NotFound();
@@ -108,19 +114,19 @@ public class ArticlesController : ControllerBase
             await _articleService.DeleteByIdAsync(id, cancellationToken);
             return Ok();
         }
-        catch (ArticleNotFoundException ex)
+        catch (EntityNotFoundException ex)
         {
             _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return NotFound();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
-    [HttpPut("publish/{id}")]
+    [HttpPut("{id}/publish")]
     public async Task<ActionResult> Publish([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         try
@@ -128,10 +134,15 @@ public class ArticlesController : ControllerBase
             await _articleService.SetPublicationStatusAsync(id, true, cancellationToken);
             return Ok();
         }
-        catch (ArticleNotFoundException ex)
+        catch (EntityNotFoundException ex)
         {
             _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return NotFound();
+        }
+        catch (ArticleIsNotApproveException ex)
+        {
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"), id);
+            return BadRequest();
         }
         catch (Exception ex)
         {
@@ -140,7 +151,7 @@ public class ArticlesController : ControllerBase
         }
     }
 
-    [HttpPut("unpublish/{id}")]
+    [HttpPut("{id}/unpublish")]
     public async Task<ActionResult> Unpublish([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         try
@@ -148,14 +159,42 @@ public class ArticlesController : ControllerBase
             await _articleService.SetPublicationStatusAsync(id, false, cancellationToken);
             return Ok();
         }
-        catch (ArticleNotFoundException ex)
+        catch (EntityNotFoundException ex)
         {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"), id);
+            return NotFound();
+        }
+        catch (ArticleIsNotApproveException ex)
+        {
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"), id);
+            return BadRequest();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}"), id);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult> SetApproveState(
+        [FromRoute] Guid id,
+        [FromQuery] ApproveState approveState,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _articleService.SetApproveStateAsync(id, approveState, cancellationToken);
+            return Ok();
+        }
+        catch (EntityNotFoundException ex)
+        {
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}\napprove state: {approveState}"), id, approveState);
             return NotFound();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
+            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}\napprove state: {approveState}"), id, approveState);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }

@@ -2,6 +2,9 @@
 
 namespace NewHabr.Domain.Exceptions;
 
-public class TagAlreadyExistsException : EntityAlreadyExistsException<Tag, int>
+public class TagAlreadyExistsException : EntityAlreadyExistsException
 {
+    public TagAlreadyExistsException() : base(typeof(Tag))
+    {
+    }
 }

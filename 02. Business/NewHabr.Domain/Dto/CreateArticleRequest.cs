@@ -15,7 +15,7 @@ public class CreateArticleRequest
     [NotNull]
     public string Content { get; set; }
 
-    public CategoryDto[] Categories { get; set; }
+    public CreateCategoryRequest[] Categories { get; set; } = Array.Empty<CreateCategoryRequest>();
 
-    public TagDto[] Tags { get; set; }
+    public CreateTagRequest[] Tags { get; set; } = Array.Empty<CreateTagRequest>();
 }

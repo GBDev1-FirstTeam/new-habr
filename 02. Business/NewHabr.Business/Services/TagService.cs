@@ -30,10 +30,9 @@ public class TagService : ITagService
         _repositoryManager.TagRepository.Create(newTag);
         await _repositoryManager.SaveAsync(cancellationToken);
     }
-
     public async Task DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        var tag = await _repositoryManager.TagRepository.GetByIdAsync(id, cancellationToken: cancellationToken);
+        var tag = await _repositoryManager.TagRepository.GetByIdIncludeAsync(id, trackChanges: true, cancellationToken);
 
         if (tag is null)
         {
@@ -43,13 +42,11 @@ public class TagService : ITagService
         _repositoryManager.TagRepository.Delete(tag);
         await _repositoryManager.SaveAsync(cancellationToken);
     }
-
     public async Task<IReadOnlyCollection<TagDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var tags = await _repositoryManager.TagRepository.GetAllAsync(cancellationToken);
+        var tags = await _repositoryManager.TagRepository.GetAvaliableAsync(cancellationToken: cancellationToken);
         return _mapper.Map<List<TagDto>>(tags);
     }
-
     public async Task UpdateAsync(TagDto tagToUpdate, CancellationToken cancellationToken = default)
     {
         var targetTag = await _repositoryManager.TagRepository.GetByIdAsync(tagToUpdate.Id, cancellationToken: cancellationToken);

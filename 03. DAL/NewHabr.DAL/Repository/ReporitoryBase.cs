@@ -24,7 +24,7 @@ public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity, TKey>
         Set.Add(data);
     }
 
-    public void Delete(TEntity data)
+    public virtual void Delete(TEntity data)
     {
         data.Deleted = true;
         Update(data);
@@ -45,18 +45,23 @@ public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity, TKey>
         return FindAll(trackChanges).Where(expression);
     }
 
-    public async Task<TEntity?> GetByIdAsync(TKey id, bool trackChanges = false, CancellationToken cancellationToken = default)
+    public IQueryable<TEntity?> GetById(TKey id, bool trackChanges = false)
     {
-        return await FindByCondition(e => e.Id.Equals(id) && !e.Deleted, trackChanges).FirstOrDefaultAsync(cancellationToken);
+        return FindByCondition(e => e.Id.Equals(id) && !e.Deleted, trackChanges);
     }
 
-    public virtual async Task<IReadOnlyCollection<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
+    public IQueryable<TEntity> GetAll(bool trackChanges = false)
     {
-        return await FindAll().ToListAsync(cancellationToken);
+        return FindAll(trackChanges);
     }
 
-    public async Task<IReadOnlyCollection<TEntity>> GetDeletedAsync(CancellationToken cancellationToken = default)
+    public IQueryable<TEntity> GetDeleted(bool trackChanges = false)
     {
-        return await FindByCondition(a => a.Deleted).ToListAsync(cancellationToken);
+        return FindByCondition(a => a.Deleted, trackChanges);
+    }
+
+    public IQueryable<TEntity> GetAvailable(bool trackChanges = false)
+    {
+        return FindByCondition(a => !a.Deleted, trackChanges);
     }
 }

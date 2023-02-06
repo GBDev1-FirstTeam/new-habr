@@ -1,12 +1,8 @@
-﻿using NewHabr.Domain.Models;
+﻿namespace NewHabr.Domain.Exceptions;
 
-namespace NewHabr.Domain.Exceptions;
-
-public abstract class EntityAlreadyExistsException<TEntity, TId> : Exception
-    where TEntity : IEntity<TId>
-    where TId : struct
+public abstract class EntityAlreadyExistsException : Exception
 {
-    public EntityAlreadyExistsException() : base($"Entity type of {nameof(TEntity)} already exists.")
+    protected EntityAlreadyExistsException(Type type) : base($"Entity type of {type.Name} already exists.")
     {
     }
 }

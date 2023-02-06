@@ -2,6 +2,9 @@
 
 namespace NewHabr.Domain.Exceptions;
 
-public class CategoryAlreadyExistsException : EntityAlreadyExistsException<Category, int>
+public class CategoryAlreadyExistsException : EntityAlreadyExistsException
 {
+    public CategoryAlreadyExistsException() : base(typeof(Category))
+    {
+    }
 }

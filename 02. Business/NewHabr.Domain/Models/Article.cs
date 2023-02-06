@@ -16,11 +16,11 @@ public class Article : BaseEntity<Guid>
 
     public User User { get; set; }
 
-    public ICollection<Category> Categories { get; set; }
+    public ICollection<Category> Categories { get; set; } = new HashSet<Category>();
 
     public ICollection<Comment> Comments { get; set; }
 
-    public ICollection<Tag> Tags { get; set; }
+    public ICollection<Tag> Tags { get; set; } = new HashSet<Tag>();
 
     public ICollection<LikedArticle> Likes { get; set; }
 
