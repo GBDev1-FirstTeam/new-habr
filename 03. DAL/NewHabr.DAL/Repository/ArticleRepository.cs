@@ -13,16 +13,25 @@ public class ArticleRepository : ReporitoryBase<Article, Guid>, IArticleReposito
 
     public async Task<IReadOnlyCollection<Article>> GetByTitleAsync(string title, CancellationToken cancellationToken = default)
     {
-        return await FindByCondition(a => a.Title.ToLower() == title.ToLower() && !a.Deleted).ToListAsync(cancellationToken);
+        return await FindByCondition(a => a.Title.ToLower() == title.ToLower() && !a.Deleted)
+            .Include(a => a.Categories)
+            .Include(a => a.Tags)
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyCollection<Article>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        return await FindByCondition(a => a.UserId == userId && !a.Deleted).ToListAsync(cancellationToken);
+        return await FindByCondition(a => a.UserId == userId && !a.Deleted)
+            .Include(a => a.Categories)
+            .Include(a => a.Tags)
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyCollection<Article>> GetUnpublishedAsync(CancellationToken cancellationToken = default)
     {
-        return await FindByCondition(a => !a.Published && !a.Deleted).ToListAsync(cancellationToken);
+        return await FindByCondition(a => !a.Published && !a.Deleted)
+            .Include(a => a.Categories)
+            .Include(a => a.Tags)
+            .ToListAsync(cancellationToken);
     }
 }

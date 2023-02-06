@@ -14,4 +14,8 @@ public class UpdateArticleRequest
 
     [NotNull]
     public string Content { get; set; }
+
+    public CategoryDto[] Categories { get; set; }
+
+    public TagDto[] Tags { get; set; }
 }

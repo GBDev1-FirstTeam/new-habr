@@ -14,4 +14,8 @@ public class CreateArticleRequest
 
     [NotNull]
     public string Content { get; set; }
+
+    public CategoryDto[] Categories { get; set; }
+
+    public TagDto[] Tags { get; set; }
 }

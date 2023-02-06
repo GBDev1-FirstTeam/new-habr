@@ -79,6 +79,8 @@ public class ArticleService : IArticleService
 
         article.Deleted = true;
         article.DeletedAt = DateTimeOffset.UtcNow;
+        article.Published = false;
+        article.PublishedAt = null;
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 

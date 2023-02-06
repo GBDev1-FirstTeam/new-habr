@@ -15,6 +15,10 @@ public class ArticleDto
     [NotNull, MinLength(3), MaxLength(500)]
     public string Title { get; set; }
 
+    public CategoryDto[] Categories { get; set; }
+
+    public TagDto[] Tags { get; set; }
+
     [NotNull]
     public string Content { get; set; }
 
