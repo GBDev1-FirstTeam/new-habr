@@ -9,7 +9,46 @@
         </nav>
     </div>
     <div class="main-container-grid">
-        <router-outlet></router-outlet>
+        <div>
+            <router-outlet></router-outlet>
+        </div>
+        <div class="account-container">
+            <div *ngIf="isAuth; else login" class="user-container">
+                <div class="emoji">
+                    <i class="bi bi-person-check"></i>
+                </div>
+                <div class="login">
+                    <span>Привет, {{ auth?.User?.Login }}!</span>
+                </div>
+                <hr>
+                <div class="info">
+                    Вы авторизованы как:
+                    <div>{{ auth?.User?.LastName }} {{ auth?.User?.FirstName }} {{ auth?.User?.Patronymic }}</div>
+                    <div>Возраст: {{ auth?.User?.Age }} лет</div>
+                    <div>Роль: {{ auth?.User?.Role }}</div>
+                </div>
+                <div class="nav">
+                    <button type="button" class="btn btn-light" (click)="navigate(['accounts', auth?.User?.Id])">Мой профиль</button>
+                    <button type="button" class="btn btn-light" (click)="navigate(['accounts', auth?.User?.Id, 'articles'])">Мои статьи</button>
+                    <button type="button" class="btn btn-light" (click)="logout()">Выйти</button>
+                </div>
+            </div>
+            <ng-template #login class="user-container">
+                <div class="emoji">
+                    <i class="bi bi-person-lines-fill"></i>
+                </div>
+                <div class="login">
+                    <span>Привет, Гость!</span>
+                </div>
+                <hr>
+                <div class="nav">
+                    <button type="button" class="btn btn-light" (click)="navigate(['accounts', 'login'])">Авторизация</button>
+                    <div>
+                        Еще не завели аккаунт? <a [routerLink]="menu[1].url">Зарегистрируйтесь</a>
+                    </div>
+                </div>
+            </ng-template>
+        </div>
     </div>
 </div>
 

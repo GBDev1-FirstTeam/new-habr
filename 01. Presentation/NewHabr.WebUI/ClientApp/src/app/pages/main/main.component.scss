@@ -7,6 +7,53 @@
 
     &-grid {
         width: 80vw;
+        display: grid;
+        grid-template-columns: 7fr 2fr;
+
+        .account-container {
+            margin: 15px 5px;
+            background-color: white;
+            border: 1px solid lightgray;
+            position: sticky;
+            top: 61px;
+
+            .user-container {
+                padding: 10px;
+            }
+
+            .login {
+                font-weight: bold;
+                text-align: center;
+            }
+
+            height: min-content;
+        }
+    }
+}
+
+.emoji {
+    font-size: 4em;
+    color: burlywood;
+    text-align: center;
+}
+
+.nav {
+    display: flex;
+    flex-flow: column nowrap;
+
+    button {
+        display: block;
+        margin: 10px;
+    }
+
+    div {
+        text-align: center;
+        margin-bottom: 10px;
+        font-size: 0.9em;
+
+        a {
+            display: block;
+        }
     }
 }
 

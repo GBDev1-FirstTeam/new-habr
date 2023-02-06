@@ -16,6 +16,7 @@ export interface AppStore {
 })
 export class AppStoreProvider {
 
+    private authObjectName: string = 'auth-object';
     private store: Store<StoreDef<AppStore>>;
 
     constructor(private http: HttpRequestService) {
@@ -98,14 +99,23 @@ export class AppStoreProvider {
         });
     }
 
+    logout() {
+        this.store.update(st => ({
+            ...st,
+            auth: null,
+            isAuth: false
+        }))
+        localStorage.removeItem(this.authObjectName)
+    }
+
     getAuth = () => this.store.pipe(select((state => state.auth)));
     getIsAuth = () => this.store.pipe(select((state => state.isAuth)));
 
     private saveToLocalStorage(auth: Authorization) {
-        localStorage.setItem('auth-object', JSON.stringify(auth))
+        localStorage.setItem(this.authObjectName, JSON.stringify(auth))
     }
     
     private readFromLocalStorage(): Authorization | null {
-        return JSON.parse(localStorage.getItem('auth-object')!) as Authorization | null;
+        return JSON.parse(localStorage.getItem(this.authObjectName)!) as Authorization | null;
     }
 }
