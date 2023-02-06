@@ -27,6 +27,6 @@ public class UserRepository : ReporitoryBase<User, Guid>, IUserRepository
 
     public async Task<User?> GetUserByLoginAsync(string login, CancellationToken cancellationToken = default)
     {
-        return await FindByCondition(u => u.Login == login && !u.Deleted).SingleOrDefaultAsync(cancellationToken);
+        return await FindByCondition(u => u.UserName == login && !u.Deleted).SingleOrDefaultAsync(cancellationToken);
     }
 }

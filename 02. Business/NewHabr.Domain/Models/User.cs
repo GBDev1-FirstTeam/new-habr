@@ -1,16 +1,11 @@
 ﻿#nullable disable
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace NewHabr.Domain.Models;
 
-public class User : IEntity<Guid> // при внедрении аутентификации этот класс будет наследоваться от Identity<User>
+public class User : IdentityUser<Guid>, IEntity<Guid>
 {
-    [Key]
-    public Guid Id { get; set; }
-
-    [Required, MaxLength(30), MinLength(2)]
-    public string Login { get; set; }
-
     [MaxLength(30)]
     public string FirstName { get; set; }
 
@@ -55,5 +50,16 @@ public class User : IEntity<Guid> // при внедрении аутентиф�
 
     [Required]
     public string SecureAnswer { get; set; }
-    
+
+    public int? Age
+    {
+        get
+        {
+            if (BirthDay is null || BirthDay > DateTime.Now)
+                return null;
+
+            return (DateTime.Now - BirthDay).Value.Days / 365;
+        }
+    }
+
 }

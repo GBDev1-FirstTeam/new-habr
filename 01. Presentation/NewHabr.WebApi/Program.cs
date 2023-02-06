@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NewHabr.Business.Services;
 using NewHabr.Business.Configurations;
 using NewHabr.Business.AutoMapperProfiles;
 using NewHabr.DAL.EF;
+using NewHabr.Domain.ConfigurationModels;
+using NewHabr.Domain.Contracts;
 using NewHabr.WebApi.Extensions;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Serilog;
 
 namespace NewHabr.WebApi;
@@ -22,15 +23,31 @@ public class Program
 
         services.ConfigureDbContext(builder.Configuration);
 
-        services.AddControllers()
-                .AddNewtonsoftJson(options =>
-                {
-                    options.UseMemberCasing();
-                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
-                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                    options.SerializerSettings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
-                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Unspecified;
-                });
+        #region Configure Identity
+
+        services.AddAuthentication();
+        services.ConfigureIdentity();
+
+        #endregion
+
+        #region Configure Jwt
+
+        services.Configure<JwtConfiguration>(builder.Configuration.GetSection(JwtConfiguration.Section));
+        services.ConfigureJWT(builder.Configuration);
+
+        #endregion
+
+        #region Register services in DI
+
+        services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+        #endregion
+
+        #region Configure Controllers
+
+        services.ConfigureControllers();
+
+        #endregion
 
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
@@ -47,7 +64,8 @@ public class Program
             app.UseSwaggerUI();
         }
 
-        //app.UseAuthorization();
+        app.UseAuthentication();
+        app.UseAuthorization();
 
         app.MapControllers();
 
