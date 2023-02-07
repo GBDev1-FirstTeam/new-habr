@@ -44,11 +44,10 @@
                 <div class="nav">
                     <button type="button" class="btn btn-light" (click)="navigate(['accounts', 'login'])">Авторизация</button>
                     <div>
-                        Еще не завели аккаунт? <a [routerLink]="menu[1].url">Зарегистрируйтесь</a>
+                        Еще не завели аккаунт? <a [routerLink]="'accounts/register'">Зарегистрируйтесь</a>
                     </div>
                 </div>
             </ng-template>
         </div>
     </div>
 </div>
-

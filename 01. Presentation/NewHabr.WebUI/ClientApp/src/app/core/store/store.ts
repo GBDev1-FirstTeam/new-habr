@@ -3,6 +3,8 @@ import { createStore, withProps, Store, StoreDef, select } from '@ngneat/elf';
 import { Injectable } from "@angular/core";
 import { HttpRequestService } from "../services/HttpRequestService";
 import { Authorization } from "../models/Authorization";
+import { RegistrationRequest } from "../models/Registration";
+import { RecoveryRequestAnswer } from "../models/Recovery";
 
 export interface AppStore {
     publications: Array<Publication> | null,
@@ -75,27 +77,47 @@ export class AppStoreProvider {
         }))
     }
 
+    private authSubscribtion = (auth: Authorization) => {
+        const isAuth = !!auth?.User && !!auth?.Token && !!auth?.RefreshToken;
+        if (isAuth) {
+            this.store.update(st => ({
+                ...st,
+                auth: auth,
+                isAuth: isAuth
+            }))
+        } else {
+            this.store.update(st => ({
+                ...st,
+                auth: null,
+                isAuth: false
+            }))
+        }
+        this.saveToLocalStorage(auth);
+    }
+
     authentication(login: string, password: string) {
         const authenticationSubscribtion = this.http.postAuthentication({
             Login: login,
             Password: password
         }).subscribe(auth => {
-            const isAuth = !!auth?.User && !!auth?.Token && !!auth?.RefreshToken;
-            if (isAuth) {
-                this.store.update(st => ({
-                    ...st,
-                    auth: auth,
-                    isAuth: isAuth
-                }))
-            } else {
-                this.store.update(st => ({
-                    ...st,
-                    auth: null,
-                    isAuth: false
-                }))
-            }
-            this.saveToLocalStorage(auth);
+            this.authSubscribtion(auth);
             authenticationSubscribtion.unsubscribe();
+        });
+    }
+    
+    register(registerData: RegistrationRequest) {
+        const registrationSubscribtion =
+            this.http.postRegistration(registerData).subscribe(auth => {
+            this.authSubscribtion(auth);
+            registrationSubscribtion.unsubscribe();
+        });
+    }
+
+    recovery(recoveryData: RecoveryRequestAnswer) {
+        const recoverySubscribtion =
+            this.http.postRecoveryAnswer(recoveryData).subscribe(auth => {
+            this.authSubscribtion(auth);
+            recoverySubscribtion.unsubscribe();
         });
     }
 

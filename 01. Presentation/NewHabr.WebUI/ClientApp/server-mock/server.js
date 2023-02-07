@@ -437,6 +437,96 @@ server.on({
     }
 });
 
+server.on({
+    method: 'POST',
+    path: '/api/register',
+    filter: function(request) {
+        console.log(request)
+        return true;
+    },
+    reply: {
+        status:  200,
+        headers: { "content-type": "application/json" },
+        body:    JSON.stringify({
+            Token: 'kyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkRhbmlsIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.TI9Co9XS1Md9Ov5Xq3hh2fLGmsWytLoFrvc7LzqMZ9pYnyhkpQ6PryJ-ImUAALC3kb2osa_7C5j_LSYVZYviXw',
+            RefreshToken: 'kyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkRhbmlsIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.fK2ZYt85hw4ScpieADgGsKeW2brg9sb-KJUFF2o7Yq_RAzg3GEmnDBvCyfClXCcNE1xuX040S1IcAZbhX-7P6A',
+            User: {
+                Id: '8878687c-fb03-4308-b3ba-7dcf62a2abc7',
+                Login: 'shabanchik95',
+                FirstName: 'Данил',
+                LastName: 'Шабанов',
+                Patronymic: 'Валерьевич',
+                Role: 'user',
+                Age: 27,
+                Description: 'Программист-гитарист',
+                LikesCount: 0,
+                IsLiked: false,
+            }
+        })
+    }
+});
+
+server.on({
+    method: 'POST',
+    path: '/api/recovery/login',
+    filter: function(request) {
+        console.log(request)
+        return true;
+    },
+    reply: {
+        status:  200,
+        headers: { "content-type": "application/json" },
+        body:    JSON.stringify({
+            Question: 'Два кольца, два конца, посередине гвоздик. Что это?',
+            TransactionId: '0078687c-fb03-4308-b3ba-7dcf62a2abc7'
+        })
+    }
+});
+
+server.on({
+    method: 'POST',
+    path: '/api/recovery/answer',
+    filter: function(request) {
+        return _.isEqual(request.body, {
+            Answer: 'Ножницы',
+            TransactionId: '0078687c-fb03-4308-b3ba-7dcf62a2abc7'
+        })
+    },
+    reply: {
+        status:  200,
+        headers: { "content-type": "application/json" },
+        body:    JSON.stringify({
+            Token: 'kyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkRhbmlsIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.TI9Co9XS1Md9Ov5Xq3hh2fLGmsWytLoFrvc7LzqMZ9pYnyhkpQ6PryJ-ImUAALC3kb2osa_7C5j_LSYVZYviXw',
+            RefreshToken: 'kyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkRhbmlsIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.fK2ZYt85hw4ScpieADgGsKeW2brg9sb-KJUFF2o7Yq_RAzg3GEmnDBvCyfClXCcNE1xuX040S1IcAZbhX-7P6A',
+            User: {
+                Id: '8878687c-fb03-4308-b3ba-7dcf62a2abc7',
+                Login: 'shabanchik95',
+                FirstName: 'Данил',
+                LastName: 'Шабанов',
+                Patronymic: 'Валерьевич',
+                Role: 'user',
+                Age: 27,
+                Description: 'Программист-гитарист',
+                LikesCount: 0,
+                IsLiked: false,
+            }
+        })
+    }
+});
+
+server.on({
+    method: 'POST',
+    path: '/api/recovery/password',
+    filter: function(request) {
+        console.log(request)
+        return true;
+    },
+    reply: {
+        status:  200,
+        headers: { "content-type": "application/json" }
+    }
+});
+
 server.start(() => {
     console.log('Server succesfully started')
 });

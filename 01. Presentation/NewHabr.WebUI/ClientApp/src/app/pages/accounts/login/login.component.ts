@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { Authorization } from 'src/app/core/models/Authorization';
 import { AppStoreProvider } from 'src/app/core/store/store';
 
@@ -10,19 +11,29 @@ import { AppStoreProvider } from 'src/app/core/store/store';
 })
 export class LoginComponent implements OnInit {
 
+  subscribtions: Subscription[] = [];
+
   login: string;
   password: string;
   auth: Authorization;
 
+  path = 'accounts/register'
+
   constructor(private store: AppStoreProvider, private router: Router) { }
   
   ngOnInit(): void {
-    this.store.getAuth().subscribe(auth => {
+    const authSubscribtion = this.store.getAuth().subscribe(auth => {
       if (auth) {
         this.auth = auth;
-        this.router.navigate(['accounts', auth.User.Id, 'articles']);
+        this.router.navigate(['accounts', auth.User.Id]);
       }
     })
+
+    this.subscribtions.push(authSubscribtion);
+  }
+
+  ngOnDestroy(): void {
+    this.subscribtions.forEach(element => element.unsubscribe());
   }
 
   authenticate() {

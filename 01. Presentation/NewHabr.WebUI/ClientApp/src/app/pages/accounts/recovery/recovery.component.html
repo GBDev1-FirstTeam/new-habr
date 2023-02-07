@@ -1,0 +1,41 @@
+<div class="form-container">
+    <h5>Введите свои учётные данные</h5>
+
+    <form *ngIf="step === 1">
+        <div>Шаг 1 - получение контрольного вопроса, указанного при регистрации</div>
+        <div class="form-group">
+            <label for="login">Введите ваш логин</label>
+            <input type="text" class="form-control" id="login" placeholder="Логин" [(ngModel)]="login" name="login">
+        </div>
+
+        <button type="submit" class="btn btn-outline-dark" (click)="getQuestion()">Получить вопрос</button>
+    </form>
+
+    <form *ngIf="step === 2">
+        <div>Шаг 2 - Ответ на контрольный вопрос</div>
+        <div>{{ question }}</div>
+        <div class="form-group">
+            <label for="answer">Ваш ответ</label>
+            <input type="text" class="form-control" id="answer" placeholder="Ответ" [(ngModel)]="answer" name="answer">
+        </div>
+
+        <button type="submit" class="btn btn-outline-dark" (click)="answerQuestion()">Ответить</button>
+    </form>
+
+    <form *ngIf="step === 3">
+        <div>Шаг 3 - Созранение нового пароля</div>
+
+        <div class="form-group">
+            <label for="password">Придумайте новый пароль</label>
+            <input type="password" class="form-control" id="password" placeholder="Пароль" [(ngModel)]="password" name="password">
+        </div>
+        <div class="form-group">
+            <label for="repeatPassword">Повторите пароль</label>
+            <input type="password" class="form-control" id="repeatPassword" placeholder="Повторите пароль" [(ngModel)]="repeatPassword" name="repeatPassword">
+        </div>
+
+        <div *ngIf="incorrectPasswords" style="color: red; margin-bottom: 10px;">Пароли не совпадают!</div>
+
+        <button type="submit" class="btn btn-outline-dark" (click)="changePassword()">Сохранить</button>
+    </form>
+</div>
