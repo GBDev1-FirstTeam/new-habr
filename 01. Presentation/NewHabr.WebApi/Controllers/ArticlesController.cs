@@ -19,6 +19,28 @@ public class ArticlesController : ControllerBase
         _logger = logger;
     }
 
+    [HttpGet("{id}/comments")]
+    public async Task<ActionResult<IEnumerable<CommentWithLikedMark>>> GetCommentsWithLikedMark(
+        [FromRoute] Guid id,
+        [FromQuery] Guid userId,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            return Ok(await _articleService.GetCommentsWithLikedMarkAsync(id, userId, cancellationToken));
+        }
+        catch(EntityNotFoundException ex)
+        {
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}\nuser id: {userId}"), id, userId);
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}\nuser id: {userId}"), id, userId);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
     [HttpGet("{id}")]
     public async Task<ActionResult<ArticleDto>> GetById([FromRoute] Guid id, CancellationToken cancellationToken)
     {
@@ -28,12 +50,12 @@ public class ArticlesController : ControllerBase
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
-            return NotFound();
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"), id);
+            return NotFound(ex.Message);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
+            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}"), id);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
@@ -76,52 +98,32 @@ public class ArticlesController : ControllerBase
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nrequest: {@request}:"), request);
-            return BadRequest();
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
+            return BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nrequest: {@request}:"), request);
+            _logger.LogError(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
-    [HttpPut("update")]
-    public async Task<ActionResult> Update([FromBody] UpdateArticleRequest request, CancellationToken cancellationToken)
+    [HttpPut("{id}")]
+    public async Task<ActionResult> Update([FromRoute] Guid id, [FromBody] UpdateArticleRequest request, CancellationToken cancellationToken)
     {
         try
         {
-            await _articleService.UpdateAsync(request, cancellationToken);
+            await _articleService.UpdateAsync(id, request, cancellationToken);
             return Ok();
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nrequest: {@request}:"), request);
-            return NotFound();
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
+            return NotFound(ex.Message);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nrequest: {@request}:"), request);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<ActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
-    {
-        try
-        {
-            await _articleService.DeleteByIdAsync(id, cancellationToken);
-            return Ok();
-        }
-        catch (EntityNotFoundException ex)
-        {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
-            return NotFound();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
+            _logger.LogError(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
@@ -136,13 +138,13 @@ public class ArticlesController : ControllerBase
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
-            return NotFound();
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"), id);
+            return NotFound(ex.Message);
         }
         catch (ArticleIsNotApproveException ex)
         {
             _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"), id);
-            return BadRequest();
+            return BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
@@ -162,12 +164,7 @@ public class ArticlesController : ControllerBase
         catch (EntityNotFoundException ex)
         {
             _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"), id);
-            return NotFound();
-        }
-        catch (ArticleIsNotApproveException ex)
-        {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"), id);
-            return BadRequest();
+            return NotFound(ex.Message);
         }
         catch (Exception ex)
         {
@@ -176,7 +173,7 @@ public class ArticlesController : ControllerBase
         }
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{id}/approve")]
     public async Task<ActionResult> SetApproveState(
         [FromRoute] Guid id,
         [FromQuery] ApproveState approveState,
@@ -190,11 +187,31 @@ public class ArticlesController : ControllerBase
         catch (EntityNotFoundException ex)
         {
             _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}\napprove state: {approveState}"), id, approveState);
-            return NotFound();
+            return NotFound(ex.Message);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}\napprove state: {approveState}"), id, approveState);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _articleService.DeleteByIdAsync(id, cancellationToken);
+            return Ok();
+        }
+        catch (EntityNotFoundException ex)
+        {
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"), id);
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}"), id);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }

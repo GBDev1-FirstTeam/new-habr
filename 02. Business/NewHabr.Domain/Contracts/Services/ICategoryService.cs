@@ -12,7 +12,7 @@ public interface ICategoryService
 
     /// <exception cref="CategoryNotFoundException"></exception>
     /// <exception cref="CategoryAlreadyExistsException"></exception>
-    Task UpdateAsync(CategoryDto categoryToUpdate, CancellationToken cancellationToken = default);
+    Task UpdateAsync(int id, UpdateCategoryRequest categoryToUpdate, CancellationToken cancellationToken = default);
 
     /// <exception cref="CategoryNotFoundException"></exception>
     Task DeleteByIdAsync(int id, CancellationToken cancellationToken = default);

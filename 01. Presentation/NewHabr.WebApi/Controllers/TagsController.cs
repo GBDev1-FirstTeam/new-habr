@@ -43,37 +43,40 @@ public class TagsController : ControllerBase
         }
         catch (TagAlreadyExistsException ex)
         {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nrequest: {@request}:"), request);
-            return BadRequest();
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
+            return BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nrequest: {@request}:"), request);
+            _logger.LogError(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
-    [HttpPut]
-    public async Task<ActionResult> Update([FromBody] TagDto tagToUpdate, CancellationToken cancellationToken)
+    [HttpPut("{id}")]
+    public async Task<ActionResult> Update(
+        [FromRoute, Range(1, int.MaxValue)] int id,
+        [FromBody] UpdateTagRequest tagToUpdate,
+        CancellationToken cancellationToken)
     {
         try
         {
-            await _tagService.UpdateAsync(tagToUpdate, cancellationToken);
+            await _tagService.UpdateAsync(id, tagToUpdate, cancellationToken);
             return Ok();
         }
         catch (TagNotFoundException ex)
         {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\ntagToUpdate: {@tagToUpdate}:"), tagToUpdate);
-            return NotFound();
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\ntagToUpdate: {@tagToUpdate}"), tagToUpdate);
+            return NotFound(ex.Message);
         }
         catch (TagAlreadyExistsException ex)
         {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\ntagToUpdate: {@tagToUpdate}:"), tagToUpdate);
-            return BadRequest();
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\ntagToUpdate: {@tagToUpdate}"), tagToUpdate);
+            return BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, string.Concat(ex.Message, "\ntagToUpdate: {@tagToUpdate}:"), tagToUpdate);
+            _logger.LogError(ex, string.Concat(ex.Message, "\ntagToUpdate: {@tagToUpdate}"), tagToUpdate);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
@@ -88,12 +91,12 @@ public class TagsController : ControllerBase
         }
         catch (TagNotFoundException ex)
         {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
-            return NotFound();
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"), id);
+            return NotFound(ex.Message);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
+            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}"), id);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }

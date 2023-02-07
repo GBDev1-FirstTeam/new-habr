@@ -17,6 +17,32 @@ public class ArticleService : IArticleService
         _mapper = mapper;
     }
 
+    public async Task<IReadOnlyCollection<CommentWithLikedMark>> GetCommentsWithLikedMarkAsync(
+        Guid id,
+        Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        var article = await _repositoryManager.ArticleRepository.GetByIdIncludeCommentLikesAsync(id, cancellationToken: cancellationToken);
+
+        if (article is null)
+        {
+            throw new ArticleNotFoundException();
+        }
+
+        var articleComments = article.Comments.OrderByDescending(c => c.CreatedAt);
+        var comments = new List<CommentWithLikedMark>(article.Comments.Count);
+        foreach (var comment in articleComments)
+        {
+            comments.Add(new CommentWithLikedMark
+            {
+                UserId = userId,
+                Comment = _mapper.Map<CommentDto>(comment),
+                IsLiked = comment.Likes.Any(l => l.UserId == userId),
+            });
+        }
+
+        return comments;
+    }
     public async Task<ArticleDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var article = await _repositoryManager.ArticleRepository.GetByIdIncludeAsync(id, cancellationToken: cancellationToken);
@@ -61,9 +87,9 @@ public class ArticleService : IArticleService
         _repositoryManager.ArticleRepository.Create(article);
         await _repositoryManager.SaveAsync(cancellationToken);
     }
-    public async Task UpdateAsync(UpdateArticleRequest articleToUpdate, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(Guid id, UpdateArticleRequest articleToUpdate, CancellationToken cancellationToken = default)
     {
-        var article = await _repositoryManager.ArticleRepository.GetByIdIncludeAsync(articleToUpdate.Id, trackChanges: true, cancellationToken);
+        var article = await _repositoryManager.ArticleRepository.GetByIdIncludeAsync(id, trackChanges: true, cancellationToken);
 
         if (article is null)
         {
@@ -74,6 +100,7 @@ public class ArticleService : IArticleService
         UpdateTags(article, articleToUpdate.Tags);
 
         _mapper.Map(articleToUpdate, article);
+        article.Id = id;
         article.ModifiedAt = DateTimeOffset.UtcNow;
         await _repositoryManager.SaveAsync(cancellationToken);
     }
@@ -94,7 +121,7 @@ public class ArticleService : IArticleService
     }
     public async Task SetPublicationStatusAsync(Guid id, bool publicationStatus, CancellationToken cancellationToken = default)
     {
-        var article = await _repositoryManager.ArticleRepository.GetByIdAsync(id, cancellationToken: cancellationToken);
+        var article = await _repositoryManager.ArticleRepository.GetByIdAsync(id, trackChanges: true, cancellationToken);
 
         if (article is null)
         {
@@ -105,17 +132,15 @@ public class ArticleService : IArticleService
             return;
         }
 
-        if(article.ApproveState != ApproveState.Approved)
+        if (article.ApproveState != ApproveState.Approved && !article.Published)
         {
             throw new ArticleIsNotApproveException();
         }
 
-        var publishedDateTime = DateTimeOffset.UtcNow;
-
         if (!article.Published)
         {
             article.Published = true;
-            article.PublishedAt = publishedDateTime;
+            article.PublishedAt = DateTimeOffset.UtcNow;
         }
         else
         {
@@ -123,7 +148,6 @@ public class ArticleService : IArticleService
             article.PublishedAt = null;
         }
 
-        _repositoryManager.ArticleRepository.Update(article);
         await _repositoryManager.SaveAsync(cancellationToken);
     }
     public async Task SetApproveStateAsync(Guid id, ApproveState state, CancellationToken cancellationToken = default)
@@ -147,7 +171,7 @@ public class ArticleService : IArticleService
     /// If one of them doesn't contains in repository, throw exception.
     /// </remarks>
     /// <exception cref="CategoryNotFoundException"></exception>
-    private void UpdateCategores(Article article, CreateCategoryRequest[] categoresDto)
+    private void UpdateCategores(Article article, UpdateCategoryRequest[] categoresDto)
     {
         if (article.Categories.Count != 0)
         {
@@ -172,7 +196,7 @@ public class ArticleService : IArticleService
     /// </remarks>
     private void UpdateTags(Article article, CreateTagRequest[] tagsDto)
     {
-        if(article.Tags.Count != 0)
+        if (article.Tags.Count != 0)
         {
             article.Tags.Clear();
         }

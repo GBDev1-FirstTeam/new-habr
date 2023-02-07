@@ -12,7 +12,7 @@ public interface ITagService
 
     /// <exception cref="TagNotFoundException"></exception>
     /// <exception cref="TagAlreadyExistsException"></exception>
-    Task UpdateAsync(TagDto tagToUpdate, CancellationToken cancellationToken = default);
+    Task UpdateAsync(int id, UpdateTagRequest tagToUpdate, CancellationToken cancellationToken = default);
 
     /// <exception cref="TagNotFoundException"></exception>
     Task DeleteByIdAsync(int id, CancellationToken cancellationToken = default);
