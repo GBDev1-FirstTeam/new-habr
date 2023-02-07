@@ -7,6 +7,7 @@ import { Commentary } from '../models/Commentary';
 import { User } from '../models/User';
 import { ConfigurationService } from './ConfigurationService';
 import { AuthorizationRequest, Authorization } from '../models/Authorization';
+import { LikeRequest } from '../models/Like';
 
 @Injectable({
   providedIn: 'root',
@@ -29,42 +30,47 @@ export class HttpRequestService {
 
 
   getPublications(): Observable<Publication[]> {
-    const url = this.backend.baseURL + this.backend.children.publications;
+    const url = this.backend.baseURL + `/publications`;
     return this.get<Array<Publication>>(url);
   }
   
   getAccountPublications(id: string): Observable<Publication[]> {
-    const url = this.backend.baseURL + this.backend.children.userPublications.format(id);
+    const url = this.backend.baseURL + `/users/${id}/publications`;
     return this.get<Array<Publication>>(url);
   }
   
   getPostById(id: string): Observable<Publication> {
-    const url = this.backend.baseURL + this.backend.children.publication.format(id);
+    const url = this.backend.baseURL + `/publications/${id}`;
     return this.get<Publication>(url);
   }
   
   getUserById(id: string): Observable<User> {
-    const url = this.backend.baseURL + this.backend.children.user.format(id);
+    const url = this.backend.baseURL + `/users/${id}`;
     return this.get<User>(url);
   }
   
   getCommentsByPostId(id: string): Observable<Array<Commentary>> {
-    const url = this.backend.baseURL + this.backend.children.comments.format(id);
+    const url = this.backend.baseURL + `/comments/${id}`;
     return this.get<Array<Commentary>>(url);
   }
 
   postAuthentication(body: AuthorizationRequest) {
-    const url = this.backend.baseURL + this.backend.children.login;
+    const url = this.backend.baseURL + `/login`;
     return this.post<AuthorizationRequest, Authorization>(url, body);
   }
   
   postComment(body: Commentary) {
-    const url = this.backend.baseURL + this.backend.children.addComment;
+    const url = this.backend.baseURL + `/comments/add`;
     return this.post<Commentary, any>(url, body);
   }
   
   postPublication(body: Publication) {
-    const url = this.backend.baseURL + this.backend.children.addPublication;
+    const url = this.backend.baseURL + `/publications/add`;
     return this.post<Publication, any>(url, body);
+  }
+  
+  postLike(body: LikeRequest, path: string) {
+    let url = this.backend.baseURL + `/${path}/like`;
+    return this.post<LikeRequest, any>(url, body);
   }
 }

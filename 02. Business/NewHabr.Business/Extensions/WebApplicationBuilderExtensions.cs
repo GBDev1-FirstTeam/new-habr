@@ -12,6 +12,7 @@ public static class WebApplicationBuilderExtensions
             .MinimumLevel.Debug()
             .MinimumLevel.Override("System", LogEventLevel.Warning)
             .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
             .WriteTo.Console()
             .WriteTo.File($"{path}/{name}.log",
                             rollingInterval: RollingInterval.Day,

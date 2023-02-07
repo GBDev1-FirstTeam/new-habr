@@ -2,11 +2,9 @@
 
 namespace NewHabr.Domain.Exceptions;
 
-public abstract class EntityNotFoundException<TEntity, TId> : Exception
-    where TEntity : IEntity<TId>
-    where TId : struct
+public abstract class EntityNotFoundException : Exception
 {
-    public EntityNotFoundException() : base($"Entity type of {nameof(TEntity)} not found.")
+    protected EntityNotFoundException(Type type) : base($"Entity type of {type.Name} not found.")
     {
     }
 }

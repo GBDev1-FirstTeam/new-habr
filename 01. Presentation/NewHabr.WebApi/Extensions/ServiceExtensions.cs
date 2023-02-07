@@ -2,12 +2,33 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using NewHabr.DAL.EF;
+using Microsoft.AspNetCore.Identity;
+using NewHabr.Domain.Models;
+using NewHabr.Domain.ConfigurationModels;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using NewHabr.Domain;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json;
 
 namespace NewHabr.WebApi.Extensions;
 
 public static class ServiceExtensions
 {
+    public static void ConfigureControllers(this IServiceCollection services)
+    {
+        services.AddControllers()
+            .AddNewtonsoftJson(options =>
+            {
+                options.UseMemberCasing();
+                options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                options.SerializerSettings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
+                options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Unspecified;
+            });
+    }
+
     public static void ConfigureDbContext(this IServiceCollection services, IConfiguration configuration)
     {
         var dbProvider = configuration.GetValue<string>(Constants.SQLProvider.ConfigurationName, Constants.SQLProvider.PostgreSQL);
@@ -24,6 +45,46 @@ public static class ServiceExtensions
                     options.UseSqlServer(connectionString, options => options.MigrationsAssembly("NewHabr.MSSQL")));
                 break;
         }
+    }
+
+    public static void ConfigureIdentity(this IServiceCollection services)
+    {
+        services.AddIdentity<User, UserRole>(setupAction =>
+        {
+            setupAction.Password.RequiredLength = 5;
+            setupAction.Password.RequireDigit = false;
+            setupAction.Password.RequireLowercase = false;
+            setupAction.Password.RequireUppercase = false;
+            setupAction.Password.RequireNonAlphanumeric = false;
+        })
+        .AddEntityFrameworkStores<ApplicationContext>()
+        .AddDefaultTokenProviders();
+    }
+
+    public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
+    {
+        var jwtConfiguration = new JwtConfiguration();
+        configuration.Bind(JwtConfiguration.Section, jwtConfiguration);
+
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidateAudience = false,
+                    ClockSkew = TimeSpan.Zero,
+
+                    ValidIssuer = jwtConfiguration.ValidIssuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration.Secret))
+                };
+            });
     }
 
     public static void ConfigureAutoMapper(this IServiceCollection services, params Assembly[] assembliesToScan)
