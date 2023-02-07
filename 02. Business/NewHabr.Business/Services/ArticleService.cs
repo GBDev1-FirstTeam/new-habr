@@ -37,7 +37,7 @@ public class ArticleService : IArticleService
             {
                 UserId = userId,
                 Comment = _mapper.Map<CommentDto>(comment),
-                IsLiked = comment.Likes.Where(l => l.UserId == userId).FirstOrDefault() is not null,
+                IsLiked = comment.Likes.Any(l => l.UserId == userId),
             });
         }
 
