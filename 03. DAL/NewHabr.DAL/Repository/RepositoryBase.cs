@@ -6,7 +6,7 @@ using NewHabr.Domain.Models;
 
 namespace NewHabr.DAL.Repository;
 
-public abstract class RepositoryBase<TEntity, TKey> : IRepository<TEntity>
+public abstract class RepositoryBase<TEntity, TKey> : IRepository<TEntity, TKey>
     where TEntity : class, IEntity<TKey>
     where TKey : struct
 {
@@ -57,7 +57,7 @@ public abstract class RepositoryBase<TEntity, TKey> : IRepository<TEntity>
 
     public IQueryable<TEntity> GetDeleted(bool trackChanges = false)
     {
-        return await FindAll(trackChanges).ToListAsync(cancellationToken);
+        return FindByCondition(a => a.Deleted, trackChanges);
     }
 
     public IQueryable<TEntity> GetAvailable(bool trackChanges = false)

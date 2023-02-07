@@ -1,9 +1,7 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using NewHabr.Business.Services;
 using NewHabr.Business.Configurations;
 using NewHabr.Business.AutoMapperProfiles;
-using NewHabr.Business.Services;
-using NewHabr.Business.Configurations;
 using NewHabr.DAL.EF;
 using NewHabr.DAL.Repository;
 using NewHabr.Domain.ConfigurationModels;
@@ -11,9 +9,6 @@ using NewHabr.Domain.Contracts;
 using NewHabr.WebApi.Extensions;
 using Serilog;
 using NewHabr.Domain.Contracts.Services;
-using NewHabr.Business.Services;
-using NewHabr.DAL.Repository;
-using NewHabr.Domain.Contracts;
 
 namespace NewHabr.WebApi;
 
@@ -47,6 +42,11 @@ public class Program
         #region Register services in DI
 
         services.AddScoped<IAuthenticationService, AuthenticationService>();
+        services.AddScoped<IRepositoryManager, RepositoryManager>();
+        services.AddScoped<IArticleService, ArticleService>();
+        services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<ITagService, TagService>();
+        services.AddScoped<ICommentService, CommentService>();
 
         #endregion
 
@@ -60,14 +60,6 @@ public class Program
         services.AddSwaggerGen();
 
         services.ConfigureAutoMapper(typeof(ArticleProfile).Assembly);
-
-        services.AddScoped<IRepositoryManager, RepositoryManager>();
-        services.AddScoped<IArticleService, ArticleService>();
-        services.AddScoped<ICategoryService, CategoryService>();
-        services.AddScoped<ITagService, TagService>();
-
-        services.AddScoped<IRepositoryManager, RepositoryManager>();
-        services.AddScoped<ICommentService, CommentService>();
 
         var app = builder.Build();
         UpdateDatabase(app);

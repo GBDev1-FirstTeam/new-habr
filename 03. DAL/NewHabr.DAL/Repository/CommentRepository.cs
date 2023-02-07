@@ -11,12 +11,27 @@ public class CommentRepository : RepositoryBase<Comment, Guid>, ICommentReposito
     {
     }
 
+    public async Task<IReadOnlyCollection<Comment>> GetAllAsync(
+        bool trackChanges = false,
+        CancellationToken cancellationToken = default)
+    {
+        return await GetAll(trackChanges).ToListAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyCollection<Comment>> GetByArticleIdAsync(
         Guid articleId,
         bool trackChanges = false,
         CancellationToken cancellationToken = default)
     {
         return await FindByCondition(comment => comment.ArticleId == articleId, trackChanges).ToListAsync(cancellationToken);
+    }
+
+    public async Task<Comment?> GetByIdAsync(
+        Guid id,
+        bool trackChanges = false,
+        CancellationToken cancellationToken = default)
+    {
+        return await GetById(id, trackChanges).FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyCollection<Comment>> GetByUserIdAsync(

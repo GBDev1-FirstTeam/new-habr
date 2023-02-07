@@ -15,4 +15,5 @@ public class CommentDto
     [NotNull]
     public string Text { get; set; }
     public long CreatedAt { get; set; }
+    public long ModifiedAt { get; set; }
 }

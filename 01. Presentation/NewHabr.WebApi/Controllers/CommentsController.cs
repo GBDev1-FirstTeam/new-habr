@@ -25,7 +25,7 @@ public class CommentsController : ControllerBase
     {
         try
         {
-            return Ok(await _commentService.GetAllAsync(false, cancellationToken));
+            return Ok(await _commentService.GetAllAsync(cancellationToken));
         }
         catch (Exception ex)
         {
@@ -39,7 +39,7 @@ public class CommentsController : ControllerBase
     {
         try
         {
-            return Ok(await _commentService.GetByUserIdAsync(userId, false, cancellationToken));
+            return Ok(await _commentService.GetByUserIdAsync(userId, cancellationToken));
         }
         catch (CommentNotFoundException ex)
         {
@@ -58,7 +58,7 @@ public class CommentsController : ControllerBase
     {
         try
         {
-            return Ok(await _commentService.GetByArticleIdAsync(articleId, false, cancellationToken));
+            return Ok(await _commentService.GetByArticleIdAsync(articleId, cancellationToken));
         }
         catch (Exception ex)
         {
@@ -77,7 +77,7 @@ public class CommentsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nsuer id: {userId}:"), newComment.UserId);
+            _logger.LogError(ex, string.Concat(ex.Message, "\nuser id: {id}:"), newComment.UserId);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
@@ -102,22 +102,22 @@ public class CommentsController : ControllerBase
         }
     }
 
-    [HttpDelete]
-    public async Task<ActionResult> DeleteAsync([FromBody] CommentDto commentDto, CancellationToken cancellationToken)
+    [HttpDelete("id")]
+    public async Task<ActionResult> DeleteAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         try
         {
-            await _commentService.DeleteAsync(commentDto, cancellationToken);
+            await _commentService.DeleteAsync(id, cancellationToken);
             return Ok();
         }
         catch (CommentNotFoundException ex)
         {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), commentDto.Id);
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return NotFound();
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}:"), commentDto.Id);
+            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }

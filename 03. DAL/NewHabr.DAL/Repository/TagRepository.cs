@@ -5,7 +5,7 @@ using NewHabr.Domain.Models;
 
 namespace NewHabr.DAL.Repository;
 
-public class TagRepository : ReporitoryBase<Tag, int>, ITagRepository
+public class TagRepository : RepositoryBase<Tag, int>, ITagRepository
 {
     public TagRepository(ApplicationContext context) : base(context)
     {

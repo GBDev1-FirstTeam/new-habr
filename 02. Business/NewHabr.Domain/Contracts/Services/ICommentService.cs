@@ -17,14 +17,14 @@ public interface ICommentService
     /// <param name="data"></param>
     /// <returns></returns>
     /// <exception cref="CommentNotFoundException"></exception>
-    Task UpdateAsync(CommentDto data, CancellationToken cancellationToken = default);
+    Task UpdateAsync(CommentDto commentDto, CancellationToken cancellationToken = default);
     /// <summary>
     /// Deletes an existing in database Comment class 
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
     /// <exception cref="CommentNotFoundException"></exception>
-    Task DeleteAsync(CommentDto data, CancellationToken cancellationToken = default);
+    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
     /// <summary>
     /// Returns a list of all existing in database Comments classes 
     /// </summary>
