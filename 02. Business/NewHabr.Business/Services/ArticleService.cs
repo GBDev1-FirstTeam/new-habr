@@ -29,8 +29,9 @@ public class ArticleService : IArticleService
             throw new ArticleNotFoundException();
         }
 
+        var articleComments = article.Comments.OrderByDescending(c => c.CreatedAt);
         var comments = new List<CommentWithLikedMark>(article.Comments.Count);
-        foreach (var comment in article.Comments)
+        foreach (var comment in articleComments)
         {
             comments.Add(new CommentWithLikedMark
             {
