@@ -30,23 +30,23 @@ public class CommentService : ICommentService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<CommentDto>> GetAllAsync(bool trackChanges = false, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<CommentDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var comments = await _repositoryManager.CommentRepository.GetAllAsync(trackChanges, cancellationToken);
+        var comments = await _repositoryManager.CommentRepository.GetAllAsync(cancellationToken: cancellationToken);
         return _mapper.Map<List<CommentDto>>(comments);
     }
 
-    public async Task<IReadOnlyCollection<CommentDto>> GetByArticleIdAsync(Guid articleId, bool trackChanges = false, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<CommentDto>> GetByArticleIdAsync(Guid articleId, CancellationToken cancellationToken = default)
     {
-        var comments = await _repositoryManager.CommentRepository.GetByArticleIdAsync(articleId, trackChanges, cancellationToken);
+        var comments = await _repositoryManager.CommentRepository.GetByArticleIdAsync(articleId, cancellationToken: cancellationToken);
         return _mapper.Map<List<CommentDto>>(comments);
     }    
 
-    public async Task<IReadOnlyCollection<CommentDto>> GetByUserIdAsync(Guid userId, bool trackChanges = false, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<CommentDto>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        var comments = await _repositoryManager.CommentRepository.GetByUserIdAsync(userId, trackChanges, cancellationToken);
+        var comments = await _repositoryManager.CommentRepository.GetByUserIdAsync(userId, cancellationToken: cancellationToken);
         return _mapper.Map<List<CommentDto>>(comments);
-    }    
+    }
 
     public async Task UpdateAsync(CommentDto data, CancellationToken cancellationToken = default)
     {

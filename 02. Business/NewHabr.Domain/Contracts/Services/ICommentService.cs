@@ -30,19 +30,19 @@ public interface ICommentService
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IReadOnlyCollection<CommentDto>> GetAllAsync(bool trackChanges = false, CancellationToken cancellationToken = default);
+    Task<IReadOnlyCollection<CommentDto>> GetAllAsync(CancellationToken cancellationToken = default);
     /// <summary>
     /// Returns a list of existing in database Comments classes matched to User.Id
     /// </summary>
     /// <param name="userId"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IReadOnlyCollection<CommentDto>> GetByUserIdAsync(Guid userId, bool trackChanges = false, CancellationToken cancellationToken = default);
+    Task<IReadOnlyCollection<CommentDto>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
     /// <summary>
     /// Returns a list of existing in database Comments classes matched to Article.Id
     /// </summary>
     /// <param name="articleId"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IReadOnlyCollection<CommentDto>> GetByArticleIdAsync(Guid articleId, bool trackChanges = false, CancellationToken cancellationToken = default);
+    Task<IReadOnlyCollection<CommentDto>> GetByArticleIdAsync(Guid articleId, CancellationToken cancellationToken = default);
 }

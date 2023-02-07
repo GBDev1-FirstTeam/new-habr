@@ -6,7 +6,7 @@ using NewHabr.Domain.Models;
 
 namespace NewHabr.DAL.Repository;
 
-public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity>
+public abstract class RepositoryBase<TEntity, TKey> : IRepository<TEntity>
     where TEntity : class, IEntity<TKey>
     where TKey : struct
 {
@@ -14,7 +14,7 @@ public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity>
     private readonly ApplicationContext _context;
     protected DbSet<TEntity> Set;
 
-    public ReporitoryBase(ApplicationContext context)
+    public RepositoryBase(ApplicationContext context)
     {
         _context = context;
         Set = _context.Set<TEntity>();
@@ -43,11 +43,6 @@ public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity>
     public async Task<ICollection<TEntity>> GetAllAsync(bool trackChanges = false, CancellationToken cancellationToken = default)
     {
         return await FindAll(trackChanges).ToListAsync(cancellationToken);
-    }
-
-    public async Task<ICollection<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
-    {
-        return await FindAll().ToListAsync(cancellationToken);
     }
 
     public void Update(TEntity data)

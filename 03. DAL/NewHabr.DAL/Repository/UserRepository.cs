@@ -4,7 +4,7 @@ using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Models;
 
 namespace NewHabr.DAL.Repository.Impl;
-public class UserRepository : ReporitoryBase<User, Guid>, IUserRepository
+public class UserRepository : RepositoryBase<User, Guid>, IUserRepository
 {
     public UserRepository(ApplicationContext context) : base(context)
     {

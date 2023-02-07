@@ -6,6 +6,10 @@ using NewHabr.WebApi.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Serilog;
+using NewHabr.Domain.Contracts.Services;
+using NewHabr.Business.Services;
+using NewHabr.DAL.Repository;
+using NewHabr.Domain.Contracts;
 
 namespace NewHabr.WebApi;
 
@@ -35,7 +39,10 @@ public class Program
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
 
-        services.ConfigureAutoMapper(typeof(ArticleProfile).Assembly, typeof(CommentProfile).Assembly);
+        services.ConfigureAutoMapper(typeof(ArticleProfile).Assembly);
+
+        services.AddScoped<IRepositoryManager, RepositoryManager>();
+        services.AddScoped<ICommentService, CommentService>();
 
         var app = builder.Build();
         UpdateDatabase(app);
