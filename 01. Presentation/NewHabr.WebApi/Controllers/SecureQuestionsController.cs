@@ -8,6 +8,7 @@ using NewHabr.Domain.Exceptions;
 namespace NewHabr.WebApi.Controllers;
 
 [ApiController, Route("api/[controller]")]
+[Authorize(Roles = "Administrator")]
 public class SecureQuestionsController : ControllerBase
 {
     private readonly ISecureQuestionsService _secureQuestionsService;
@@ -20,6 +21,7 @@ public class SecureQuestionsController : ControllerBase
 
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetQuestions(CancellationToken cancellationToken)
     {
         var questions = await _secureQuestionsService.GetAllAsync(false, cancellationToken);
@@ -27,7 +29,6 @@ public class SecureQuestionsController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> CreateQuestion(SecureQuestionCreateRequest request, CancellationToken cancellationToken)
     {
         if (request is null)
