@@ -26,7 +26,7 @@ public class CategoriesController : ControllerBase
         {
             return Ok(await _categoryService.GetAllAsync(cancellationToken));
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             _logger.LogError(ex, ex.Message);
             return StatusCode(StatusCodes.Status500InternalServerError);
@@ -44,37 +44,40 @@ public class CategoriesController : ControllerBase
         }
         catch (CategoryAlreadyExistsException ex)
         {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nrequest: {@request}:"), request);
-            return BadRequest();
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
+            return BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nrequest: {@request}:"), request);
+            _logger.LogError(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
-    [HttpPut]
-    public async Task<ActionResult> Update([FromBody] CategoryDto categoryToUpdate, CancellationToken cancellationToken)
+    [HttpPut("{id}")]
+    public async Task<ActionResult> Update(
+        [FromRoute, Range(1, int.MaxValue)] int id,
+        [FromBody] UpdateCategoryRequest categoryToUpdate,
+        CancellationToken cancellationToken)
     {
         try
         {
-            await _categoryService.UpdateAsync(categoryToUpdate, cancellationToken);
+            await _categoryService.UpdateAsync(id, categoryToUpdate, cancellationToken);
             return Ok();
         }
         catch (CategoryNotFoundException ex)
         {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\ncategoryToUpdate: {@categoryToUpdate}:"), categoryToUpdate);
-            return NotFound();
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\ncategoryToUpdate: {@categoryToUpdate}"), categoryToUpdate);
+            return NotFound(ex.Message);
         }
         catch (CategoryAlreadyExistsException ex)
         {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\ncategoryToUpdate: {@categoryToUpdate}:"), categoryToUpdate);
-            return BadRequest();
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\ncategoryToUpdate: {@categoryToUpdate}"), categoryToUpdate);
+            return BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, string.Concat(ex.Message, "\ncategoryToUpdate: {@categoryToUpdate}:"), categoryToUpdate);
+            _logger.LogError(ex, string.Concat(ex.Message, "\ncategoryToUpdate: {@categoryToUpdate}"), categoryToUpdate);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
@@ -89,12 +92,12 @@ public class CategoriesController : ControllerBase
         }
         catch (CategoryNotFoundException ex)
         {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
-            return NotFound();
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"), id);
+            return NotFound(ex.Message);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
+            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}"), id);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }

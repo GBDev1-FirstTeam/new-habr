@@ -19,6 +19,7 @@ public class ArticleRepository : ReporitoryBase<Article, Guid>, IArticleReposito
         return await FindByCondition(a => a.Title.ToLower() == title.ToLower() && !a.Deleted, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
+            .Include(a => a.Comments)
             .ToListAsync(cancellationToken);
     }
 
@@ -30,6 +31,7 @@ public class ArticleRepository : ReporitoryBase<Article, Guid>, IArticleReposito
         return await FindByCondition(a => a.UserId == userId && !a.Deleted, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
+            .Include(a => a.Comments)
             .ToListAsync(cancellationToken);
     }
 
@@ -40,6 +42,7 @@ public class ArticleRepository : ReporitoryBase<Article, Guid>, IArticleReposito
         return await FindByCondition(a => !a.Published && !a.Deleted, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
+            .Include(a => a.Comments)
             .ToListAsync(cancellationToken);
     }
 
@@ -50,6 +53,7 @@ public class ArticleRepository : ReporitoryBase<Article, Guid>, IArticleReposito
         return await GetDeleted(trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
+            .Include(a => a.Comments)
             .ToListAsync(cancellationToken);
     }
 
@@ -69,6 +73,19 @@ public class ArticleRepository : ReporitoryBase<Article, Guid>, IArticleReposito
         return await FindByCondition(a => a.Id == id && !a.Deleted, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
+            .Include(a => a.Comments)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<Article?> GetByIdIncludeCommentLikesAsync(
+        Guid id,
+        bool trackChanges = false,
+        CancellationToken cancellationToken = default)
+    {
+        return await FindByCondition(a => a.Id == id && !a.Deleted, trackChanges)
+            .Include(a => a.Categories)
+            .Include(a => a.Tags)
+            .Include(a => a.Comments).ThenInclude(c => c.Likes)
             .FirstOrDefaultAsync(cancellationToken);
     }
 }

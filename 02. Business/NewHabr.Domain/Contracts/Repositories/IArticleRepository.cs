@@ -31,4 +31,9 @@ public interface IArticleRepository : IRepository<Article, Guid>
         Guid id,
         bool trackChanges = false,
         CancellationToken cancellationToken = default);
+
+    Task<Article?> GetByIdIncludeCommentLikesAsync(
+        Guid id,
+        bool trackChanges = false,
+        CancellationToken cancellationToken = default);
 }
