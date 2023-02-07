@@ -2,7 +2,7 @@
 
 namespace NewHabr.Domain.Contracts;
 
-public interface ICommentRepository : IRepository<Comment>
+public interface ICommentRepository : IRepository<Comment, Guid>
 {
     Task<IReadOnlyCollection<Comment>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
     Task<IReadOnlyCollection<Comment>> GetByArticleIdAsync(Guid articleId, CancellationToken cancellationToken = default);

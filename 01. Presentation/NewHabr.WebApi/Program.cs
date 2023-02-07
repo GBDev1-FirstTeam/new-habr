@@ -1,8 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using NewHabr.Business.Services;
 using NewHabr.Business.Configurations;
 using NewHabr.Business.AutoMapperProfiles;
+using NewHabr.Business.Services;
+using NewHabr.Business.Configurations;
 using NewHabr.DAL.EF;
+using NewHabr.DAL.Repository;
 using NewHabr.Domain.ConfigurationModels;
 using NewHabr.Domain.Contracts;
 using NewHabr.WebApi.Extensions;
@@ -53,6 +56,11 @@ public class Program
         services.AddSwaggerGen();
 
         services.ConfigureAutoMapper(typeof(ArticleProfile).Assembly);
+
+        services.AddScoped<IRepositoryManager, RepositoryManager>();
+        services.AddScoped<IArticleService, ArticleService>();
+        services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<ITagService, TagService>();
 
         var app = builder.Build();
         UpdateDatabase(app);

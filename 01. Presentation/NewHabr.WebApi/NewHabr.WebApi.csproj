@@ -14,9 +14,6 @@
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.13" />
 	</ItemGroup>
 	<ItemGroup>
-		<Folder Include="Controllers\" />
-	</ItemGroup>
-	<ItemGroup>
 		<ProjectReference Include="..\..\03. DAL\NewHabr.MSSQL\NewHabr.MSSQL.csproj" />
 		<ProjectReference Include="..\..\03. DAL\NewHabr.PostgreSQL\NewHabr.PostgreSQL.csproj" />
 		<ProjectReference Include="..\..\02. Business\NewHabr.Business\NewHabr.Business.csproj">

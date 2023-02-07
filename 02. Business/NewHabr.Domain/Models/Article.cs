@@ -16,11 +16,11 @@ public class Article : BaseEntity<Guid>
 
     public User User { get; set; }
 
-    public ICollection<Category> Categories { get; set; }
+    public ICollection<Category> Categories { get; set; } = new HashSet<Category>();
 
     public ICollection<Comment> Comments { get; set; }
 
-    public ICollection<Tag> Tags { get; set; }
+    public ICollection<Tag> Tags { get; set; } = new HashSet<Tag>();
 
     public ICollection<LikedArticle> Likes { get; set; }
 
@@ -31,8 +31,6 @@ public class Article : BaseEntity<Guid>
     public bool Published { get; set; }
 
     public DateTimeOffset? PublishedAt { get; set; }
-
-    //public bool Deleted { get; set; }
 
     public DateTimeOffset? DeletedAt { get; set; }
 

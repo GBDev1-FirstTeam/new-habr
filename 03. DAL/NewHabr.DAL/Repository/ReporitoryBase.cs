@@ -6,11 +6,10 @@ using NewHabr.Domain.Models;
 
 namespace NewHabr.DAL.Repository;
 
-public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity>
+public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity, TKey>
     where TEntity : class, IEntity<TKey>
     where TKey : struct
 {
-
     private readonly ApplicationContext _context;
     protected DbSet<TEntity> Set;
 
@@ -19,15 +18,21 @@ public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity>
         _context = context;
         Set = _context.Set<TEntity>();
     }
+
     public void Create(TEntity data)
     {
         Set.Add(data);
     }
 
-    public void Delete(TEntity data)
+    public virtual void Delete(TEntity data)
     {
         data.Deleted = true;
         Update(data);
+    }
+
+    public void Update(TEntity data)
+    {
+        Set.Update(data);
     }
 
     public IQueryable<TEntity> FindAll(bool trackChanges = false)
@@ -40,13 +45,23 @@ public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity>
         return FindAll(trackChanges).Where(expression);
     }
 
-    public async Task<ICollection<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
+    public IQueryable<TEntity?> GetById(TKey id, bool trackChanges = false)
     {
-        return await FindAll().ToListAsync(cancellationToken);
+        return FindByCondition(e => e.Id.Equals(id) && !e.Deleted, trackChanges);
     }
 
-    public void Update(TEntity data)
+    public IQueryable<TEntity> GetAll(bool trackChanges = false)
     {
-        Set.Update(data);
+        return FindAll(trackChanges);
+    }
+
+    public IQueryable<TEntity> GetDeleted(bool trackChanges = false)
+    {
+        return FindByCondition(a => a.Deleted, trackChanges);
+    }
+
+    public IQueryable<TEntity> GetAvailable(bool trackChanges = false)
+    {
+        return FindByCondition(a => !a.Deleted, trackChanges);
     }
 }
