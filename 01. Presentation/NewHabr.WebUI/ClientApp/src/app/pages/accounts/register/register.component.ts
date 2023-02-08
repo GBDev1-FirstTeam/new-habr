@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { Authorization } from 'src/app/core/models/Authorization';
 import { AppStoreProvider } from 'src/app/core/store/store';
 
@@ -8,7 +9,9 @@ import { AppStoreProvider } from 'src/app/core/store/store';
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent implements OnInit, OnDestroy {
+
+  subscribtions: Subscription[] = [];
 
   login: string;
   name: string;
@@ -26,12 +29,18 @@ export class RegisterComponent implements OnInit {
   constructor(private store: AppStoreProvider, private router: Router) { }
   
   ngOnInit(): void {
-    this.store.getAuth().subscribe(auth => {
+    const authSubscribtion = this.store.getAuth().subscribe(auth => {
       if (auth) {
         this.auth = auth;
         this.router.navigate(['accounts', auth.User.Id]);
       }
     })
+
+    this.subscribtions.push(authSubscribtion);
+  }
+
+  ngOnDestroy(): void {
+    this.subscribtions.forEach(element => element.unsubscribe());
   }
 
   register() {

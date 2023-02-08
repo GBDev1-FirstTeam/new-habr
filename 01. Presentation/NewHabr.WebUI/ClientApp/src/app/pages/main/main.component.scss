@@ -1,3 +1,5 @@
+@import '/src/assets/scss/colors.scss';
+@import '/src/assets/scss/mixins.scss';
 
 .main-container {
     display: flex;
@@ -28,12 +30,16 @@
 
             height: min-content;
         }
+
+        .content-area {
+            min-height: calc(100vh - 116px);
+        }
     }
 }
 
 .emoji {
     font-size: 4em;
-    color: burlywood;
+    color: gray;
     text-align: center;
 }
 
@@ -70,9 +76,22 @@
         justify-content: center;
         align-items: center;
         height: 45px;
+        background-color: get-color(dark-blue);
         
         a {
-            color: black;
+            color: white;
         }
+    }
+}
+
+footer {
+    background-color: get-color(dark-blue);
+    color: white;
+    height: 70px;
+    width: 100%;
+    padding: 10px;
+
+    div {
+        text-align: center;
     }
 }

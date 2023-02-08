@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, Subscription } from 'rxjs';
 import { Authorization } from 'src/app/core/models/Authorization';
 import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
 import { AppStoreProvider } from 'src/app/core/store/store';
@@ -10,8 +10,9 @@ import { AppStoreProvider } from 'src/app/core/store/store';
   templateUrl: './recovery.component.html',
   styleUrls: ['./recovery.component.scss']
 })
-export class RecoveryComponent implements OnInit {
+export class RecoveryComponent implements OnInit, OnDestroy {
 
+  subscribtions: Subscription[] = [];
   step: number = 1;
 
   // step 1
@@ -30,12 +31,18 @@ export class RecoveryComponent implements OnInit {
   constructor(private store: AppStoreProvider, private router: Router, private http: HttpRequestService) { }
   
   ngOnInit(): void {
-    this.store.getAuth().subscribe(auth => {
+    const authSubscribtion = this.store.getAuth().subscribe(auth => {
       if (auth) {
         this.auth = auth;
         this.step = 3;
       }
     })
+
+    this.subscribtions.push(authSubscribtion);
+  }
+
+  ngOnDestroy(): void {
+    this.subscribtions.forEach(element => element.unsubscribe());
   }
 
   getQuestion() {
