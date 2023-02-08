@@ -2,15 +2,12 @@ using Microsoft.EntityFrameworkCore;
 using NewHabr.Business.Services;
 using NewHabr.Business.Configurations;
 using NewHabr.Business.AutoMapperProfiles;
-using NewHabr.Business.Services;
-using NewHabr.Business.Configurations;
 using NewHabr.DAL.EF;
 using NewHabr.DAL.Repository;
 using NewHabr.Domain.ConfigurationModels;
 using NewHabr.Domain.Contracts;
 using NewHabr.WebApi.Extensions;
 using Serilog;
-using NewHabr.DAL.Repository;
 using NewHabr.Domain.Contracts.Services;
 
 namespace NewHabr.WebApi;

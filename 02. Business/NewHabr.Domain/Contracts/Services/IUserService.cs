@@ -89,7 +89,5 @@ public interface IUserService
     /// <param name="userId">'like' author</param>
     /// <returns></returns>
     Task<ICollection<LikedUserDto>> GetUserLikedUsersAsync(Guid userId, CancellationToken cancellationToken);
-
-    Task<ICollection<User>>
 }
 

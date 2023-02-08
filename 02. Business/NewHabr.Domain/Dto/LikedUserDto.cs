@@ -2,8 +2,8 @@
 
 namespace NewHabr.Domain.Dto;
 
-public class UserAssignRolesResponse
+public class LikedUserDto
 {
     public Guid Id { get; set; }
-    public ICollection<string> Roles { get; set; }
+    public string UserName { get; set; }
 }
