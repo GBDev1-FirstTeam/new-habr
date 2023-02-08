@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Reflection.Metadata.Ecma335;
+using Microsoft.EntityFrameworkCore;
 using NewHabr.DAL.EF;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Models;
@@ -28,6 +29,14 @@ public class UserRepository : ReporitoryBase<User, Guid>, IUserRepository
     public async Task<IReadOnlyCollection<User>> GetDeletedUsersAsync(CancellationToken cancellationToken = default)
     {
         return await FindByCondition(u => u.Deleted).ToListAsync(cancellationToken);
+    }
+
+    public async Task<int> GetReceivedLikesCount(Guid userId, CancellationToken cancellationToken)
+    {
+        return await GetById(userId, false)
+            .Include(e => e.ReceivedLikes)
+            .Select(user => user.ReceivedLikes.Count)
+            .SingleAsync(cancellationToken);
     }
 
     public async Task<User?> GetUserByLoginAsync(string login, CancellationToken cancellationToken = default)

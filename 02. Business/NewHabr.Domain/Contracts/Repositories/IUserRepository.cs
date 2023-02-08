@@ -11,4 +11,5 @@ public interface IUserRepository : IRepository<User, Guid>
     Task<int> GetUsersCountWithSecureQuestionId(int id, CancellationToken cancellationToken);
     Task<User?> GetByIdAsync(Guid id, bool trackChanges, CancellationToken cancellationToken);
     Task<ICollection<UserLikedUser>> GetUserLikedUsersAsync(Guid userId, CancellationToken cancellationToken);
+    Task<int> GetReceivedLikesCount(Guid userId, CancellationToken cancellationToken);
 }

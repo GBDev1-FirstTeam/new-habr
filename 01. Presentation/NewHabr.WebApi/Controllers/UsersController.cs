@@ -29,9 +29,17 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public Task<IActionResult> GetUserDetails([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUserDetails([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var response = await _userService.GetUserInfoAsync(id, cancellationToken);
+            return Ok(response);
+        }
+        catch (UserNotFoundException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpGet("{id}/articles")]
@@ -122,10 +130,10 @@ public class UsersController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUserProfile([FromRoute] Guid id, [FromBody] UserForManipulationDto userDto, CancellationToken cancellationToken)
     {
-        UserProfileDto response;
         try
         {
-            response = await _userService.UpdateUserProfileAsync(id, userDto, cancellationToken);
+            await _userService.UpdateUserProfileAsync(id, userDto, cancellationToken);
+            return NoContent();
         }
         catch (UserNotFoundException ex)
         {
@@ -135,7 +143,6 @@ public class UsersController : ControllerBase
         {
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
-        return Ok(response);
     }
 
 

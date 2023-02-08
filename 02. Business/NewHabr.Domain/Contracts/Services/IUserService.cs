@@ -15,13 +15,21 @@ public interface IUserService
     Task<ICollection<UserArticleDto>> GetUserArticlesAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
+    /// Get User profile info
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<UserProfileDto> GetUserInfoAsync(Guid userId, CancellationToken cancellationToken);
+
+    /// <summary>
     /// Update user's profile
     /// </summary>
     /// <param name="id"></param>
     /// <param name="userDto"></param>
     /// <param name="cancellation"></param>
     /// <returns></returns>
-    Task<UserProfileDto> UpdateUserProfileAsync(Guid id, UserForManipulationDto userDto, CancellationToken cancellation);
+    Task UpdateUserProfileAsync(Guid id, UserForManipulationDto userDto, CancellationToken cancellation);
 
     /// <summary>
     /// Set list of user's roles
@@ -81,5 +89,7 @@ public interface IUserService
     /// <param name="userId">'like' author</param>
     /// <returns></returns>
     Task<ICollection<LikedUserDto>> GetUserLikedUsersAsync(Guid userId, CancellationToken cancellationToken);
+
+    Task<ICollection<User>>
 }
 

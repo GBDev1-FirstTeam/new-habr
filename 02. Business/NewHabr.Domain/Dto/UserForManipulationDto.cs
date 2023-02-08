@@ -36,5 +36,6 @@ public class UserProfileDto : UserForManipulationDto
     public long? BanExpiratonDate { get; set; }
 
     public long? BannedAt { get; set; }
-}
 
+    public int ReceivedLikes { get; set; }
+}

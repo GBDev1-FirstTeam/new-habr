@@ -30,6 +30,7 @@ public class UserService : IUserService
         _mapper = mapper;
     }
 
+
     public async Task SetUserRolesAsync(Guid id, UserAssignRolesRequest request, CancellationToken cancellationToken)
     {
         var user = await GetUserAndCheckIfItExistsAsync(id, false, cancellationToken);
@@ -59,14 +60,11 @@ public class UserService : IUserService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task<UserProfileDto> UpdateUserProfileAsync(Guid id, UserForManipulationDto userDataDto, CancellationToken cancellationToken)
+    public async Task UpdateUserProfileAsync(Guid id, UserForManipulationDto userDataDto, CancellationToken cancellationToken)
     {
         var user = await GetUserAndCheckIfItExistsAsync(id, true, cancellationToken);
         _mapper.Map(userDataDto, user);
         await _repositoryManager.SaveAsync();
-
-        var userDto = _mapper.Map<UserProfileDto>(user);
-        return userDto;
     }
 
     public async Task<ICollection<UserArticleDto>> GetUserArticlesAsync(Guid id, CancellationToken cancellationToken)
@@ -121,6 +119,15 @@ public class UserService : IUserService
 
         var usersDto = _mapper.Map<ICollection<LikedUserDto>>(users);
         return usersDto;
+    }
+
+    public async Task<UserProfileDto> GetUserInfoAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var user = await GetUserAndCheckIfItExistsAsync(userId, false, cancellationToken);
+        var userDto = _mapper.Map<UserProfileDto>(user);
+        userDto.ReceivedLikes = await _repositoryManager.UserRepository.GetReceivedLikesCount(userId, cancellationToken);
+
+        return userDto;
     }
 
 
