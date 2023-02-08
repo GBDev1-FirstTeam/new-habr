@@ -29,9 +29,9 @@ public class UserService : IUserService
         _mapper = mapper;
     }
 
-    public async Task SetUserRoles(Guid id, UserAssignRolesRequest request, CancellationToken cancellationToken)
+    public async Task SetUserRolesAsync(Guid id, UserAssignRolesRequest request, CancellationToken cancellationToken)
     {
-        var user = await GetUserAndCheckIfItExists(id, false, cancellationToken);
+        var user = await GetUserAndCheckIfItExistsAsync(id, false, cancellationToken);
 
         await CheckIfUserRolesExist(request.Roles);
 
@@ -42,15 +42,15 @@ public class UserService : IUserService
         result = await _userManager.RemoveFromRolesAsync(user, rolesAlreadyIn.Except(request.Roles));
     }
 
-    public async Task<UserAssignRolesResponse> GetUserRoles(Guid id, CancellationToken cancellationToken)
+    public async Task<UserAssignRolesResponse> GetUserRolesAsync(Guid id, CancellationToken cancellationToken)
     {
-        var user = await GetUserAndCheckIfItExists(id, false, cancellationToken);
+        var user = await GetUserAndCheckIfItExistsAsync(id, false, cancellationToken);
         return new UserAssignRolesResponse { Id = user.Id, Roles = await GetUserRoles(user) };
     }
 
-    public async Task SetBanOnUser(Guid id, UserBanDto userBanDto, CancellationToken cancellationToken)
+    public async Task SetBanOnUserAsync(Guid id, UserBanDto userBanDto, CancellationToken cancellationToken)
     {
-        var user = await GetUserAndCheckIfItExists(id, true, cancellationToken);
+        var user = await GetUserAndCheckIfItExistsAsync(id, true, cancellationToken);
         user.Banned = true;
         user.BannedAt = DateTimeOffset.UtcNow;
         user.BanReason = userBanDto.BanReason;
@@ -58,9 +58,9 @@ public class UserService : IUserService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task<UserProfileDto> UpdateUserProfile(Guid id, UserForManipulationDto userDataDto, CancellationToken cancellationToken)
+    public async Task<UserProfileDto> UpdateUserProfileAsync(Guid id, UserForManipulationDto userDataDto, CancellationToken cancellationToken)
     {
-        var user = await GetUserAndCheckIfItExists(id, true, cancellationToken);
+        var user = await GetUserAndCheckIfItExistsAsync(id, true, cancellationToken);
         _mapper.Map(userDataDto, user);
         await _repositoryManager.SaveAsync();
 
@@ -68,8 +68,16 @@ public class UserService : IUserService
         return userDto;
     }
 
+    public async Task<ICollection<UserArticleDto>> GetUserArticlesAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var user = await GetUserAndCheckIfItExistsAsync(id, false, cancellationToken);
+        var articles = await _repositoryManager.ArticleRepository.GetUserArticles(id, cancellationToken);
 
-    private async Task<User> GetUserAndCheckIfItExists(Guid id, bool trackChanges, CancellationToken cancellationToken)
+        return _mapper.Map<List<UserArticleDto>>(articles);
+    }
+
+
+    private async Task<User> GetUserAndCheckIfItExistsAsync(Guid id, bool trackChanges, CancellationToken cancellationToken)
     {
         var user = await _repositoryManager.UserRepository.GetByIdAsync(id, trackChanges, cancellationToken);
 

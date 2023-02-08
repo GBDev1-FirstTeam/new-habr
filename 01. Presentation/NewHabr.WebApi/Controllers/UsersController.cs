@@ -34,9 +34,17 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{id}/articles")]
-    public Task<IActionResult> GetUserArticles([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUserArticles([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var articles = await _userService.GetUserArticlesAsync(id, cancellationToken);
+            return Ok(articles);
+        }
+        catch (UserNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 
     [HttpGet("{id}/comments")]
@@ -76,7 +84,7 @@ public class UsersController : ControllerBase
         UserProfileDto response;
         try
         {
-            response = await _userService.UpdateUserProfile(id, userDto, cancellationToken);
+            response = await _userService.UpdateUserProfileAsync(id, userDto, cancellationToken);
         }
         catch (UserNotFoundException ex)
         {
@@ -96,7 +104,7 @@ public class UsersController : ControllerBase
     {
         try
         {
-            await _userService.SetUserRoles(id, request, cancellationToken);
+            await _userService.SetUserRolesAsync(id, request, cancellationToken);
         }
         catch (UserNotFoundException ex)
         {
@@ -120,7 +128,7 @@ public class UsersController : ControllerBase
         UserAssignRolesResponse response;
         try
         {
-            response = await _userService.GetUserRoles(id, cancellationToken);
+            response = await _userService.GetUserRolesAsync(id, cancellationToken);
         }
         catch (UserNotFoundException ex)
         {
@@ -139,7 +147,7 @@ public class UsersController : ControllerBase
     {
         try
         {
-            await _userService.SetBanOnUser(id, userBanDto, cancellationToken);
+            await _userService.SetBanOnUserAsync(id, userBanDto, cancellationToken);
         }
         catch (UserNotFoundException ex)
         {

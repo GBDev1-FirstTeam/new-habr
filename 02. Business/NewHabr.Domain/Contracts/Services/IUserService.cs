@@ -5,9 +5,11 @@ namespace NewHabr.Domain.Contracts.Services;
 
 public interface IUserService
 {
-    Task<UserProfileDto> UpdateUserProfile(Guid id, UserForManipulationDto userDto, CancellationToken cancellation);
-    Task SetUserRoles(Guid id, UserAssignRolesRequest request, CancellationToken cancellationToken);
-    Task<UserAssignRolesResponse> GetUserRoles(Guid id, CancellationToken cancellationToken);
-    Task SetBanOnUser(Guid id, UserBanDto userBanDto, CancellationToken cancellationToken);
+    Task<ICollection<UserArticleDto>> GetUserArticlesAsync(Guid id, CancellationToken cancellationToken);
+    Task<UserProfileDto> UpdateUserProfileAsync(Guid id, UserForManipulationDto userDto, CancellationToken cancellation);
+    Task SetUserRolesAsync(Guid id, UserAssignRolesRequest request, CancellationToken cancellationToken);
+    Task<UserAssignRolesResponse> GetUserRolesAsync(Guid id, CancellationToken cancellationToken);
+    Task SetBanOnUserAsync(Guid id, UserBanDto userBanDto, CancellationToken cancellationToken);
+    //Task<ICollection<UserNotificationDto>> GetUserNotificationsAsync(Guid id, CancellationToken cancellationToken);
 }
 

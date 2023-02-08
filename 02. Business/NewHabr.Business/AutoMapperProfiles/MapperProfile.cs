@@ -17,10 +17,20 @@ public class MapperProfile : Profile
             .ForMember(dest => dest.SecureQuestionId, opt => opt.MapFrom(src => src.SecurityQuestionId));
 
         CreateMap<UserForManipulationDto, User>();
+
+
         CreateMap<long?, DateTime?>()
             .ConstructUsing((src, dst) => src.HasValue ? DateTimeOffset.FromUnixTimeMilliseconds(src.Value).UtcDateTime : null);
         CreateMap<DateTime?, long?>()
             .ConstructUsing((src, dst) => src.HasValue ? new DateTimeOffset(src.Value).ToUnixTimeMilliseconds() : null);
+
+        CreateMap<long, DateTimeOffset>()
+            .ConstructUsing((src, dst) => DateTimeOffset.FromUnixTimeMilliseconds(src));
+        CreateMap<DateTimeOffset, long>()
+            .ConstructUsing((src, dst) => src.ToUnixTimeMilliseconds());
+
+
+        CreateMap<UserArticle, UserArticleDto>();
 
         CreateMap<User, UserProfileDto>();
 
@@ -30,5 +40,6 @@ public class MapperProfile : Profile
 
         CreateMap<SecureQuestion, SecureQuestionDto>().ReverseMap();
         CreateMap<SecureQuestionUpdateRequest, SecureQuestion>();
+
     }
 }

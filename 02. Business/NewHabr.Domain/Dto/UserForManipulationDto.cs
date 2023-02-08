@@ -1,6 +1,6 @@
 ﻿using System;
-using NewHabr.Domain.Models;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace NewHabr.Domain.Dto;
 
@@ -37,3 +37,4 @@ public class UserProfileDto : UserForManipulationDto
 
     public long? BannedAt { get; set; }
 }
+
