@@ -7,6 +7,4 @@ export interface Commentary extends Like {
     ArticleId: string;
     Text: string;
     CreatedAt: number;
-    LikesCount?: number;
-    IsLiked?: boolean;
 }

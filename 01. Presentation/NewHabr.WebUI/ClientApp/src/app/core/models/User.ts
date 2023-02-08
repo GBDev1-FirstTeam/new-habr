@@ -9,6 +9,4 @@ export interface User extends Like {
     Role: string;
     Age: number;
     Description: string;
-    LikesCount?: number;
-    IsLiked?: boolean;
 }
