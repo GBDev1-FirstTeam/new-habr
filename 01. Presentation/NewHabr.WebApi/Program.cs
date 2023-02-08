@@ -11,6 +11,7 @@ using NewHabr.Domain.Contracts;
 using NewHabr.WebApi.Extensions;
 using Serilog;
 using NewHabr.DAL.Repository;
+using NewHabr.Domain.Contracts.Services;
 
 namespace NewHabr.WebApi;
 
@@ -46,6 +47,7 @@ public class Program
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<ISecureQuestionsService, SecureQuestionsService>();
         services.AddScoped<IRepositoryManager, RepositoryManager>();
+        services.AddScoped<IUserService, UserService>();
 
         #endregion
 

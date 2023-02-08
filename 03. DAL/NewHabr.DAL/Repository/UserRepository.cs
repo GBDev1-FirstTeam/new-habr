@@ -15,6 +15,11 @@ public class UserRepository : ReporitoryBase<User, Guid>, IUserRepository
         return await FindByCondition(u => u.Banned && !u.Deleted).ToListAsync(cancellationToken);
     }
 
+    public async Task<User?> GetByIdAsync(Guid id, bool trackChanges, CancellationToken cancellationToken)
+    {
+        return await GetById(id, trackChanges).FirstOrDefaultAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyCollection<User>> GetByRoleIdAsync(int id, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();

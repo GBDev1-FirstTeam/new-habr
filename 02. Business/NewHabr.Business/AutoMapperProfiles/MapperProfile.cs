@@ -16,6 +16,14 @@ public class MapperProfile : Profile
             .ForMember(dest => dest.SecureAnswer, opt => opt.MapFrom(src => src.SecurityQuestionAnswer))
             .ForMember(dest => dest.SecureQuestionId, opt => opt.MapFrom(src => src.SecurityQuestionId));
 
+        CreateMap<UserForManipulationDto, User>();
+        CreateMap<long?, DateTime?>()
+            .ConstructUsing((src, dst) => src.HasValue ? DateTimeOffset.FromUnixTimeMilliseconds(src.Value).UtcDateTime : null);
+        CreateMap<DateTime?, long?>()
+            .ConstructUsing((src, dst) => src.HasValue ? new DateTimeOffset(src.Value).ToUnixTimeMilliseconds() : null);
+
+        CreateMap<User, UserProfileDto>();
+
         CreateMap<RegistrationRequest, AuthorizationRequest>();
 
         CreateMap<SecureQuestionCreateRequest, SecureQuestion>();

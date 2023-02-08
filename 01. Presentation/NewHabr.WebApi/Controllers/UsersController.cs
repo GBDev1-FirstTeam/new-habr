@@ -1,10 +1,14 @@
 ﻿using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NewHabr.Domain.Contracts.Services;
 using NewHabr.Domain.Dto;
+using NewHabr.Domain.Exceptions;
 
 namespace NewHabr.WebApi.Controllers;
 
+[ApiController]
+[Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -67,24 +71,85 @@ public class UsersController : ControllerBase
 
 
     [HttpPut("{id}")]
-    public Task<IActionResult> UpdateUserProfile([FromRoute] Guid id, [FromBody] UserForManipulationDto userDto, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateUserProfile([FromRoute] Guid id, [FromBody] UserForManipulationDto userDto, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        UserProfileDto response;
+        try
+        {
+            response = await _userService.UpdateUserProfile(id, userDto, cancellationToken);
+        }
+        catch (UserNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+        return Ok(response);
     }
 
 
-    [HttpPut("{id}/assignroles")]
+    [HttpPut("{id}/setroles")]
     [Authorize(Roles = "Administrator")]
-    public Task<IActionResult> AssignRoles([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> SetRoles([FromRoute] Guid id, [FromBody] UserAssignRolesRequest request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            await _userService.SetUserRoles(id, request, cancellationToken);
+        }
+        catch (UserNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+        return NoContent();
+    }
+
+    [HttpGet("{id}/getroles")]
+    [Authorize(Roles = "Administrator")]
+    public async Task<IActionResult> GetRoles([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        UserAssignRolesResponse response;
+        try
+        {
+            response = await _userService.GetUserRoles(id, cancellationToken);
+        }
+        catch (UserNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+        return Ok(response);
     }
 
     [HttpPut("{id}/ban")]
     [Authorize(Roles = "Moderator")]
-    public Task<IActionResult> SetBanOnUser([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> SetBanOnUser([FromRoute] Guid id, [FromBody] UserBanDto userBanDto, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            await _userService.SetBanOnUser(id, userBanDto, cancellationToken);
+        }
+        catch (UserNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+        return NoContent();
     }
 }
 
