@@ -48,9 +48,17 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{id}/comments")]
-    public Task<IActionResult> GetUserComments([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUserComments([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var comments = await _userService.GetUserCommentsAsync(id, cancellationToken);
+            return Ok(comments);
+        }
+        catch (UserNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 
     [HttpGet("{id}/notifications")]

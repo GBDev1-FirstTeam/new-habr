@@ -10,6 +10,7 @@ public interface IUserService
     Task SetUserRolesAsync(Guid id, UserAssignRolesRequest request, CancellationToken cancellationToken);
     Task<UserAssignRolesResponse> GetUserRolesAsync(Guid id, CancellationToken cancellationToken);
     Task SetBanOnUserAsync(Guid id, UserBanDto userBanDto, CancellationToken cancellationToken);
+    Task<ICollection<UserCommentDto>> GetUserCommentsAsync(Guid id, CancellationToken cancellationToken);
     Task<ICollection<UserNotificationDto>> GetUserNotificationsAsync(Guid id, bool unreadOnly, CancellationToken cancellationToken);
 }
 

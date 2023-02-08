@@ -43,5 +43,7 @@ public class MapperProfile : Profile
 
         CreateMap<UserNotification, UserNotificationDto>()
             .ReverseMap();
+
+        CreateMap<UserComment, UserCommentDto>();
     }
 }

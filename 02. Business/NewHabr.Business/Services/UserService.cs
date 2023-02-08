@@ -85,6 +85,16 @@ public class UserService : IUserService
         return notifDto;
     }
 
+    public async Task<ICollection<UserCommentDto>> GetUserCommentsAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var user = await GetUserAndCheckIfItExistsAsync(id, false, cancellationToken);
+
+        var comments = await _repositoryManager.CommentRepository.GetUserCommentAsync(id, cancellationToken);
+
+        var commentsDto = _mapper.Map<List<UserCommentDto>>(comments);
+        return commentsDto;
+    }
+
 
     private async Task<User> GetUserAndCheckIfItExistsAsync(Guid id, bool trackChanges, CancellationToken cancellationToken)
     {
