@@ -54,9 +54,17 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{id}/notifications")]
-    public Task<IActionResult> GetUserNotifications([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUserNotifications([FromRoute] Guid id, CancellationToken cancellationToken, [FromQuery] bool? unread = false)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var notification = await _userService.GetUserNotificationsAsync(id, unread ?? false, cancellationToken);
+            return Ok(notification);
+        }
+        catch (UserNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 
     [HttpGet("{id}/likedArticles")]

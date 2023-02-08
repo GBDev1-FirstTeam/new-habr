@@ -76,6 +76,15 @@ public class UserService : IUserService
         return _mapper.Map<List<UserArticleDto>>(articles);
     }
 
+    public async Task<ICollection<UserNotificationDto>> GetUserNotificationsAsync(Guid id, bool unreadOnly, CancellationToken cancellationToken)
+    {
+        var user = await GetUserAndCheckIfItExistsAsync(id, false, cancellationToken);
+        var notifications = await _repositoryManager.NotificationRepository.GetUserNotificationsAsync(id, unreadOnly, false, cancellationToken);
+
+        var notifDto = _mapper.Map<List<UserNotificationDto>>(notifications);
+        return notifDto;
+    }
+
 
     private async Task<User> GetUserAndCheckIfItExistsAsync(Guid id, bool trackChanges, CancellationToken cancellationToken)
     {
@@ -106,5 +115,6 @@ public class UserService : IUserService
     {
         return await _userManager.GetRolesAsync(user);
     }
+
 }
 

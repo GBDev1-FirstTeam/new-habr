@@ -1,6 +1,7 @@
 ﻿using NewHabr.DAL.EF;
 using NewHabr.DAL.Repository.Impl;
 using NewHabr.Domain.Contracts;
+using NewHabr.Domain.Contracts.Repositories;
 
 namespace NewHabr.DAL.Repository;
 public class RepositoryManager : IRepositoryManager
@@ -12,7 +13,7 @@ public class RepositoryManager : IRepositoryManager
     public ICategoryRepository CategoryRepository { get; }
     public ITagRepository TagRepository { get; }
     public ISecureQuestionsRepository SecureQuestionsRepository { get; }
-
+    public INotificationRepository NotificationRepository { get; }
 
     public RepositoryManager(ApplicationContext context)
     {
@@ -23,6 +24,7 @@ public class RepositoryManager : IRepositoryManager
         CategoryRepository = new CategoryRepository(_context);
         TagRepository = new TagRepository(_context);
         SecureQuestionsRepository = new SecureQuestionsRepository(_context);
+        NotificationRepository = new NotificationRepository(_context);
     }
 
     public async Task SaveAsync(CancellationToken cancellationToken = default)
