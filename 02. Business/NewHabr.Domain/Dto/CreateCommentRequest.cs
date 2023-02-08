@@ -10,5 +10,4 @@ public class CreateCommentRequest
     public Guid ArticleId { get; set; }
     [NotNull]
     public string Text { get; set; }
-    public long CreatedAt { get; set; }
 }

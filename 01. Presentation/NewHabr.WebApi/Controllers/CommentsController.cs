@@ -21,7 +21,7 @@ public class CommentsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<CommentDto>>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<ActionResult<List<CommentDto>>> GetAll(CancellationToken cancellationToken)
     {
         try
         {
@@ -33,42 +33,9 @@ public class CommentsController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
-        
-    [HttpGet("user/{userId}/comments")]
-    public async Task<ActionResult<List<CommentDto>>> GetByUserIdAsync([FromRoute] Guid userId, CancellationToken cancellationToken)
-    {
-        try
-        {
-            return Ok(await _commentService.GetByUserIdAsync(userId, cancellationToken));
-        }
-        catch (CommentNotFoundException ex)
-        {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nuser id: {userId}:"), userId);
-            return NotFound();
-        }
-        catch(Exception ex)
-        {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nuser id: {userId}"), userId);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
-
-    [HttpGet("article/{articleId}/comments")]
-    public async Task<ActionResult<List<CommentDto>>> GetByArticleIdAsync([FromRoute] Guid articleId, CancellationToken cancellationToken)
-    {
-        try
-        {
-            return Ok(await _commentService.GetByArticleIdAsync(articleId, cancellationToken));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, string.Concat(ex.Message, "\narticle id: {articleId}:"), articleId);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
 
     [HttpPost]
-    public async Task<ActionResult> CreateAsync([FromBody] CreateCommentRequest newComment, CancellationToken cancellationToken)
+    public async Task<ActionResult> Createc([FromBody] CreateCommentRequest newComment, CancellationToken cancellationToken)
     {
         try
         {
@@ -82,28 +49,30 @@ public class CommentsController : ControllerBase
         }
     }
 
-    [HttpPut]
-    public async Task<ActionResult> UpdateAsync([FromBody] CommentDto commentDto, CancellationToken cancellationToken)
+    [HttpPut("id")]
+    public async Task<ActionResult> Update([FromRoute] Guid id,
+        [FromBody] UpdateCommentRequest updateComment,
+        CancellationToken cancellationToken)
     {
         try
         {
-            await _commentService.UpdateAsync(commentDto, cancellationToken);
+            await _commentService.UpdateAsync(id, updateComment, cancellationToken);
             return Ok();
         }
         catch (CommentNotFoundException ex)
         {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), commentDto.Id);
-            return NotFound(commentDto.Id);
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
+            return NotFound(ex.Message);
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}:"), commentDto.Id);
+            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
     [HttpDelete("id")]
-    public async Task<ActionResult> DeleteAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         try
         {

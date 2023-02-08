@@ -58,19 +58,19 @@ public class CommentService : ICommentService
         return _mapper.Map<List<CommentDto>>(comments);
     }
 
-    public async Task UpdateAsync(CommentDto commentDto, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(Guid id, UpdateCommentRequest updatedComment, CancellationToken cancellationToken = default)
     {
-        var updateComment = await _repositoryManager.CommentRepository.GetByIdAsync(commentDto.Id, cancellationToken: cancellationToken);
-        if (updateComment is null)
+        var comment = await _repositoryManager.CommentRepository.GetByIdAsync(id, cancellationToken: cancellationToken);
+        if (comment is null)
         {
             throw new CommentNotFoundException();
         }
 
-        _mapper.Map(commentDto, updateComment);
+        _mapper.Map(updatedComment, comment);
+        comment.Id = id;
+        comment.ModifiedAt = DateTimeOffset.UtcNow;
 
-        updateComment.ModifiedAt = DateTimeOffset.UtcNow;
-
-        _repositoryManager.CommentRepository.Update(updateComment);
+        _repositoryManager.CommentRepository.Update(comment);
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 }

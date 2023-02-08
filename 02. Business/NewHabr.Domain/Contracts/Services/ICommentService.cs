@@ -17,7 +17,9 @@ public interface ICommentService
     /// <param name="data"></param>
     /// <returns></returns>
     /// <exception cref="CommentNotFoundException"></exception>
-    Task UpdateAsync(CommentDto commentDto, CancellationToken cancellationToken = default);
+    Task UpdateAsync(Guid id,
+        UpdateCommentRequest updatedComment,
+        CancellationToken cancellationToken = default);
     /// <summary>
     /// Deletes an existing in database Comment class 
     /// </summary>
