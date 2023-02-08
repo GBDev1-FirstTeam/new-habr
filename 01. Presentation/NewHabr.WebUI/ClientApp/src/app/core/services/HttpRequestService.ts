@@ -8,6 +8,8 @@ import { User } from '../models/User';
 import { ConfigurationService } from './ConfigurationService';
 import { AuthorizationRequest, Authorization } from '../models/Authorization';
 import { LikeRequest } from '../models/Like';
+import { Registration, RegistrationRequest } from '../models/Registration';
+import { Recovery, RecoveryChangePassword, RecoveryQuestion, RecoveryRequestAnswer, RecoveryRequestLogin } from '../models/Recovery';
 
 @Injectable({
   providedIn: 'root',
@@ -57,6 +59,26 @@ export class HttpRequestService {
   postAuthentication(body: AuthorizationRequest) {
     const url = this.backend.baseURL + `/login`;
     return this.post<AuthorizationRequest, Authorization>(url, body);
+  }
+
+  postRegistration(body: RegistrationRequest) {
+    const url = this.backend.baseURL + `/register`;
+    return this.post<RegistrationRequest, Registration>(url, body);
+  }
+
+  postRecoveryLogin(body: RecoveryRequestLogin) {
+    const url = this.backend.baseURL + `/recovery/login`;
+    return this.post<RecoveryRequestLogin, RecoveryQuestion>(url, body);
+  }
+
+  postRecoveryAnswer(body: RecoveryRequestAnswer) {
+    const url = this.backend.baseURL + `/recovery/answer`;
+    return this.post<RecoveryRequestAnswer, Recovery>(url, body);
+  }
+
+  postRecoveryChangePassword(body: RecoveryChangePassword) {
+    const url = this.backend.baseURL + `/recovery/password`;
+    return this.post<RecoveryChangePassword, any>(url, body);
   }
   
   postComment(body: Commentary) {

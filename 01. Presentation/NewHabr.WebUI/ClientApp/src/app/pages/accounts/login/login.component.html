@@ -1,5 +1,5 @@
-<div class="login-container">
-    <h5>Введите учётные данные</h5>
+<div class="form-container">
+    <h5>Введите свои учётные данные</h5>
 
     <form>
         <div class="form-group">
@@ -12,5 +12,13 @@
         </div>
 
         <button type="submit" class="btn btn-outline-dark" (click)="authenticate()">Войти</button>
+
+        <div class="variant">
+            Если Вы забыли пароль, то перейдите на <a [routerLink]="'/accounts/recovery'">форму восстановления пароля</a>
+        </div>
+    
+        <div class="variant">
+            Если Вы новый пользователь, то перейдите на <a [routerLink]="'/accounts/register'">форму регистрации</a>
+        </div>
     </form>
 </div>

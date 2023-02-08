@@ -1,3 +1,5 @@
+@import '/src/assets/scss/colors.scss';
+@import '/src/assets/scss/mixins.scss';
 
 .main-container {
     display: flex;
@@ -7,6 +9,57 @@
 
     &-grid {
         width: 80vw;
+        display: grid;
+        grid-template-columns: 7fr 2fr;
+
+        .account-container {
+            margin: 15px 5px;
+            background-color: white;
+            border: 1px solid lightgray;
+            position: sticky;
+            top: 61px;
+
+            .user-container {
+                padding: 10px;
+            }
+
+            .login {
+                font-weight: bold;
+                text-align: center;
+            }
+
+            height: min-content;
+        }
+
+        .content-area {
+            min-height: calc(100vh - 116px);
+        }
+    }
+}
+
+.emoji {
+    font-size: 4em;
+    color: gray;
+    text-align: center;
+}
+
+.nav {
+    display: flex;
+    flex-flow: column nowrap;
+
+    button {
+        display: block;
+        margin: 10px;
+    }
+
+    div {
+        text-align: center;
+        margin-bottom: 10px;
+        font-size: 0.9em;
+
+        a {
+            display: block;
+        }
     }
 }
 
@@ -23,9 +76,22 @@
         justify-content: center;
         align-items: center;
         height: 45px;
+        background-color: get-color(dark-blue);
         
         a {
-            color: black;
+            color: white;
         }
+    }
+}
+
+footer {
+    background-color: get-color(dark-blue);
+    color: white;
+    height: 70px;
+    width: 100%;
+    padding: 10px;
+
+    div {
+        text-align: center;
     }
 }
