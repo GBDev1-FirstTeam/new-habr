@@ -1,5 +1,6 @@
 $global-colors: (
-    "light-grey": #F8F8F8
+    "light-grey": #d5dee3,
+    "dark-blue": #2e3940,
 );
 
 @each $name, $color in $global-colors {
