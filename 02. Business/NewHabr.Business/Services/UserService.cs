@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Xml.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using NewHabr.Domain.Contracts;
@@ -71,7 +72,7 @@ public class UserService : IUserService
     public async Task<ICollection<UserArticleDto>> GetUserArticlesAsync(Guid id, CancellationToken cancellationToken)
     {
         var user = await GetUserAndCheckIfItExistsAsync(id, false, cancellationToken);
-        var articles = await _repositoryManager.ArticleRepository.GetUserArticles(id, cancellationToken);
+        var articles = await _repositoryManager.ArticleRepository.GetUserArticlesAsync(id, false, cancellationToken);
 
         return _mapper.Map<List<UserArticleDto>>(articles);
     }
@@ -93,6 +94,33 @@ public class UserService : IUserService
 
         var commentsDto = _mapper.Map<List<UserCommentDto>>(comments);
         return commentsDto;
+    }
+
+    public async Task<ICollection<LikedArticleDto>> GetUserLikedArticlesAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var user = await GetUserAndCheckIfItExistsAsync(userId, false, cancellationToken);
+        var articles = await _repositoryManager.ArticleRepository.GetUserLikedArticlesAsync(userId, cancellationToken);
+
+        var articlesDto = _mapper.Map<ICollection<LikedArticleDto>>(articles);
+        return articlesDto;
+    }
+
+    public async Task<ICollection<LikedCommentDto>> GetUserLikedCommentsAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var user = await GetUserAndCheckIfItExistsAsync(userId, false, cancellationToken);
+        var comments = await _repositoryManager.CommentRepository.GetUserLikedCommentsAsync(userId, cancellationToken);
+
+        var commentsDto = _mapper.Map<ICollection<LikedCommentDto>>(comments);
+        return commentsDto;
+    }
+
+    public async Task<ICollection<LikedUserDto>> GetUserLikedUsersAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var user = await GetUserAndCheckIfItExistsAsync(userId, false, cancellationToken);
+        var users = await _repositoryManager.UserRepository.GetUserLikedUsersAsync(userId, cancellationToken);
+
+        var usersDto = _mapper.Map<ICollection<LikedUserDto>>(users);
+        return usersDto;
     }
 
 
@@ -125,6 +153,5 @@ public class UserService : IUserService
     {
         return await _userManager.GetRolesAsync(user);
     }
-
 }
 

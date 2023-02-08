@@ -45,5 +45,9 @@ public class MapperProfile : Profile
             .ReverseMap();
 
         CreateMap<UserComment, UserCommentDto>();
+
+        CreateMap<UserLikedArticle, LikedArticleDto>();
+        CreateMap<UserLikedComment, LikedCommentDto>();
+        CreateMap<UserLikedUser, LikedUserDto>();
     }
 }

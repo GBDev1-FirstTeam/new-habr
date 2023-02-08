@@ -90,7 +90,7 @@ public class ArticleRepository : ReporitoryBase<Article, Guid>, IArticleReposito
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<ICollection<UserArticle>> GetUserArticles(Guid userId, CancellationToken cancellationToken)
+    public async Task<ICollection<UserArticle>> GetUserArticlesAsync(Guid userId, bool trackChanges, CancellationToken cancellationToken)
     {
         return await FindByCondition(article => article.UserId == userId && article.Published && !article.Deleted)
             .Include(a => a.Categories)
@@ -106,6 +106,23 @@ public class ArticleRepository : ReporitoryBase<Article, Guid>, IArticleReposito
                 CreatedAt = row.CreatedAt,
                 ModifiedAt = row.ModifiedAt,
                 PublishedAt = row.PublishedAt.HasValue ? row.PublishedAt.Value : default(DateTimeOffset)
+            })
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<ICollection<UserLikedArticle>> GetUserLikedArticlesAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        return await FindByCondition(article => !article.Deleted && article.Published)
+            .Include(article => article.Tags)
+            .Include(article => article.Categories)
+            .Include(article => article.Likes)
+            .Where(a => a.Likes.Any(like => like.UserId == userId))
+            .Select(row => new UserLikedArticle
+            {
+                Id = row.Id,
+                Title = row.Title,
+                Categories = row.Categories,
+                Tags = row.Tags
             })
             .ToListAsync(cancellationToken);
     }

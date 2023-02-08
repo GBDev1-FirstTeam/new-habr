@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NewHabr.Domain.Contracts.Services;
@@ -76,21 +77,45 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{id}/likedArticles")]
-    public Task<IActionResult> GetUserLikedArticles([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUserLikedArticles([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var response = await _userService.GetUserLikedArticlesAsync(id, cancellationToken);
+            return Ok(response);
+        }
+        catch (UserNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 
     [HttpGet("{id}/likedComments")]
-    public Task<IActionResult> GetUserLikedComments([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUserLikedComments([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var response = await _userService.GetUserLikedCommentsAsync(id, cancellationToken);
+            return Ok(response);
+        }
+        catch (UserNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 
     [HttpGet("{id}/likedUsers")]
-    public Task<IActionResult> GetUserLikedUsers([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUserLikedUsers([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var response = await _userService.GetUserLikedUsersAsync(id, cancellationToken);
+            return Ok(response);
+        }
+        catch (UserNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 
 

@@ -35,4 +35,20 @@ public class CommentRepository : ReporitoryBase<Comment, Guid>, ICommentReposito
             .ToListAsync(cancellationToken);
         return response;
     }
+
+    public async Task<ICollection<UserLikedComment>> GetUserLikedCommentsAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        return await FindByCondition(comment => !comment.Deleted)
+            .Include(comment => comment.Article)
+            .Include(comment => comment.Likes)
+            .Where(comment => comment.Article.Published && !comment.Article.Deleted && comment.Likes.Any(like => like.UserId == userId))
+            .Select(row => new UserLikedComment
+            {
+                Id = row.Id,
+                ArticleId = row.ArticleId,
+                ArticleTitle = row.Article.Title,
+                Text = row.Text
+            })
+            .ToListAsync(cancellationToken);
+    }
 }

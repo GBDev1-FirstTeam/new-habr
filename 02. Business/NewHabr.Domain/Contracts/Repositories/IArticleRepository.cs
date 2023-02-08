@@ -38,5 +38,7 @@ public interface IArticleRepository : IRepository<Article, Guid>
         bool trackChanges = false,
         CancellationToken cancellationToken = default);
 
-    Task<ICollection<UserArticle>> GetUserArticles(Guid id, CancellationToken cancellationToken);
+    Task<ICollection<UserArticle>> GetUserArticlesAsync(Guid userId, bool trackChanges, CancellationToken cancellationToken);
+
+    Task<ICollection<UserLikedArticle>> GetUserLikedArticlesAsync(Guid userId, CancellationToken cancellationToken);
 }
