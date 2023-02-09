@@ -13,8 +13,8 @@ public class CommentProfile : Profile
             .ForMember(dest => dest.ModifiedAt, e => e.MapFrom(src => src.ModifiedAt.ToUnixTimeMilliseconds()));
 
         CreateMap<CommentDto, Comment>()
-            .ForMember(dest => dest.CreatedAt, e => e.MapFrom(src => new DateTimeOffset(new DateTime(src.CreatedAt))))
-            .ForMember(dest => dest.ModifiedAt, e => e.MapFrom(src => new DateTimeOffset(new DateTime(src.ModifiedAt))));
+            .ForMember(dest => dest.CreatedAt, e => e.MapFrom(src => DateTimeOffset.FromUnixTimeMilliseconds(src.CreatedAt)))
+            .ForMember(dest => dest.ModifiedAt, e => e.MapFrom(src => DateTimeOffset.FromUnixTimeMilliseconds(src.ModifiedAt)));
 
         CreateMap<CreateCommentRequest, Comment>();
         CreateMap<UpdateCommentRequest, Comment>();
