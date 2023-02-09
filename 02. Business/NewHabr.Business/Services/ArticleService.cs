@@ -100,9 +100,9 @@ public class ArticleService : IArticleService
         await UpdateCategoresAsync(article, request.Categories);
         await UpdateTagsAsync(article, request.Tags);
 
-        var newArticleId = _repositoryManager.ArticleRepository.Create(article);
+        _repositoryManager.ArticleRepository.Create(article);
         await _repositoryManager.SaveAsync(cancellationToken);
-        return newArticleId;
+        return article.Id;
     }
     public async Task UpdateAsync(Guid id, UpdateArticleRequest articleToUpdate, CancellationToken cancellationToken = default)
     {

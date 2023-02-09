@@ -8,7 +8,7 @@ public interface ITagService
     Task<IReadOnlyCollection<TagDto>> GetAllAsync(CancellationToken cancellationToken = default);
 
     /// <exception cref="TagAlreadyExistsException"></exception>
-    Task CreateAsync(CreateTagRequest request, CancellationToken cancellationToken = default);
+    Task<int> CreateAsync(CreateTagRequest request, CancellationToken cancellationToken = default);
 
     /// <exception cref="TagNotFoundException"></exception>
     /// <exception cref="TagAlreadyExistsException"></exception>

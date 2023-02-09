@@ -22,7 +22,7 @@ public class TagService : ITagService
         var tags = await _repositoryManager.TagRepository.GetAvaliableAsync(cancellationToken: cancellationToken);
         return _mapper.Map<List<TagDto>>(tags);
     }
-    public async Task CreateAsync(CreateTagRequest request, CancellationToken cancellationToken = default)
+    public async Task<int> CreateAsync(CreateTagRequest request, CancellationToken cancellationToken = default)
     {
         var tag = _repositoryManager.TagRepository.FindByCondition(c => c.Name == request.Name && !c.Deleted).FirstOrDefault();
 
@@ -34,6 +34,7 @@ public class TagService : ITagService
         var newTag = _mapper.Map<Tag>(request);
         _repositoryManager.TagRepository.Create(newTag);
         await _repositoryManager.SaveAsync(cancellationToken);
+        return newTag.Id;
     }
     public async Task UpdateAsync(int id, UpdateTagRequest tagToUpdate, CancellationToken cancellationToken = default)
     {

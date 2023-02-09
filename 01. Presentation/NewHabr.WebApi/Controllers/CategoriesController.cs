@@ -39,8 +39,7 @@ public class CategoriesController : ControllerBase
     {
         try
         {
-            await _categoryService.CreateAsync(request, cancellationToken);
-            return Ok();
+            return Ok(await _categoryService.CreateAsync(request, cancellationToken));
         }
         catch (CategoryAlreadyExistsException ex)
         {

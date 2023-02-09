@@ -10,7 +10,7 @@ public interface IRepository<TEntity, TKey>
     IQueryable<TEntity> GetDeleted(bool trackChanges = false);
     IQueryable<TEntity> GetAvailable(bool trackChanges = false);
     IQueryable<TEntity?> GetById(TKey id, bool trackChanges = false);
-    TKey Create(TEntity data);
+    void Create(TEntity data);
     void Update(TEntity data);
     void Delete(TEntity data);
 }

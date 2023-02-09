@@ -38,8 +38,7 @@ public class TagsController : ControllerBase
     {
         try
         {
-            await _tagService.CreateAsync(request, cancellationToken);
-            return Ok();
+            return Ok(await _tagService.CreateAsync(request, cancellationToken));
         }
         catch (TagAlreadyExistsException ex)
         {
