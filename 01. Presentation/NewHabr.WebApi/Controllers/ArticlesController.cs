@@ -89,12 +89,11 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> Create([FromBody] CreateArticleRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<Guid>> Create([FromBody] CreateArticleRequest request, CancellationToken cancellationToken)
     {
         try
         {
-            await _articleService.CreateAsync(request, cancellationToken);
-            return Ok();
+            return Ok(await _articleService.CreateAsync(request, cancellationToken));
         }
         catch (EntityNotFoundException ex)
         {

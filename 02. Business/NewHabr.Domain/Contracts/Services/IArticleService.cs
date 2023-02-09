@@ -19,10 +19,12 @@ public interface IArticleService
 
     Task<IReadOnlyCollection<ArticleDto>> GetDeletedAsync(CancellationToken cancellationToken = default);
 
+    /// <exception cref="UserNotFoundException"></exception>
     /// <exception cref="CategoryNotFoundException"></exception>
-    Task CreateAsync(CreateArticleRequest request, CancellationToken cancellationToken = default);
+    Task<Guid> CreateAsync(CreateArticleRequest request, CancellationToken cancellationToken = default);
 
     /// <exception cref="ArticleNotFoundException"></exception>
+    /// <exception cref="CategoryNotFoundException"></exception>
     Task UpdateAsync(Guid id, UpdateArticleRequest articleToUpdate, CancellationToken cancellationToken = default);
 
     /// <exception cref="ArticleNotFoundException"></exception>

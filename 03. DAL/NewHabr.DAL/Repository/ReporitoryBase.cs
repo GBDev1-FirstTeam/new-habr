@@ -19,9 +19,9 @@ public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity, TKey>
         Set = _context.Set<TEntity>();
     }
 
-    public void Create(TEntity data)
+    public TKey Create(TEntity data)
     {
-        Set.Add(data);
+        return Set.Add(data).Entity.Id;
     }
 
     public virtual void Delete(TEntity data)

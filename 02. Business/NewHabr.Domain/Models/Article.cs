@@ -5,7 +5,7 @@ namespace NewHabr.Domain.Models;
 
 public class Article : BaseEntity<Guid>
 {
-    [Required, MinLength(10), MaxLength(200)]
+    [Required, MinLength(3), MaxLength(200)]
     public string Title { get; set; } = string.Empty;
 
     [Required]
@@ -14,6 +14,7 @@ public class Article : BaseEntity<Guid>
     [Required]
     public Guid UserId { get; set; }
 
+    [Required]
     public User User { get; set; }
 
     public ICollection<Category> Categories { get; set; } = new HashSet<Category>();

@@ -31,7 +31,29 @@ public class ArticleDto
 
     public long PublishedAt { get; set; }
 
+    public long DeletedAt { get; set; }
+
     public bool Published { get; set; }
 
+    public bool Deleted { get; set; }
+
     public ApproveState ApproveState { get; set; }
+
+    public override bool Equals(object obj) => obj is ArticleDto ? Equals(obj as ArticleDto) : base.Equals(obj);
+    public bool Equals(ArticleDto article)
+    {
+        return Id == article.Id
+            && UserId == article.UserId
+            && Title == article.Title
+            && Content == article.Content
+            && CreatedAt == article.CreatedAt
+            && ModifiedAt == article.ModifiedAt
+            && Published == article.Published
+            && DeletedAt == article.DeletedAt
+            && ApproveState == article.ApproveState
+            && Published == article.Published
+            && Deleted == article.Deleted;
+    }
+    public static bool operator ==(ArticleDto a1, ArticleDto a2) => a1.Equals(a2);
+    public static bool operator !=(ArticleDto a1, ArticleDto a2) => !a1.Equals(a2);
 }
