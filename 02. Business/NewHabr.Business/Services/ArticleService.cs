@@ -195,7 +195,7 @@ public class ArticleService : IArticleService
     /// If one of them doesn't contains in repository, throw exception.
     /// </remarks>
     /// <exception cref="CategoryNotFoundException"></exception>
-    private async Task UpdateCategoresAsync(Article article, CreateCategoryRequest[] categoriesDto)
+    private async Task UpdateCategoresAsync(Article article, ICollection<CreateCategoryRequest> categoriesDto)
     {
         if (article.Categories.Count != 0)
         {
@@ -218,7 +218,7 @@ public class ArticleService : IArticleService
     /// In proccess of adding <paramref name="tagsDto"/>, comparing them with existing in tags repository.
     /// If one of them doesn't contains in repository, adding to both (Articles, Tags).
     /// </remarks>
-    private async Task UpdateTagsAsync(Article article, CreateTagRequest[] tagsDto)
+    private async Task UpdateTagsAsync(Article article, ICollection<CreateTagRequest> tagsDto)
     {
         if (article.Tags.Count != 0)
         {

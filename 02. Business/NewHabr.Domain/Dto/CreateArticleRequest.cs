@@ -15,7 +15,7 @@ public class CreateArticleRequest
     [NotNull]
     public string Content { get; set; }
 
-    public CreateCategoryRequest[] Categories { get; set; } = Array.Empty<CreateCategoryRequest>();
+    public ICollection<CreateCategoryRequest> Categories { get; set; } = new HashSet<CreateCategoryRequest>();
 
-    public CreateTagRequest[] Tags { get; set; } = Array.Empty<CreateTagRequest>();
+    public ICollection<CreateTagRequest> Tags { get; set; } = new HashSet<CreateTagRequest>();
 }

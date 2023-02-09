@@ -16,11 +16,11 @@ public class ArticleDto
     [NotNull, MinLength(3), MaxLength(500)]
     public string Title { get; set; }
 
-    public CategoryDto[] Categories { get; set; } = Array.Empty<CategoryDto>();
+    public ICollection<CategoryDto> Categories { get; set; } = new HashSet<CategoryDto>();
 
-    public TagDto[] Tags { get; set; } = Array.Empty<TagDto>();
+    public ICollection<TagDto> Tags { get; set; } = new HashSet<TagDto>();
 
-    public CommentDto[] Comments { get; set; } = Array.Empty<CommentDto>();
+    public ICollection<CommentDto> Comments { get; set; } = new HashSet<CommentDto>();
 
     [NotNull]
     public string Content { get; set; }
