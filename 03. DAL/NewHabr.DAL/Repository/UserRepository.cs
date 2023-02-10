@@ -29,4 +29,10 @@ public class UserRepository : RepositoryBase<User, Guid>, IUserRepository
     {
         return await FindByCondition(u => u.UserName == login && !u.Deleted).SingleOrDefaultAsync(cancellationToken);
     }
+
+    public async Task<int> GetUsersCountWithSecureQuestionId(int id, CancellationToken cancellationToken)
+    {
+        return await FindByCondition(u => u.SecureQuestionId == id)
+            .CountAsync(cancellationToken);
+    }
 }
