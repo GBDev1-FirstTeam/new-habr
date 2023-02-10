@@ -1,6 +1,5 @@
 ﻿#nullable disable
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 using NewHabr.Domain.Models;
 
 namespace NewHabr.Domain.Dto;
@@ -13,7 +12,7 @@ public class ArticleDto
     [Required]
     public Guid UserId { get; set; }
 
-    [NotNull, MinLength(3), MaxLength(500)]
+    [MinLength(3), MaxLength(500)]
     public string Title { get; set; }
 
     public ICollection<CategoryDto> Categories { get; set; } = new HashSet<CategoryDto>();
@@ -22,7 +21,6 @@ public class ArticleDto
 
     public ICollection<CommentDto> Comments { get; set; } = new HashSet<CommentDto>();
 
-    [NotNull]
     public string Content { get; set; }
 
     public long CreatedAt { get; set; }
@@ -40,6 +38,20 @@ public class ArticleDto
     public ApproveState ApproveState { get; set; }
 
     public override bool Equals(object obj) => obj is ArticleDto ? Equals(obj as ArticleDto) : base.Equals(obj);
+    public override int GetHashCode()
+    {
+        return
+            Id.GetHashCode() +
+            Title.GetHashCode() +
+            UserId.GetHashCode() +
+            Categories.GetHashCode() +
+            Comments.GetHashCode() +
+            Tags.GetHashCode() +
+            Content.GetHashCode() +
+            CreatedAt.GetHashCode() +
+            PublishedAt.GetHashCode() +
+            DeletedAt.GetHashCode();
+    }
     public bool Equals(ArticleDto article)
     {
         return Id == article.Id
