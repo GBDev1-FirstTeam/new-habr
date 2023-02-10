@@ -45,7 +45,7 @@ public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity, TKey>
         return FindAll(trackChanges).Where(expression);
     }
 
-    protected IQueryable<TEntity?> GetById(TKey id, bool trackChanges = false)
+    protected IQueryable<TEntity> GetById(TKey id, bool trackChanges = false)
     {
         return FindByCondition(e => e.Id.Equals(id) && !e.Deleted, trackChanges);
     }

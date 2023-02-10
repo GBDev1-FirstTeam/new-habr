@@ -24,7 +24,9 @@ public class TagService : ITagService
     }
     public async Task CreateAsync(CreateTagRequest request, CancellationToken cancellationToken = default)
     {
-        var tag = _repositoryManager.TagRepository.FindByCondition(c => c.Name == request.Name && !c.Deleted).FirstOrDefault();
+        var tag = _repositoryManager
+            .TagRepository
+            .GetByNameAsync(request.Name, false, cancellationToken);
 
         if (tag is not null)
         {
@@ -44,8 +46,9 @@ public class TagService : ITagService
             throw new TagNotFoundException();
         }
 
-        var tagWithSameName = _repositoryManager.TagRepository
-            .FindByCondition(c => c.Name == tagToUpdate.Name && !c.Deleted).FirstOrDefault();
+        var tagWithSameName = await _repositoryManager
+            .TagRepository
+            .GetByNameAsync(tagToUpdate.Name, false, cancellationToken);
 
         if (tagWithSameName is not null)
         {

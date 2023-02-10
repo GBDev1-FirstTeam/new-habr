@@ -25,5 +25,10 @@ public class CategoryRepository : ReporitoryBase<Category, int>, ICategoryReposi
     {
         return await GetAvailable(trackChanges).ToListAsync(cancellationToken);
     }
-    public override void Delete(Category category) => Set.Remove(category);
+
+    public async Task<Category?> GetByNameAsync(string name, bool trackChanges, CancellationToken cancellationToken)
+    {
+        return await FindByCondition(q => !q.Deleted && q.Name == name, trackChanges)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
 }
