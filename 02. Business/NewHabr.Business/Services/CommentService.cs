@@ -17,11 +17,14 @@ public class CommentService : ICommentService
         _mapper = mapper;
     }
 
-    public async Task CreateAsync(CreateCommentRequest data, CancellationToken cancellationToken = default)
+    public async Task CreateAsync(Guid CreatorId, CreateCommentRequest data, CancellationToken cancellationToken = default)
     {
         var newComment = _mapper.Map<Comment>(data);
-        newComment.CreatedAt = DateTimeOffset.UtcNow;
-        newComment.ModifiedAt = DateTimeOffset.UtcNow;
+        newComment.UserId = CreatorId;
+
+        var createDate = DateTimeOffset.UtcNow;
+        newComment.CreatedAt = createDate;
+        newComment.ModifiedAt = createDate;
 
         _repositoryManager.CommentRepository.Create(newComment);
         await _repositoryManager.SaveAsync(cancellationToken);
@@ -46,31 +49,23 @@ public class CommentService : ICommentService
         return _mapper.Map<List<CommentDto>>(comments);
     }
 
-    public async Task<IReadOnlyCollection<CommentDto>> GetByArticleIdAsync(Guid articleId, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(Guid commentId, Guid modifierId, UpdateCommentRequest updatedComment, CancellationToken cancellationToken = default)
     {
-        var comments = await _repositoryManager.CommentRepository.GetByArticleIdAsync(articleId, cancellationToken: cancellationToken);
-        return _mapper.Map<List<CommentDto>>(comments);
-    }    
+        var comment = await _repositoryManager.CommentRepository.GetByIdAsync(commentId, true, cancellationToken: cancellationToken);
 
-    public async Task<IReadOnlyCollection<CommentDto>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
-    {
-        var comments = await _repositoryManager.CommentRepository.GetByUserIdAsync(userId, cancellationToken: cancellationToken);
-        return _mapper.Map<List<CommentDto>>(comments);
-    }
-
-    public async Task UpdateAsync(Guid id, UpdateCommentRequest updatedComment, CancellationToken cancellationToken = default)
-    {
-        var comment = await _repositoryManager.CommentRepository.GetByIdAsync(id, cancellationToken: cancellationToken);
         if (comment is null)
         {
             throw new CommentNotFoundException();
         }
 
+        if (comment.UserId != modifierId)
+        {
+            throw new UnauthorizedAccessException();
+        }
+
         _mapper.Map(updatedComment, comment);
-        comment.Id = id;
         comment.ModifiedAt = DateTimeOffset.UtcNow;
 
-        _repositoryManager.CommentRepository.Update(comment);
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 }

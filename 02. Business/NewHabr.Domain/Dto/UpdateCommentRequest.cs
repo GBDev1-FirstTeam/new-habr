@@ -1,8 +1,10 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿#nullable disable
+using System.ComponentModel.DataAnnotations;
 
 namespace NewHabr.Domain.Dto;
+
 public class UpdateCommentRequest
 {
-    [NotNull]
+    [Required]
     public string Text { get; set; }
 }

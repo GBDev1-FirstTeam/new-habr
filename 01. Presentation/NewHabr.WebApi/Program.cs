@@ -9,7 +9,6 @@ using NewHabr.Domain.Contracts;
 using NewHabr.WebApi.Extensions;
 using Serilog;
 using NewHabr.Domain.Contracts.Services;
-using Microsoft.OpenApi.Models;
 
 namespace NewHabr.WebApi;
 

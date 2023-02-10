@@ -3,9 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using NewHabr.Domain.Contracts.Services;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Exceptions;
-using NewHabr.Domain.Models;
+using NewHabr.WebApi.Extensions;
 
 namespace NewHabr.WebApi.Controllers;
+
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
@@ -35,28 +36,30 @@ public class CommentsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> Createc([FromBody] CreateCommentRequest newComment, CancellationToken cancellationToken)
+    public async Task<ActionResult> Create([FromBody] CreateCommentRequest newComment, CancellationToken cancellationToken)
     {
+        var userId = User.GetUserId();
         try
         {
-            await _commentService.CreateAsync(newComment, cancellationToken);
+            await _commentService.CreateAsync(userId, newComment, cancellationToken);
             return Ok();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nuser id: {id}:"), newComment.UserId);
+            _logger.LogError(ex, string.Concat(ex.Message, "\nuser id: {id}:"), userId);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
-    [HttpPut("id")]
+    [HttpPut("id")] //todo кто может изменять? автор
     public async Task<ActionResult> Update([FromRoute] Guid id,
         [FromBody] UpdateCommentRequest updateComment,
         CancellationToken cancellationToken)
     {
+        var userId = User.GetUserId();
         try
         {
-            await _commentService.UpdateAsync(id, updateComment, cancellationToken);
+            await _commentService.UpdateAsync(id, userId, updateComment, cancellationToken);
             return Ok();
         }
         catch (CommentNotFoundException ex)
@@ -64,14 +67,14 @@ public class CommentsController : ControllerBase
             _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return NotFound(ex.Message);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
-    [HttpDelete("id")]
+    [HttpDelete("id")] //todo кто может удалять? автор, модератор, админ
     public async Task<ActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         try
@@ -84,10 +87,12 @@ public class CommentsController : ControllerBase
             _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return NotFound();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
+
+    //todo Ставить лайки на комментарии
 }
