@@ -11,6 +11,8 @@ public class RepositoryManager : IRepositoryManager
     public IUserRepository UserRepository { get; }
     public ICategoryRepository CategoryRepository { get; }
     public ITagRepository TagRepository { get; }
+    public ISecureQuestionsRepository SecureQuestionsRepository { get; }
+
 
     public RepositoryManager(ApplicationContext context)
     {
@@ -20,6 +22,7 @@ public class RepositoryManager : IRepositoryManager
         UserRepository = new UserRepository(_context);
         CategoryRepository = new CategoryRepository(_context);
         TagRepository = new TagRepository(_context);
+        SecureQuestionsRepository = new SecureQuestionsRepository(_context);
     }
 
     public async Task SaveAsync(CancellationToken cancellationToken = default)

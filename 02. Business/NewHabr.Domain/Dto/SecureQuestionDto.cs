@@ -1,13 +1,13 @@
 ﻿#nullable disable
+
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace NewHabr.Domain.Dto;
 
-public class TagDto
+public class SecureQuestionDto
 {
-    [Range(1, int.MaxValue)]
     public int Id { get; set; }
-
-    [Required, MinLength(3), MaxLength(50)]
-    public string Name { get; set; }
+    public string Question { get; set; }
 }
+

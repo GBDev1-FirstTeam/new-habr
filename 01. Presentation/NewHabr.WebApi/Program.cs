@@ -47,6 +47,8 @@ public class Program
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<ITagService, TagService>();
         services.AddScoped<ICommentService, CommentService>();
+        services.AddScoped<ISecureQuestionsService, SecureQuestionsService>();
+        services.AddScoped<IRepositoryManager, RepositoryManager>();
 
         #endregion
 

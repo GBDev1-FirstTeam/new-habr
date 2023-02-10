@@ -26,4 +26,10 @@ public class TagRepository : RepositoryBase<Tag, int>, ITagRepository
         return await GetAvailable(trackChanges).ToListAsync(cancellationToken);
     }
     public override void Delete(Tag tag) => Set.Remove(tag);
+
+    public async Task<Tag?> GetByNameAsync(string name, bool trackChanges, CancellationToken cancellationToken)
+    {
+        return await FindByCondition(q => !q.Deleted && q.Name == name, trackChanges)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
 }

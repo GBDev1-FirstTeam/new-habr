@@ -17,5 +17,10 @@ public class MapperProfile : Profile
             .ForMember(dest => dest.SecureQuestionId, opt => opt.MapFrom(src => src.SecurityQuestionId));
 
         CreateMap<RegistrationRequest, AuthorizationRequest>();
+
+        CreateMap<SecureQuestionCreateRequest, SecureQuestion>();
+
+        CreateMap<SecureQuestion, SecureQuestionDto>().ReverseMap();
+        CreateMap<SecureQuestionUpdateRequest, SecureQuestion>();
     }
 }
