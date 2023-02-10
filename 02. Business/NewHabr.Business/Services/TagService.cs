@@ -67,7 +67,9 @@ public class TagService : ITagService
             throw new TagNotFoundException();
         }
 
-        _repositoryManager.TagRepository.Delete(tag);
+        tag.Articles = null;
+        tag.Deleted = true;
+
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 }

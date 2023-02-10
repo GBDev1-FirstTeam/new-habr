@@ -60,14 +60,16 @@ public class CategoryService : ICategoryService
     }
     public async Task DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        var category = await _repositoryManager.CategoryRepository.GetByIdIncludeAsync(id, cancellationToken: cancellationToken);
+        var category = await _repositoryManager.CategoryRepository.GetByIdIncludeAsync(id, trackChanges: true, cancellationToken);
 
         if (category is null)
         {
             throw new CategoryNotFoundException();
         }
 
-        _repositoryManager.CategoryRepository.Delete(category);
+        category.Articles = null;
+        category.Deleted = true;
+
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 }

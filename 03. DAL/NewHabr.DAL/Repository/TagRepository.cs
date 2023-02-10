@@ -25,5 +25,4 @@ public class TagRepository : ReporitoryBase<Tag, int>, ITagRepository
     {
         return await GetAvailable(trackChanges).ToListAsync(cancellationToken);
     }
-    public override void Delete(Tag tag) => Set.Remove(tag);
 }

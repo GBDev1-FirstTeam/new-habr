@@ -48,7 +48,7 @@ public class ArticleServiceTests
     public async Task GetByIdAsync__ExistsArticleId__ReturnsCorrectArticleDto()
     {
         // arrange
-        var article = await CreateArticleAsync(saveChanges: true);
+        var article = await CreateArticleAsync();
         var articleDto = _mapper.Map<ArticleDto>(article);
 
         // act
@@ -160,7 +160,7 @@ public class ArticleServiceTests
     public async Task CreatAsync__ExistsCategory__NotDuplicatedInCategorySet()
     {
         // arrange
-        var existsCategory = await CreateCategoryAsync("test", saveChanges: true);
+        var existsCategory = await CreateCategoryAsync("test");
         var request = new CreateArticleRequest
         {
             UserId = _user.Id,
@@ -236,7 +236,7 @@ public class ArticleServiceTests
     public async Task CreateAsync__ExistsTag__NotDuplicatedInTagSet()
     {
         // arrange
-        var existsTag = await CreateTagAsync("test", saveChanges: true);
+        var existsTag = await CreateTagAsync("test");
         var request = new CreateArticleRequest
         {
             UserId = _user.Id,
@@ -246,7 +246,7 @@ public class ArticleServiceTests
         };
 
         // act
-        var result = await _articleService.CreateAsync(request);
+        await _articleService.CreateAsync(request);
 
         // assert
         var count = _context.Tags.Count(t => t.Name == existsTag.Name && !t.Deleted);
@@ -280,7 +280,7 @@ public class ArticleServiceTests
     public async Task UpdateAsync__NotExistsArticleId__ThrowNotFoundException()
     {
         // arrange
-        var existsArticle = await CreateArticleAsync(saveChanges: true);
+        var existsArticle = await CreateArticleAsync();
         var request = new UpdateArticleRequest
         {
             Title = "test",
@@ -297,11 +297,11 @@ public class ArticleServiceTests
     public async Task UpdateAsync__ValidRequest__CorrectUpdatedEntity()
     {
         // arrange
-        var existsArticle = await CreateArticleAsync(saveChanges: true);
+        var existsArticle = await CreateArticleAsync();
         var request = new UpdateArticleRequest
         {
-            Title = "test",
-            Content = "test"
+            Title = "noway",
+            Content = "noway"
         };
 
         // act
@@ -319,7 +319,7 @@ public class ArticleServiceTests
     public async Task UpdateAsync__NotExistsCategory__ThrowNotFoundException()
     {
         // arrange
-        var existsArticle = await CreateArticleAsync(saveChanges: true);
+        var existsArticle = await CreateArticleAsync();
         var request = new UpdateArticleRequest
         {
             Title = "test",
@@ -337,8 +337,8 @@ public class ArticleServiceTests
     public async Task UpdateAsync__ExistsCategory__NotDuplicatedInCategorySet()
     {
         // arrange
-        var existsArticle = await CreateArticleAsync(saveChanges: true);
-        var existsCategory = await CreateCategoryAsync("test", saveChanges: true);
+        var existsArticle = await CreateArticleAsync();
+        var existsCategory = await CreateCategoryAsync("test");
         var request = new UpdateArticleRequest
         {
             Title = "test",
@@ -362,7 +362,7 @@ public class ArticleServiceTests
     {
         // arrange
         var tagNameToAdd = "test";
-        var existsArticle = await CreateArticleAsync(saveChanges: true);
+        var existsArticle = await CreateArticleAsync();
         var request = new UpdateArticleRequest
         {
             Title = "test",
@@ -384,7 +384,7 @@ public class ArticleServiceTests
     public async Task UpdateAsync__NotExistsTag__NotDuplicatedInTagSet()
     {
         // arrange
-        var existsArticle = await CreateArticleAsync(saveChanges: true);
+        var existsArticle = await CreateArticleAsync();
         var tagNameToAdd = "test";
         var request = new UpdateArticleRequest
         {
@@ -411,8 +411,8 @@ public class ArticleServiceTests
     [Fact]
     public async Task UpdateAsync__ExistsTag__NotDuplicatedInTagSet()
     {
-        var existsArticle = await CreateArticleAsync(saveChanges: true);
-        var existsTag = await CreateTagAsync("test", saveChanges: true);
+        var existsArticle = await CreateArticleAsync();
+        var existsTag = await CreateTagAsync("test");
         var request = new UpdateArticleRequest
         {
             Title = "test",
@@ -556,14 +556,13 @@ public class ArticleServiceTests
     public async Task SetApproveStateAsync__ValidRequest__CorrectApproveStateOfArticle()
     {
         // arrange
-        var existsArticle = await CreateArticleAsync(saveChanges: true);
+        var existsArticle = await CreateArticleAsync();
 
         // act
         await _articleService.SetApproveStateAsync(existsArticle.Id, ApproveState.Approved);
 
         // assert
-        var updatedArticle = await _context.Articles.FirstOrDefaultAsync(a => a.Id == existsArticle.Id && !a.Deleted);
-        Assert.Equal(ApproveState.Approved, updatedArticle.ApproveState);
+        Assert.Equal(ApproveState.Approved, existsArticle.ApproveState);
 
         await ClearContextFromEntitiesAsync<Article, Guid>();
     }

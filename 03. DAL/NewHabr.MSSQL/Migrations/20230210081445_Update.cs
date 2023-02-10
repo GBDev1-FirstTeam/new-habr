@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace NewHabr.MSSQL.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class Update : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -29,7 +29,7 @@ namespace NewHabr.MSSQL.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Deleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -410,17 +410,17 @@ namespace NewHabr.MSSQL.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { new Guid("00a98c8e-6a15-4447-9343-063f4f1efefc"), "74c7647b-24ac-4a3a-a78d-708e961b3427", "User", "USER" });
+                values: new object[] { new Guid("00a98c8e-6a15-4447-9343-063f4f1efefc"), "c70ef5f3-4967-4b64-9d4b-0dbbdd7d6d41", "User", "USER" });
 
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { new Guid("1bfc496b-ebd2-4c5a-b3e8-4b2c1e334391"), "e8d1e1c4-7cbc-46f1-b06a-7b521e945ab7", "Moderator", "MODERATOR" });
+                values: new object[] { new Guid("1bfc496b-ebd2-4c5a-b3e8-4b2c1e334391"), "3412d907-4d3d-4626-a99a-b197779e7863", "Moderator", "MODERATOR" });
 
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { new Guid("aec1eede-5f3f-43ba-9ec3-454a3002c013"), "188a9574-c1ac-415b-bf17-c7092393f34d", "Administrator", "ADMINISTRATOR" });
+                values: new object[] { new Guid("aec1eede-5f3f-43ba-9ec3-454a3002c013"), "dbbf524e-a005-47f5-a4d9-c952710e2d2f", "Administrator", "ADMINISTRATOR" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ArticleCategory_CategoriesId",
@@ -482,11 +482,6 @@ namespace NewHabr.MSSQL.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Categories_Name",
-                table: "Categories",
-                column: "Name");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Comments_ArticleId",
                 table: "Comments",
                 column: "ArticleId");
@@ -510,11 +505,6 @@ namespace NewHabr.MSSQL.Migrations
                 name: "IX_LikedUsers_AuthorId",
                 table: "LikedUsers",
                 column: "AuthorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tags_Name",
-                table: "Tags",
-                column: "Name");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserNotifications_UserId",

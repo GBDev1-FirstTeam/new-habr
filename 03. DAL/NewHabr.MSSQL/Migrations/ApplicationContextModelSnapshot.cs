@@ -215,11 +215,9 @@ namespace NewHabr.MSSQL.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Name");
 
                     b.ToTable("Categories");
                 });
@@ -337,8 +335,6 @@ namespace NewHabr.MSSQL.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Name");
 
                     b.ToTable("Tags");
                 });
@@ -513,21 +509,21 @@ namespace NewHabr.MSSQL.Migrations
                         new
                         {
                             Id = new Guid("00a98c8e-6a15-4447-9343-063f4f1efefc"),
-                            ConcurrencyStamp = "74c7647b-24ac-4a3a-a78d-708e961b3427",
+                            ConcurrencyStamp = "c70ef5f3-4967-4b64-9d4b-0dbbdd7d6d41",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = new Guid("1bfc496b-ebd2-4c5a-b3e8-4b2c1e334391"),
-                            ConcurrencyStamp = "e8d1e1c4-7cbc-46f1-b06a-7b521e945ab7",
+                            ConcurrencyStamp = "3412d907-4d3d-4626-a99a-b197779e7863",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         },
                         new
                         {
                             Id = new Guid("aec1eede-5f3f-43ba-9ec3-454a3002c013"),
-                            ConcurrencyStamp = "188a9574-c1ac-415b-bf17-c7092393f34d",
+                            ConcurrencyStamp = "dbbf524e-a005-47f5-a4d9-c952710e2d2f",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
