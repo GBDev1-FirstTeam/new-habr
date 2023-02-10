@@ -6,14 +6,14 @@ using NewHabr.Domain.Models;
 
 namespace NewHabr.DAL.Repository;
 
-public abstract class ReporitoryBase<TEntity, TKey> : IRepository<TEntity, TKey>
+public abstract class RepositoryBase<TEntity, TKey> : IRepository<TEntity, TKey>
     where TEntity : class, IEntity<TKey>
     where TKey : struct
 {
     private readonly ApplicationContext _context;
     protected DbSet<TEntity> Set;
 
-    public ReporitoryBase(ApplicationContext context)
+    public RepositoryBase(ApplicationContext context)
     {
         _context = context;
         Set = _context.Set<TEntity>();
