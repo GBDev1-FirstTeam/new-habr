@@ -8,4 +8,5 @@ public interface IUserRepository : IRepository<User, Guid>
     Task<IReadOnlyCollection<User>> GetByRoleIdAsync(int roleId, CancellationToken cancellationToken = default);
     Task<IReadOnlyCollection<User>> GetDeletedUsersAsync(CancellationToken cancellationToken = default);
     Task<IReadOnlyCollection<User>> GetBannedUsersAsync(CancellationToken cancellationToken = default);
+    Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 }
