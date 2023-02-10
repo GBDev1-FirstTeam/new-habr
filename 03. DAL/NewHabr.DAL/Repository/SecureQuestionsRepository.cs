@@ -6,7 +6,7 @@ using NewHabr.Domain.Models;
 
 namespace NewHabr.DAL.Repository;
 
-public class SecureQuestionsRepository : ReporitoryBase<SecureQuestion, int>, ISecureQuestionsRepository
+public class SecureQuestionsRepository : RepositoryBase<SecureQuestion, int>, ISecureQuestionsRepository
 {
     public SecureQuestionsRepository(ApplicationContext context)
         : base(context)
