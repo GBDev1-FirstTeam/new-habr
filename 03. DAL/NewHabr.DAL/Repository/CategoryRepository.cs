@@ -5,7 +5,7 @@ using NewHabr.Domain.Models;
 
 namespace NewHabr.DAL.Repository;
 
-public class CategoryRepository : ReporitoryBase<Category, int>, ICategoryRepository
+public class CategoryRepository : RepositoryBase<Category, int>, ICategoryRepository
 {
     public CategoryRepository(ApplicationContext context) : base(context)
     {
@@ -25,5 +25,10 @@ public class CategoryRepository : ReporitoryBase<Category, int>, ICategoryReposi
     {
         return await GetAvailable(trackChanges).ToListAsync(cancellationToken);
     }
-    public override void Delete(Category category) => Set.Remove(category);
+
+    public async Task<Category?> GetByNameAsync(string name, bool trackChanges, CancellationToken cancellationToken)
+    {
+        return await FindByCondition(q => !q.Deleted && q.Name == name, trackChanges)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
 }

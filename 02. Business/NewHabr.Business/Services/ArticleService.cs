@@ -73,13 +73,14 @@ public class ArticleService : IArticleService
         article.CreatedAt = creationDateTime;
         article.ModifiedAt = creationDateTime;
 
-        UpdateCategores(article, request.Categories);
-        UpdateTags(article, request.Tags);
+        await UpdateCategoresAsync(article, request.Categories, cancellationToken);
+        await UpdateTagsAsync(article, request.Tags, cancellationToken);
 
         foreach (var tagDto in request.Tags)
         {
-            var existingTag = _repositoryManager.TagRepository.FindAll(true)
-                .FirstOrDefault(c => c.Name == tagDto.Name && !c.Deleted);
+            var existingTag = await _repositoryManager
+                .TagRepository
+                .GetByNameAsync(tagDto.Name, true, cancellationToken);
 
             article.Tags.Add(existingTag ?? _mapper.Map<Tag>(tagDto));
         }
@@ -96,8 +97,8 @@ public class ArticleService : IArticleService
             throw new ArticleNotFoundException();
         }
 
-        UpdateCategores(article, articleToUpdate.Categories);
-        UpdateTags(article, articleToUpdate.Tags);
+        await UpdateCategoresAsync(article, articleToUpdate.Categories, cancellationToken);
+        await UpdateTagsAsync(article, articleToUpdate.Tags, cancellationToken);
 
         _mapper.Map(articleToUpdate, article);
         article.Id = id;
@@ -171,7 +172,7 @@ public class ArticleService : IArticleService
     /// If one of them doesn't contains in repository, throw exception.
     /// </remarks>
     /// <exception cref="CategoryNotFoundException"></exception>
-    private void UpdateCategores(Article article, UpdateCategoryRequest[] categoresDto)
+    private async Task UpdateCategoresAsync(Article article, UpdateCategoryRequest[] categoresDto, CancellationToken cancellationToken)
     {
         if (article.Categories.Count != 0)
         {
@@ -180,8 +181,9 @@ public class ArticleService : IArticleService
 
         foreach (var categoryDto in categoresDto)
         {
-            var existingCategory = _repositoryManager.CategoryRepository.FindAll(trackChanges: true)
-                .FirstOrDefault(c => c.Name == categoryDto.Name && !c.Deleted);
+            var existingCategory = await _repositoryManager
+                .CategoryRepository
+                .GetByNameAsync(categoryDto.Name, false, cancellationToken);
 
             article.Categories.Add(existingCategory ?? throw new CategoryNotFoundException());
         }
@@ -194,7 +196,7 @@ public class ArticleService : IArticleService
     /// In proccess of adding <paramref name="tagsDto"/>, comparing them with existing in tags repository.
     /// If one of them doesn't contains in repository, adding to both (Articles, Tags).
     /// </remarks>
-    private void UpdateTags(Article article, CreateTagRequest[] tagsDto)
+    private async Task UpdateTagsAsync(Article article, CreateTagRequest[] tagsDto, CancellationToken cancellationToken)
     {
         if (article.Tags.Count != 0)
         {
@@ -203,8 +205,9 @@ public class ArticleService : IArticleService
 
         foreach (var tagDto in tagsDto)
         {
-            var existingTag = _repositoryManager.TagRepository.FindAll(trackChanges: true)
-                .FirstOrDefault(c => c.Name == tagDto.Name && !c.Deleted);
+            var existingTag = await _repositoryManager
+                .TagRepository
+                .GetByNameAsync(tagDto.Name, true, cancellationToken);
 
             article.Tags.Add(existingTag ?? _mapper.Map<Tag>(tagDto));
         }

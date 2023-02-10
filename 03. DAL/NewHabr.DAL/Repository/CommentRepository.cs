@@ -3,7 +3,7 @@ using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Models;
 
 namespace NewHabr.DAL.Repository.Impl;
-public class CommentRepository : ReporitoryBase<Comment, Guid>, ICommentRepository
+public class CommentRepository : RepositoryBase<Comment, Guid>, ICommentRepository
 {
 
     public CommentRepository(ApplicationContext context) : base(context)
