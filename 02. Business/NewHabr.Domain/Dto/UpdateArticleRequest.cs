@@ -1,15 +1,14 @@
 ﻿#nullable disable
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 
 namespace NewHabr.Domain.Dto;
 
 public class UpdateArticleRequest
 {
-    [NotNull, MinLength(3), MaxLength(500)]
+    [Required, MinLength(3), MaxLength(500)]
     public string Title { get; set; }
 
-    [NotNull]
+    [Required]
     public string Content { get; set; }
 
     public UpdateCategoryRequest[] Categories { get; set; } = Array.Empty<UpdateCategoryRequest>();
