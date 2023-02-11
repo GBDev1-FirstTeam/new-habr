@@ -61,10 +61,10 @@ public class TagServiceTests
         var request = new CreateTagRequest { Name = "test" };
 
         // act
-        var id = await _tagService.CreateAsync(request);
+        await _tagService.CreateAsync(request);
 
         // assert
-        var newTag = await _context.Tags.FirstOrDefaultAsync(c => c.Id == id);
+        var newTag = await _context.Tags.FirstOrDefaultAsync();
 
         Assert.NotNull(newTag);
         Assert.Equal(request.Name, newTag.Name);

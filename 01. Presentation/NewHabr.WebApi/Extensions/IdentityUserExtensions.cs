@@ -1,12 +1,10 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using System.Security.Claims;
-using NewHabr.Domain.Models;
+﻿using System.Security.Claims;
 
 namespace NewHabr.WebApi.Extensions;
 
 public static class IdentityUserExtensions
 {
+    /// <exception cref="UnauthorizedAccessException"></exception>
     public static Guid GetUserId(this ClaimsPrincipal user)
     {
         if (!user.HasClaim(claim => claim.Type == ClaimTypes.NameIdentifier))
@@ -20,4 +18,3 @@ public static class IdentityUserExtensions
         return userId;
     }
 }
-

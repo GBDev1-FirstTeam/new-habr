@@ -62,10 +62,10 @@ public class CategoryServiceTests
         var request = new CreateCategoryRequest { Name = "test" };
 
         // act
-        var id = await _categoryService.CreateAsync(request);
+        await _categoryService.CreateAsync(request);
 
         // assert
-        var newCategory = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id);
+        var newCategory = await _context.Categories.FirstOrDefaultAsync();
 
         Assert.NotNull(newCategory);
         Assert.Equal(request.Name, newCategory.Name);

@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Exceptions;
 using NewHabr.Domain.Models;
+using NewHabr.WebApi.Extensions;
 
 namespace NewHabr.WebApi.Controllers;
 
@@ -29,7 +31,7 @@ public class ArticlesController : ControllerBase
         {
             return Ok(await _articleService.GetCommentsWithLikedMarkAsync(id, userId, cancellationToken));
         }
-        catch(EntityNotFoundException ex)
+        catch (EntityNotFoundException ex)
         {
             _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}\nuser id: {userId}"), id, userId);
             return NotFound(ex.Message);
@@ -89,11 +91,12 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Guid>> Create([FromBody] CreateArticleRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult> Create([FromBody] CreateArticleRequest request, CancellationToken cancellationToken)
     {
         try
         {
-            return Ok(await _articleService.CreateAsync(request, cancellationToken));
+            await _articleService.CreateAsync(User.GetUserId(), request, cancellationToken);
+            return StatusCode(StatusCodes.Status201Created);
         }
         catch (EntityNotFoundException ex)
         {
@@ -140,7 +143,7 @@ public class ArticlesController : ControllerBase
             _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"), id);
             return NotFound(ex.Message);
         }
-        catch (ArticleIsNotApproveException ex)
+        catch (ArticleIsNotApprovedException ex)
         {
             _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"), id);
             return BadRequest(ex.Message);

@@ -101,41 +101,24 @@ public class ArticleServiceTests
     }
 
     [Fact]
-    public async Task CreateAsync__NotExistsUserId__ThrowNotFoundException()
-    {
-        // arrange
-        var request = new CreateArticleRequest
-        {
-            UserId = default(Guid),
-            Title = "test",
-            Content = "test"
-        };
-
-        // act, assert
-        await Assert.ThrowsAsync<UserNotFoundException>(async () => await _articleService.CreateAsync(request));
-    }
-
-    [Fact]
     public async Task CreateAsync__ValidRequest__CreatedCorrectEntity()
     {
         // arrange
         var request = new CreateArticleRequest
         {
-            UserId = _user.Id,
             Title = "test",
             Content = "test"
         };
 
         // act
-        var id = await _articleService.CreateAsync(request);
+        await _articleService.CreateAsync(default(Guid), request);
 
         // assert
-        var article = await _context.Articles.FirstOrDefaultAsync(a => a.Id == id);
+        var article = await _context.Articles.FirstOrDefaultAsync();
         Assert.NotNull(article);
         Assert.True(
             article.Content == request.Content &&
-            article.Title == request.Title &&
-            article.UserId == request.UserId);
+            article.Title == request.Title);
 
         await ClearContextFromEntitiesAsync<Article, Guid>();
     }
@@ -146,14 +129,13 @@ public class ArticleServiceTests
         // arrange
         var request = new CreateArticleRequest
         {
-            UserId = _user.Id,
             Title = "test",
             Content = "test",
             Categories = new[] { new CreateCategoryRequest { Name = "test" } }
         };
 
         // act, assert
-        await Assert.ThrowsAsync<CategoryNotFoundException>(async () => await _articleService.CreateAsync(request));
+        await Assert.ThrowsAsync<CategoryNotFoundException>(async () => await _articleService.CreateAsync(default(Guid), request));
     }
 
     [Fact]
@@ -163,7 +145,6 @@ public class ArticleServiceTests
         var existsCategory = await CreateCategoryAsync("test");
         var request = new CreateArticleRequest
         {
-            UserId = _user.Id,
             Title = "test",
             Content = "test",
             Categories = new[]
@@ -174,7 +155,7 @@ public class ArticleServiceTests
         };
 
         // act
-        await _articleService.CreateAsync(request);
+        await _articleService.CreateAsync(default(Guid), request);
         var count = _context.Categories.Count(c => c.Name == existsCategory.Name && !c.Deleted);
 
         // assert
@@ -193,7 +174,6 @@ public class ArticleServiceTests
         var existsCategory3 = await CreateCategoryAsync("test3");
         var request = new CreateArticleRequest
         {
-            UserId = _user.Id,
             Title = "test",
             Content = "test",
             Categories = new[]
@@ -205,10 +185,10 @@ public class ArticleServiceTests
         };
 
         // act
-        var id = await _articleService.CreateAsync(request);
+        await _articleService.CreateAsync(default(Guid), request);
 
         // assert
-        var newArticle = await _context.Articles.Include(a => a.Categories).FirstOrDefaultAsync(a => a.Id == id);
+        var newArticle = await _context.Articles.Include(a => a.Categories).FirstOrDefaultAsync();
         Assert.Contains(existsCategory1, newArticle.Categories);
         Assert.Contains(existsCategory2, newArticle.Categories);
         Assert.Contains(existsCategory3, newArticle.Categories);
@@ -224,14 +204,13 @@ public class ArticleServiceTests
         var tagNameToAdd = "test";
         var request = new CreateArticleRequest
         {
-            UserId = _user.Id,
             Title = "test",
             Content = "test",
             Tags = new[] { new CreateTagRequest { Name = tagNameToAdd } },
         };
 
         // act
-        var result = await _articleService.CreateAsync(request);
+        await _articleService.CreateAsync(default(Guid), request);
 
         // assert
         Assert.True(await _context.Tags.AnyAsync(t => t.Name == tagNameToAdd));
@@ -247,7 +226,6 @@ public class ArticleServiceTests
         var tagNameToAdd = "test";
         var request = new CreateArticleRequest
         {
-            UserId = _user.Id,
             Title = "test",
             Content = "test",
             Tags = new[]
@@ -258,7 +236,7 @@ public class ArticleServiceTests
         };
 
         // act
-        await _articleService.CreateAsync(request);
+        await _articleService.CreateAsync(default(Guid), request);
 
         // assert
         var count = _context.Tags.Count(t => t.Name == tagNameToAdd && !t.Deleted);
@@ -272,14 +250,13 @@ public class ArticleServiceTests
         var existsTag = await CreateTagAsync("test");
         var request = new CreateArticleRequest
         {
-            UserId = _user.Id,
             Title = "test",
             Content = "test",
             Tags = new[] { new CreateTagRequest { Name = existsTag.Name } },
         };
 
         // act
-        await _articleService.CreateAsync(request);
+        await _articleService.CreateAsync(default(Guid), request);
 
         // assert
         var count = _context.Tags.Count(t => t.Name == existsTag.Name && !t.Deleted);
@@ -298,7 +275,6 @@ public class ArticleServiceTests
         var existsTag3 = await CreateTagAsync("test3");
         var request = new CreateArticleRequest
         {
-            UserId = _user.Id,
             Title = "test",
             Content = "test",
             Tags = new[]
@@ -310,10 +286,10 @@ public class ArticleServiceTests
         };
 
         // act
-        var id = await _articleService.CreateAsync(request);
+        await _articleService.CreateAsync(default(Guid), request);
 
         // assert
-        var newArticle = await _context.Articles.Include(a => a.Categories).FirstOrDefaultAsync(a => a.Id == id);
+        var newArticle = await _context.Articles.Include(a => a.Categories).FirstOrDefaultAsync();
         Assert.Contains(existsTag1, newArticle.Tags);
         Assert.Contains(existsTag2, newArticle.Tags);
         Assert.Contains(existsTag3, newArticle.Tags);
@@ -328,16 +304,15 @@ public class ArticleServiceTests
         // arrange
         var request = new CreateArticleRequest
         {
-            UserId = _user.Id,
             Title = "test",
             Content = "test",
         };
 
         // act
-        var id = await _articleService.CreateAsync(request);
+        await _articleService.CreateAsync(default(Guid), request);
 
         // assert
-        var createdArticle = await _context.Articles.FirstOrDefaultAsync(a => a.Id == id);
+        var createdArticle = await _context.Articles.FirstOrDefaultAsync();
         Assert.True(createdArticle.CreatedAt != default);
         Assert.True(createdArticle.ModifiedAt != default);
     }
@@ -630,7 +605,7 @@ public class ArticleServiceTests
         var existsArticle = await CreateArticleAsync(saveChanges: true);
 
         // act, assert
-        await Assert.ThrowsAsync<ArticleIsNotApproveException>(async () => await _articleService.SetPublicationStatusAsync(existsArticle.Id, true));
+        await Assert.ThrowsAsync<ArticleIsNotApprovedException>(async () => await _articleService.SetPublicationStatusAsync(existsArticle.Id, true));
 
         await ClearContextFromEntitiesAsync<Article, Guid>();
     }

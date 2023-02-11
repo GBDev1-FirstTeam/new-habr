@@ -8,7 +8,7 @@ public interface ICategoryService
     Task<IReadOnlyCollection<CategoryDto>> GetAllAsync(CancellationToken cancellationToken = default);
 
     /// <exception cref="CategoryAlreadyExistsException"></exception>
-    Task<int> CreateAsync(CreateCategoryRequest request, CancellationToken cancellationToken = default);
+    Task CreateAsync(CreateCategoryRequest request, CancellationToken cancellationToken = default);
 
     /// <exception cref="CategoryNotFoundException"></exception>
     /// <exception cref="CategoryAlreadyExistsException"></exception>

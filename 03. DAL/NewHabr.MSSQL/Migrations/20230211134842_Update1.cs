@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace NewHabr.MSSQL.Migrations
 {
-    public partial class Update : Migration
+    public partial class Update1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -343,6 +343,7 @@ namespace NewHabr.MSSQL.Migrations
                     ArticleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     Deleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -410,17 +411,17 @@ namespace NewHabr.MSSQL.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { new Guid("00a98c8e-6a15-4447-9343-063f4f1efefc"), "c70ef5f3-4967-4b64-9d4b-0dbbdd7d6d41", "User", "USER" });
+                values: new object[] { new Guid("00a98c8e-6a15-4447-9343-063f4f1efefc"), "729f318a-f196-44f5-b86e-37ecd7ffd06c", "User", "USER" });
 
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { new Guid("1bfc496b-ebd2-4c5a-b3e8-4b2c1e334391"), "3412d907-4d3d-4626-a99a-b197779e7863", "Moderator", "MODERATOR" });
+                values: new object[] { new Guid("1bfc496b-ebd2-4c5a-b3e8-4b2c1e334391"), "ad458b9f-d589-4105-a40d-5d058d95fd9a", "Moderator", "MODERATOR" });
 
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { new Guid("aec1eede-5f3f-43ba-9ec3-454a3002c013"), "dbbf524e-a005-47f5-a4d9-c952710e2d2f", "Administrator", "ADMINISTRATOR" });
+                values: new object[] { new Guid("aec1eede-5f3f-43ba-9ec3-454a3002c013"), "eed239e4-e11a-45e7-8233-834ca54d59bc", "Administrator", "ADMINISTRATOR" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ArticleCategory_CategoriesId",

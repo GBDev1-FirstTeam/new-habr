@@ -5,9 +5,6 @@ namespace NewHabr.Domain.Dto;
 
 public class CreateArticleRequest
 {
-    [Required]
-    public Guid UserId { get; set; }
-
     [Required, MinLength(3), MaxLength(500)]
     public string Title { get; set; }
 

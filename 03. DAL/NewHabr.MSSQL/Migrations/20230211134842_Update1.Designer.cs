@@ -12,8 +12,8 @@ using NewHabr.DAL.EF;
 namespace NewHabr.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20230209154524_AddIdentity")]
-    partial class AddIdentity
+    [Migration("20230211134842_Update1")]
+    partial class Update1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -217,11 +217,9 @@ namespace NewHabr.MSSQL.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Name");
 
                     b.ToTable("Categories");
                 });
@@ -342,8 +340,6 @@ namespace NewHabr.MSSQL.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Name");
 
                     b.ToTable("Tags");
                 });
@@ -518,21 +514,21 @@ namespace NewHabr.MSSQL.Migrations
                         new
                         {
                             Id = new Guid("00a98c8e-6a15-4447-9343-063f4f1efefc"),
-                            ConcurrencyStamp = "8d4d3605-9c0a-4e64-aa64-facb0e79174b",
+                            ConcurrencyStamp = "729f318a-f196-44f5-b86e-37ecd7ffd06c",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = new Guid("1bfc496b-ebd2-4c5a-b3e8-4b2c1e334391"),
-                            ConcurrencyStamp = "6986b2ea-7722-418a-9eee-a5df79fd5f2c",
+                            ConcurrencyStamp = "ad458b9f-d589-4105-a40d-5d058d95fd9a",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         },
                         new
                         {
                             Id = new Guid("aec1eede-5f3f-43ba-9ec3-454a3002c013"),
-                            ConcurrencyStamp = "a12e5c20-6352-41f0-b17e-fd29d833b410",
+                            ConcurrencyStamp = "eed239e4-e11a-45e7-8233-834ca54d59bc",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });

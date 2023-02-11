@@ -16,11 +16,16 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
         bool trackChanges = false,
         CancellationToken cancellationToken = default)
     {
-        return await FindByCondition(a => a.Title.ToLower() == title.ToLower() && !a.Deleted, trackChanges)
+        var articlesQuery =
+            FindByCondition(a => a.Title.ToLower() == title.ToLower() && !a.Deleted, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .Include(a => a.Comments)
-            .ToListAsync(cancellationToken);
+            .OrderByDescending(a => a.CreatedAt);
+
+        await articlesQuery.ForEachAsync(a => a.Comments.OrderByDescending(a => a.CreatedAt), cancellationToken);
+
+        return await articlesQuery.ToListAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyCollection<Article>> GetByUserIdIncludeAsync(
@@ -28,33 +33,48 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
         bool trackChanges = false,
         CancellationToken cancellationToken = default)
     {
-        return await FindByCondition(a => a.UserId == userId && !a.Deleted, trackChanges)
+        var articlesQuery =
+            FindByCondition(a => a.UserId == userId && !a.Deleted, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .Include(a => a.Comments)
-            .ToListAsync(cancellationToken);
+            .OrderByDescending(a => a.CreatedAt);
+
+        await articlesQuery.ForEachAsync(a => a.Comments.OrderByDescending(a => a.CreatedAt), cancellationToken);
+
+        return await articlesQuery.ToListAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyCollection<Article>> GetUnpublishedIncludeAsync(
         bool trackChanges = false,
         CancellationToken cancellationToken = default)
     {
-        return await FindByCondition(a => !a.Published && !a.Deleted, trackChanges)
+        var articlesQuery =
+            FindByCondition(a => !a.Published && !a.Deleted, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .Include(a => a.Comments)
-            .ToListAsync(cancellationToken);
+            .OrderByDescending(a => a.CreatedAt);
+
+        await articlesQuery.ForEachAsync(a => a.Comments.OrderByDescending(a => a.CreatedAt), cancellationToken);
+
+        return await articlesQuery.ToListAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyCollection<Article>> GetDeletedIncludeAsync(
         bool trackChanges = false,
         CancellationToken cancellationToken = default)
     {
-        return await GetDeleted(trackChanges)
+        var articlesQuery =
+            GetDeleted(trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .Include(a => a.Comments)
-            .ToListAsync(cancellationToken);
+            .OrderByDescending(a => a.CreatedAt);
+
+        await articlesQuery.ForEachAsync(a => a.Comments.OrderByDescending(a => a.CreatedAt), cancellationToken);
+
+        return await articlesQuery.ToListAsync(cancellationToken);
     }
 
     public async Task<Article?> GetByIdAsync(
@@ -70,11 +90,16 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
         bool trackChanges = false,
         CancellationToken cancellationToken = default)
     {
-        return await FindByCondition(a => a.Id == id && !a.Deleted, trackChanges)
+        var articleQuery =
+            FindByCondition(a => a.Id == id && !a.Deleted, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .Include(a => a.Comments)
-            .FirstOrDefaultAsync(cancellationToken);
+            .OrderByDescending(a => a.CreatedAt);
+
+        await articleQuery.ForEachAsync(a => a.Comments.OrderByDescending(a => a.CreatedAt), cancellationToken);
+
+        return await articleQuery.FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<Article?> GetByIdIncludeCommentLikesAsync(
@@ -82,10 +107,15 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
         bool trackChanges = false,
         CancellationToken cancellationToken = default)
     {
-        return await FindByCondition(a => a.Id == id && !a.Deleted, trackChanges)
+        var articleQuery =
+            FindByCondition(a => a.Id == id && !a.Deleted, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .Include(a => a.Comments).ThenInclude(c => c.Likes)
-            .FirstOrDefaultAsync(cancellationToken);
+            .OrderByDescending(c => c.CreatedAt);
+
+        await articleQuery.ForEachAsync(a => a.Comments.OrderByDescending(a => a.CreatedAt), cancellationToken);
+
+        return await articleQuery.FirstOrDefaultAsync(cancellationToken);
     }
 }
