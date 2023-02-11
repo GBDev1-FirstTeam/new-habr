@@ -1,4 +1,6 @@
-﻿namespace NewHabr.Domain.Exceptions;
+﻿using NewHabr.Domain.Models;
+
+namespace NewHabr.Domain.Exceptions;
 
 public abstract class EntityNotFoundException : Exception
 {

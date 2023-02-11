@@ -237,6 +237,9 @@ namespace NewHabr.MSSQL.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("bit");
 
+                    b.Property<DateTimeOffset>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -509,21 +512,21 @@ namespace NewHabr.MSSQL.Migrations
                         new
                         {
                             Id = new Guid("00a98c8e-6a15-4447-9343-063f4f1efefc"),
-                            ConcurrencyStamp = "c70ef5f3-4967-4b64-9d4b-0dbbdd7d6d41",
+                            ConcurrencyStamp = "8d4d3605-9c0a-4e64-aa64-facb0e79174b",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = new Guid("1bfc496b-ebd2-4c5a-b3e8-4b2c1e334391"),
-                            ConcurrencyStamp = "3412d907-4d3d-4626-a99a-b197779e7863",
+                            ConcurrencyStamp = "6986b2ea-7722-418a-9eee-a5df79fd5f2c",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         },
                         new
                         {
                             Id = new Guid("aec1eede-5f3f-43ba-9ec3-454a3002c013"),
-                            ConcurrencyStamp = "dbbf524e-a005-47f5-a4d9-c952710e2d2f",
+                            ConcurrencyStamp = "a12e5c20-6352-41f0-b17e-fd29d833b410",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });

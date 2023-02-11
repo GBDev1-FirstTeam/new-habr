@@ -12,7 +12,7 @@ public class ArticleDto
     [Required]
     public Guid UserId { get; set; }
 
-    [MinLength(3), MaxLength(500)]
+    [Required, MinLength(3), MaxLength(500)]
     public string Title { get; set; }
 
     public ICollection<CategoryDto> Categories { get; set; } = new HashSet<CategoryDto>();
@@ -21,6 +21,7 @@ public class ArticleDto
 
     public ICollection<CommentDto> Comments { get; set; } = new HashSet<CommentDto>();
 
+    [Required]
     public string Content { get; set; }
 
     public long CreatedAt { get; set; }

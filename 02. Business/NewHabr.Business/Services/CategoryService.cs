@@ -24,7 +24,9 @@ public class CategoryService : ICategoryService
     }
     public async Task<int> CreateAsync(CreateCategoryRequest request, CancellationToken cancellationToken = default)
     {
-        var category = _repositoryManager.CategoryRepository.FindByCondition(c => c.Name == request.Name && !c.Deleted).FirstOrDefault();
+        var category = await _repositoryManager
+            .CategoryRepository
+            .GetByNameAsync(request.Name, false, cancellationToken);
 
         if (category is not null)
         {
@@ -36,6 +38,7 @@ public class CategoryService : ICategoryService
         await _repositoryManager.SaveAsync(cancellationToken);
         return newCategory.Id;
     }
+
     public async Task UpdateAsync(int id, UpdateCategoryRequest categoryToUpdate, CancellationToken cancellationToken = default)
     {
         var targetCategory = await _repositoryManager.CategoryRepository.GetByIdAsync(id, trackChanges: true, cancellationToken);
@@ -45,8 +48,9 @@ public class CategoryService : ICategoryService
             throw new CategoryNotFoundException();
         }
 
-        var categoryWithSameName = _repositoryManager.CategoryRepository
-            .FindByCondition(c => c.Name == categoryToUpdate.Name && !c.Deleted).FirstOrDefault();
+        var categoryWithSameName = await _repositoryManager
+            .CategoryRepository
+            .GetByNameAsync(categoryToUpdate.Name, false, cancellationToken);
 
         if (categoryWithSameName is not null)
         {
@@ -54,10 +58,10 @@ public class CategoryService : ICategoryService
         }
 
         _mapper.Map(categoryToUpdate, targetCategory);
-        targetCategory.Id = id;
 
         await _repositoryManager.SaveAsync(cancellationToken);
     }
+
     public async Task DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         var category = await _repositoryManager.CategoryRepository.GetByIdIncludeAsync(id, trackChanges: true, cancellationToken);

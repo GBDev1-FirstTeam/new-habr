@@ -9,7 +9,53 @@
         </nav>
     </div>
     <div class="main-container-grid">
-        <router-outlet></router-outlet>
+        <div class="content-area">
+            <router-outlet></router-outlet>
+        </div>
+        <div class="account-container">
+            <div *ngIf="isAuth; else login" class="user-container">
+                <div class="emoji">
+                    <i class="bi bi-person-check"></i>
+                </div>
+                <div class="login">
+                    <span>Привет, {{ auth?.User?.Login }}!</span>
+                </div>
+                <hr>
+                <div class="info">
+                    Вы авторизованы как:
+                    <div>{{ auth?.User?.LastName }} {{ auth?.User?.FirstName }} {{ auth?.User?.Patronymic }}</div>
+                    <div>Возраст: {{ auth?.User?.Age }} лет</div>
+                    <div>Роль: {{ auth?.User?.Role }}</div>
+                </div>
+                <div class="nav">
+                    <button type="button" class="btn btn-light" (click)="navigate(['accounts', auth?.User?.Id])">Мой профиль</button>
+                    <button type="button" class="btn btn-light" (click)="navigate(['accounts', auth?.User?.Id, 'articles'])">Мои статьи</button>
+                    <button type="button" class="btn btn-light" (click)="logout()">Выйти</button>
+                </div>
+            </div>
+            <ng-template #login class="user-container">
+                <div class="emoji">
+                    <i class="bi bi-person-lines-fill"></i>
+                </div>
+                <div class="login">
+                    <span>Привет, Гость!</span>
+                </div>
+                <hr>
+                <div class="nav">
+                    <button type="button" class="btn btn-light" (click)="navigate(['accounts', 'login'])">Авторизация</button>
+                    <div>
+                        Еще не завели аккаунт? <a [routerLink]="'accounts/register'">Зарегистрируйтесь</a>
+                    </div>
+                </div>
+            </ng-template>
+        </div>
     </div>
+    <footer>
+        <div>
+            Разработано командой GBDev1-FirstTeam
+        </div>
+        <div>
+            GitHub проекта <a target="_blank" href="https://github.com/GBDev1-FirstTeam/new-habr"><i class="bi bi-github"></i></a>
+        </div>
+    </footer>
 </div>
-

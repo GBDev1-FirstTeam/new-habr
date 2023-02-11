@@ -1,0 +1,42 @@
+<div class="form-container">
+    <h5>Введите свои учётные данные</h5>
+
+    <form>
+        <div class="form-group">
+            <label for="login">Ваш будущий логин</label>
+            <input type="text" class="form-control" id="login" placeholder="Логин" [(ngModel)]="login" name="login">
+        </div>
+        <div class="form-group">
+            <label for="name">Ваше имя</label>
+            <input type="text" class="form-control" id="name" placeholder="Имя" [(ngModel)]="name" name="name">
+        </div>
+        <div class="form-group">
+            <label for="secondName">Ваша фамилия</label>
+            <input type="text" class="form-control" id="secondName" placeholder="Фамилия" [(ngModel)]="secondName" name="secondName">
+        </div>
+        <div class="form-group">
+            <label for="patronymic">Ваше отчество</label>
+            <input type="text" class="form-control" id="patronymic" placeholder="Отчество" [(ngModel)]="patronymic" name="patronymic">
+        </div>
+        <div class="form-group">
+            <label for="age">Ваш возраст</label>
+            <input type="number" class="form-control" id="age" placeholder="Возраст" [(ngModel)]="age" name="age">
+        </div>
+        <div class="form-group">
+            <label for="about">Немного о себе</label>
+            <input type="text" class="form-control" id="about" placeholder="О себе" [(ngModel)]="about" name="about">
+        </div>
+        <div class="form-group">
+            <label for="password">Придумайте свой пароль</label>
+            <input type="password" class="form-control" id="password" placeholder="Пароль" [(ngModel)]="password" name="password">
+        </div>
+        <div class="form-group">
+            <label for="repeatPassword">Повторите пароль</label>
+            <input type="password" class="form-control" id="repeatPassword" placeholder="Повторите пароль" [(ngModel)]="repeatPassword" name="repeatPassword">
+        </div>
+
+        <div *ngIf="incorrectPasswords" style="color: red; margin-bottom: 10px;">Пароли не совпадают!</div>
+
+        <button type="submit" class="btn btn-outline-dark" (click)="register()">Зарегистрировать</button>
+    </form>
+</div>

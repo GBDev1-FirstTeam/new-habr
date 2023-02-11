@@ -4,7 +4,7 @@ using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Models;
 
 namespace NewHabr.DAL.Repository.Impl;
-public class UserRepository : ReporitoryBase<User, Guid>, IUserRepository
+public class UserRepository : RepositoryBase<User, Guid>, IUserRepository
 {
     public UserRepository(ApplicationContext context) : base(context)
     {
@@ -33,5 +33,11 @@ public class UserRepository : ReporitoryBase<User, Guid>, IUserRepository
     public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await FindByCondition(u => u.Id == id && !u.Deleted).FirstOrDefaultAsync(cancellationToken);
+    }
+    
+    public async Task<int> GetUsersCountWithSecureQuestionId(int id, CancellationToken cancellationToken)
+    {
+        return await FindByCondition(u => u.SecureQuestionId == id)
+            .CountAsync(cancellationToken);
     }
 }

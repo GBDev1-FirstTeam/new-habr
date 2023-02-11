@@ -11,6 +11,4 @@ export interface Publication extends Like {
     PublishedAt?: number;
     ImgURL: string;
     IsPublished: boolean;
-    LikesCount?: number;
-    IsLiked?: boolean;
 }

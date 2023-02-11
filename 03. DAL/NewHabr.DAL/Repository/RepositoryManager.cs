@@ -6,20 +6,22 @@ namespace NewHabr.DAL.Repository;
 public class RepositoryManager : IRepositoryManager
 {
     private readonly ApplicationContext _context;
-    private readonly Lazy<ArticleRepository> _articleRepository;
-    private readonly Lazy<CommentRepository> _commentRepository;
-    private readonly Lazy<UserRepository> _userRepository;
-    private readonly Lazy<CategoryRepository> _categoryRepository;
-    private readonly Lazy<TagRepository> _tagRepository;
+    public IArticleRepository ArticleRepository { get; }
+    public ICommentRepository CommentRepository { get; }
+    public IUserRepository UserRepository { get; }
+    public ICategoryRepository CategoryRepository { get; }
+    public ITagRepository TagRepository { get; }
+    public ISecureQuestionsRepository SecureQuestionsRepository { get; }
 
     public RepositoryManager(ApplicationContext context)
     {
         _context = context;
-        _articleRepository = new Lazy<ArticleRepository>(() => new(_context));
-        _commentRepository = new Lazy<CommentRepository>(() => new(_context));
-        _userRepository = new Lazy<UserRepository>(() => new(_context));
-        _categoryRepository = new Lazy<CategoryRepository>(() => new(_context));
-        _tagRepository = new Lazy<TagRepository>(() => new(_context));
+        ArticleRepository = new ArticleRepository(_context);
+        CommentRepository = new CommentRepository(_context);
+        UserRepository = new UserRepository(_context);
+        CategoryRepository = new CategoryRepository(_context);
+        TagRepository = new TagRepository(_context);
+        SecureQuestionsRepository = new SecureQuestionsRepository(_context);
     }
 
     public IArticleRepository ArticleRepository => _articleRepository.Value;
