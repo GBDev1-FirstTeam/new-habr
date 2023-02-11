@@ -25,4 +25,8 @@ public class TagRepository : RepositoryBase<Tag, int>, ITagRepository
     {
         return await GetAvailable(trackChanges).ToListAsync(cancellationToken);
     }
+    public Task<Tag?> GetByNameAsync(string name, bool trackChanges, CancellationToken cancellationToken = default)
+    {
+        return FindByCondition(t => t.Name == name && !t.Deleted, trackChanges).FirstOrDefaultAsync(cancellationToken);
+    }
 }

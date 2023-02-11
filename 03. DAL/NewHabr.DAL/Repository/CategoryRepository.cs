@@ -25,4 +25,8 @@ public class CategoryRepository : RepositoryBase<Category, int>, ICategoryReposi
     {
         return await GetAvailable(trackChanges).ToListAsync(cancellationToken);
     }
+    public Task<Category?> GetByNameAsync(string name, bool trackChanges, CancellationToken cancellationToken = default)
+    {
+        return FindByCondition(c => c.Name == name && !c.Deleted, trackChanges).FirstOrDefaultAsync(cancellationToken);
+    }
 }

@@ -24,12 +24,6 @@ public class RepositoryManager : IRepositoryManager
         SecureQuestionsRepository = new SecureQuestionsRepository(_context);
     }
 
-    public IArticleRepository ArticleRepository => _articleRepository.Value;
-    public ICommentRepository CommentRepository => _commentRepository.Value;
-    public IUserRepository UserRepository => _userRepository.Value;
-    public ICategoryRepository CategoryRepository => _categoryRepository.Value;
-    public ITagRepository TagRepository => _tagRepository.Value;
-
     public async Task SaveAsync(CancellationToken cancellationToken = default)
     {
         await _context.SaveChangesAsync(cancellationToken);

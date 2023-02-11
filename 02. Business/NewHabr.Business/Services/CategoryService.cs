@@ -38,7 +38,6 @@ public class CategoryService : ICategoryService
         await _repositoryManager.SaveAsync(cancellationToken);
         return newCategory.Id;
     }
-
     public async Task UpdateAsync(int id, UpdateCategoryRequest categoryToUpdate, CancellationToken cancellationToken = default)
     {
         var targetCategory = await _repositoryManager.CategoryRepository.GetByIdAsync(id, trackChanges: true, cancellationToken);
@@ -61,7 +60,6 @@ public class CategoryService : ICategoryService
 
         await _repositoryManager.SaveAsync(cancellationToken);
     }
-
     public async Task DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         var category = await _repositoryManager.CategoryRepository.GetByIdIncludeAsync(id, trackChanges: true, cancellationToken);
