@@ -185,6 +185,39 @@ public class ArticleServiceTests
     }
 
     [Fact]
+    public async Task CreateAsync__ExistsCategoryCollection__AllCategoriesAdded()
+    {
+        // arrange
+        var existsCategory1 = await CreateCategoryAsync("test1");
+        var existsCategory2 = await CreateCategoryAsync("test2");
+        var existsCategory3 = await CreateCategoryAsync("test3");
+        var request = new CreateArticleRequest
+        {
+            UserId = _user.Id,
+            Title = "test",
+            Content = "test",
+            Categories = new[]
+            {
+                new CreateCategoryRequest { Name = existsCategory1.Name },
+                new CreateCategoryRequest { Name = existsCategory2.Name },
+                new CreateCategoryRequest { Name = existsCategory3.Name }
+            },
+        };
+
+        // act
+        var id = await _articleService.CreateAsync(request);
+
+        // assert
+        var newArticle = await _context.Articles.Include(a => a.Categories).FirstOrDefaultAsync(a => a.Id == id);
+        Assert.Contains(existsCategory1, newArticle.Categories);
+        Assert.Contains(existsCategory2, newArticle.Categories);
+        Assert.Contains(existsCategory3, newArticle.Categories);
+
+        await ClearContextFromEntitiesAsync<Article, Guid>();
+        await ClearContextFromEntitiesAsync<Category, int>();
+    }
+
+    [Fact]
     public async Task CreateAsync__NotExistsTag__CreatedNewTag()
     {
         // arrange
@@ -251,6 +284,39 @@ public class ArticleServiceTests
         // assert
         var count = _context.Tags.Count(t => t.Name == existsTag.Name && !t.Deleted);
         Assert.True(count == 1);
+
+        await ClearContextFromEntitiesAsync<Article, Guid>();
+        await ClearContextFromEntitiesAsync<Tag, int>();
+    }
+
+    [Fact]
+    public async Task CreateAsync__TagCollection__AllTagsAdded()
+    {
+        // arrange
+        var existsTag1 = await CreateTagAsync("test1");
+        var existsTag2 = await CreateTagAsync("test2");
+        var existsTag3 = await CreateTagAsync("test3");
+        var request = new CreateArticleRequest
+        {
+            UserId = _user.Id,
+            Title = "test",
+            Content = "test",
+            Tags = new[]
+            {
+                new CreateTagRequest { Name = existsTag1.Name },
+                new CreateTagRequest { Name = existsTag2.Name },
+                new CreateTagRequest { Name = existsTag3.Name }
+            },
+        };
+
+        // act
+        var id = await _articleService.CreateAsync(request);
+
+        // assert
+        var newArticle = await _context.Articles.Include(a => a.Categories).FirstOrDefaultAsync(a => a.Id == id);
+        Assert.Contains(existsTag1, newArticle.Tags);
+        Assert.Contains(existsTag2, newArticle.Tags);
+        Assert.Contains(existsTag3, newArticle.Tags);
 
         await ClearContextFromEntitiesAsync<Article, Guid>();
         await ClearContextFromEntitiesAsync<Tag, int>();
@@ -358,6 +424,38 @@ public class ArticleServiceTests
     }
 
     [Fact]
+    public async Task UpdateAsync__ExistsCategoryCollection__AllCategoriesAdded()
+    {
+        // arrange
+        var article = await CreateArticleAsync();
+        var existsCategory1 = await CreateCategoryAsync("test1");
+        var existsCategory2 = await CreateCategoryAsync("test2");
+        var existsCategory3 = await CreateCategoryAsync("test3");
+        var request = new UpdateArticleRequest
+        {
+            Title = article.Title,
+            Content = article.Title,
+            Categories = new[]
+            {
+                new CreateCategoryRequest { Name = existsCategory1.Name },
+                new CreateCategoryRequest { Name = existsCategory2.Name },
+                new CreateCategoryRequest { Name = existsCategory3.Name }
+            },
+        };
+
+        // act
+        await _articleService.UpdateAsync(article.Id, request);
+
+        // assert
+        Assert.Contains(existsCategory1, article.Categories);
+        Assert.Contains(existsCategory2, article.Categories);
+        Assert.Contains(existsCategory3, article.Categories);
+
+        await ClearContextFromEntitiesAsync<Article, Guid>();
+        await ClearContextFromEntitiesAsync<Category, int>();
+    }
+
+    [Fact]
     public async Task UpdateAsync__NotExistsTag__CreateNewTag()
     {
         // arrange
@@ -430,6 +528,38 @@ public class ArticleServiceTests
         // assert
         var count = _context.Tags.Count(c => c.Name == existsTag.Name && !c.Deleted);
         Assert.True(count == 1);
+
+        await ClearContextFromEntitiesAsync<Article, Guid>();
+        await ClearContextFromEntitiesAsync<Tag, int>();
+    }
+
+    [Fact]
+    public async Task UpdateAsync__TagCollection__AllTagsAdded()
+    {
+        // arrange
+        var article = await CreateArticleAsync();
+        var existsTag1 = await CreateTagAsync("test1");
+        var existsTag2 = await CreateTagAsync("test2");
+        var existsTag3 = await CreateTagAsync("test3");
+        var request = new UpdateArticleRequest
+        {
+            Title = article.Title,
+            Content = article.Title,
+            Tags = new[]
+            {
+                new CreateTagRequest { Name = existsTag1.Name },
+                new CreateTagRequest { Name = existsTag2.Name },
+                new CreateTagRequest { Name = existsTag3.Name }
+            },
+        };
+
+        // act
+        await _articleService.UpdateAsync(article.Id, request);
+
+        // assert
+        Assert.Contains(existsTag1, article.Tags);
+        Assert.Contains(existsTag2, article.Tags);
+        Assert.Contains(existsTag3, article.Tags);
 
         await ClearContextFromEntitiesAsync<Article, Guid>();
         await ClearContextFromEntitiesAsync<Tag, int>();

@@ -82,8 +82,8 @@ public class ArticleService : IArticleService
         article.CreatedAt = creationDateTime;
         article.ModifiedAt = creationDateTime;
 
-        await UpdateCategoresAsync(article, request.Categories);
-        await UpdateTagsAsync(article, request.Tags);
+        await UpdateCategoresAsync(article, request.Categories, cancellationToken);
+        await UpdateTagsAsync(article, request.Tags, cancellationToken);
 
         _repositoryManager.ArticleRepository.Create(article);
         await _repositoryManager.SaveAsync(cancellationToken);
@@ -173,7 +173,8 @@ public class ArticleService : IArticleService
     /// If one of them doesn't contains in repository, throw exception.
     /// </remarks>
     /// <exception cref="CategoryNotFoundException"></exception>
-    private async Task UpdateCategoresAsync(Article article,
+    private async Task UpdateCategoresAsync(
+        Article article,
         ICollection<CreateCategoryRequest> categoriesDto,
         CancellationToken cancellationToken = default)
     {
@@ -199,7 +200,8 @@ public class ArticleService : IArticleService
     /// In proccess of adding <paramref name="tagsDto"/>, comparing them with existing in tags repository.
     /// If one of them doesn't contains in repository, adding to both (Articles, Tags).
     /// </remarks>
-    private async Task UpdateTagsAsync(Article article,
+    private async Task UpdateTagsAsync(
+        Article article,
         ICollection<CreateTagRequest> tagsDto,
         CancellationToken cancellationToken = default)
     {
@@ -213,7 +215,7 @@ public class ArticleService : IArticleService
 
         foreach (var tagDto in tagsDto)
         {
-            var existsTag = existsTags.FirstOrDefault();
+            var existsTag = existsTags.FirstOrDefault(c => c.Name == tagDto.Name && !c.Deleted);
 
             article.Tags.Add(existsTag ?? _mapper.Map<Tag>(tagDto));
         }
