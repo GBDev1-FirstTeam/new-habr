@@ -35,7 +35,7 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> Create([FromBody] CreateCategoryRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult> Create([FromBody] CategoryCreateRequest request, CancellationToken cancellationToken)
     {
         try
         {
@@ -57,7 +57,7 @@ public class CategoriesController : ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult> Update(
         [FromRoute, Range(1, int.MaxValue)] int id,
-        [FromBody] UpdateCategoryRequest categoryToUpdate,
+        [FromBody] CategoryUpdateRequest categoryToUpdate,
         CancellationToken cancellationToken)
     {
         try

@@ -17,7 +17,7 @@ public class CommentService : ICommentService
         _mapper = mapper;
     }
 
-    public async Task CreateAsync(Guid CreatorId, CreateCommentRequest data, CancellationToken cancellationToken = default)
+    public async Task CreateAsync(Guid CreatorId, CommentCreateRequest data, CancellationToken cancellationToken = default)
     {
         var newComment = _mapper.Map<Comment>(data);
         newComment.UserId = CreatorId;
@@ -49,7 +49,7 @@ public class CommentService : ICommentService
         return _mapper.Map<List<CommentDto>>(comments);
     }
 
-    public async Task UpdateAsync(Guid commentId, Guid modifierId, UpdateCommentRequest updatedComment, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(Guid commentId, Guid modifierId, CommentUpdateRequest updatedComment, CancellationToken cancellationToken = default)
     {
         var comment = await _repositoryManager.CommentRepository.GetByIdAsync(commentId, true, cancellationToken: cancellationToken);
 

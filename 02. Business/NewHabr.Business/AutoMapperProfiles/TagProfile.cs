@@ -9,7 +9,7 @@ public class TagProfile : Profile
     public TagProfile()
     {
         CreateMap<Tag, TagDto>().ReverseMap();
-        CreateMap<CreateTagRequest, Tag>();
-        CreateMap<UpdateTagRequest, Tag>();
+        CreateMap<TagCreateRequest, Tag>();
+        CreateMap<TagUpdateRequest, Tag>();
     }
 }

@@ -18,11 +18,11 @@ public class ArticleProfile : Profile
             .ForMember(dest => dest.ModifiedAt, e => e.MapFrom(src => new DateTimeOffset(new DateTime(src.ModifiedAt))))
             .ForMember(dest => dest.PublishedAt, e => e.MapFrom(src => new DateTimeOffset(new DateTime(src.PublishedAt))));
 
-        CreateMap<CreateArticleRequest, Article>()
+        CreateMap<ArticleCreateRequest, Article>()
             .ForMember(dest => dest.Categories, options => options.Ignore())
             .ForMember(dest => dest.Tags, options => options.Ignore());
 
-        CreateMap<UpdateArticleRequest, Article>()
+        CreateMap<ArticleUpdateRequest, Article>()
             .ForMember(dest => dest.Categories, options => options.Ignore())
             .ForMember(dest => dest.Tags, options => options.Ignore());
     }

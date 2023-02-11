@@ -36,7 +36,7 @@ public class CommentsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> Create([FromBody] CreateCommentRequest newComment, CancellationToken cancellationToken)
+    public async Task<ActionResult> Create([FromBody] CommentCreateRequest newComment, CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
         try
@@ -53,7 +53,7 @@ public class CommentsController : ControllerBase
 
     [HttpPut("id")] //todo кто может изменять? автор
     public async Task<ActionResult> Update([FromRoute] Guid id,
-        [FromBody] UpdateCommentRequest updateComment,
+        [FromBody] CommentUpdateRequest updateComment,
         CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();

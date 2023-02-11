@@ -23,7 +23,7 @@ public class CategoryService : ICategoryService
         return _mapper.Map<List<CategoryDto>>(categories);
     }
 
-    public async Task CreateAsync(CreateCategoryRequest request, CancellationToken cancellationToken = default)
+    public async Task CreateAsync(CategoryCreateRequest request, CancellationToken cancellationToken = default)
     {
         var category = await _repositoryManager
             .CategoryRepository
@@ -39,7 +39,7 @@ public class CategoryService : ICategoryService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task UpdateAsync(int id, UpdateCategoryRequest categoryToUpdate, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(int id, CategoryUpdateRequest categoryToUpdate, CancellationToken cancellationToken = default)
     {
         var targetCategory = await _repositoryManager.CategoryRepository.GetByIdAsync(id, trackChanges: true, cancellationToken);
 

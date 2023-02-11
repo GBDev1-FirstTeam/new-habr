@@ -16,7 +16,7 @@ public class CommentProfile : Profile
             .ForMember(dest => dest.CreatedAt, e => e.MapFrom(src => DateTimeOffset.FromUnixTimeMilliseconds(src.CreatedAt)))
             .ForMember(dest => dest.ModifiedAt, e => e.MapFrom(src => DateTimeOffset.FromUnixTimeMilliseconds(src.ModifiedAt)));
 
-        CreateMap<CreateCommentRequest, Comment>();
-        CreateMap<UpdateCommentRequest, Comment>();
+        CreateMap<CommentCreateRequest, Comment>();
+        CreateMap<CommentUpdateRequest, Comment>();
     }
 }

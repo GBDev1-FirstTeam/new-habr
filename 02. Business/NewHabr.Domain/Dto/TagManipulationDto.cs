@@ -1,10 +1,13 @@
 ﻿#nullable disable
+
 using System.ComponentModel.DataAnnotations;
 
 namespace NewHabr.Domain.Dto;
 
-public class UpdateCategoryRequest
+public abstract class TagManipulationDto
 {
-    [Required, MinLength(3), MaxLength(100)]
+    [Required, MinLength(3), MaxLength(50)]
     public string Name { get; set; }
+
 }
+

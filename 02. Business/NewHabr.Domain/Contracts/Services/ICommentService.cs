@@ -10,7 +10,7 @@ public interface ICommentService
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>    
-    Task CreateAsync(Guid creatorId, CreateCommentRequest data, CancellationToken cancellationToken = default);
+    Task CreateAsync(Guid creatorId, CommentCreateRequest data, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Updates an existing in database Comment class
@@ -20,7 +20,7 @@ public interface ICommentService
     /// <exception cref="CommentNotFoundException"></exception>
     Task UpdateAsync(Guid commentId,
         Guid modifierId,
-        UpdateCommentRequest updatedComment,
+        CommentUpdateRequest updatedComment,
         CancellationToken cancellationToken = default);
 
     /// <summary>
