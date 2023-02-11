@@ -209,7 +209,7 @@ public class ArticleService : IArticleService
     /// In proccess of adding <paramref name="tagsDto"/>, comparing them with existing in tags repository.
     /// If one of them doesn't contains in repository, adding to both (Articles, Tags).
     /// </remarks>
-    private async Task UpdateTagsAsync(Article article, CreateTagRequest[] tagsDto, CancellationToken cancellationToken)
+    private async Task UpdateTagsAsync(Article article, TagCreateRequest[] tagsDto, CancellationToken cancellationToken)
     {
         if (article.Tags.Count != 0)
         {

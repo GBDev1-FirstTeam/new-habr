@@ -13,6 +13,6 @@ public abstract class ArticleManipulationDto
 
     public CategoryUpdateRequest[] Categories { get; set; } = Array.Empty<CategoryUpdateRequest>();
 
-    public CreateTagRequest[] Tags { get; set; } = Array.Empty<CreateTagRequest>();
+    public TagCreateRequest[] Tags { get; set; } = Array.Empty<TagCreateRequest>();
 
 }
