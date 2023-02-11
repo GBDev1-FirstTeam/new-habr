@@ -69,6 +69,7 @@ public class ArticleService : IArticleService
         var creationDateTime = DateTimeOffset.UtcNow;
         article.CreatedAt = creationDateTime;
         article.ModifiedAt = creationDateTime;
+        article.UserId = userId;
 
         await UpdateCategoresAsync(article, request.Categories, cancellationToken);
         await UpdateTagsAsync(article, request.Tags, cancellationToken);
