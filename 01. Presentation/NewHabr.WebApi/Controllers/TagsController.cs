@@ -34,7 +34,7 @@ public class TagsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> Create([FromBody] CreateTagRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult> Create([FromBody] TagCreateRequest request, CancellationToken cancellationToken)
     {
         try
         {
@@ -56,7 +56,7 @@ public class TagsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult> Update(
         [FromRoute, Range(1, int.MaxValue)] int id,
-        [FromBody] UpdateTagRequest tagToUpdate,
+        [FromBody] TagUpdateRequest tagToUpdate,
         CancellationToken cancellationToken)
     {
         try

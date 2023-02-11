@@ -9,7 +9,7 @@ public class CategoryProfile : Profile
     public CategoryProfile()
     {
         CreateMap<Category, CategoryDto>().ReverseMap();
-        CreateMap<CreateCategoryRequest, Category>();
-        CreateMap<UpdateCategoryRequest, Category>();
+        CreateMap<CategoryCreateRequest, Category>();
+        CreateMap<CategoryUpdateRequest, Category>();
     }
 }

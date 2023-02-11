@@ -6,7 +6,7 @@ using NewHabr.Domain.Models;
 
 namespace NewHabr.DAL.Repository;
 
-public class NotificationRepository : ReporitoryBase<UserNotification, Guid>, INotificationRepository
+public class NotificationRepository : RepositoryBase<UserNotification, Guid>, INotificationRepository
 {
     public NotificationRepository(ApplicationContext context) : base(context)
     {

@@ -8,6 +8,7 @@ using NewHabr.Domain.Exceptions;
 namespace NewHabr.WebApi.Controllers;
 
 [ApiController, Route("api/[controller]")]
+[Authorize(Roles = "Administrator")]
 public class SecureQuestionsController : ControllerBase
 {
     private readonly ISecureQuestionsService _secureQuestionsService;
@@ -20,30 +21,31 @@ public class SecureQuestionsController : ControllerBase
 
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetQuestions(CancellationToken cancellationToken)
     {
-        var questions = await _secureQuestionsService.GetAllAsync(false, cancellationToken);
+        var questions = await _secureQuestionsService.GetAllAsync(cancellationToken);
         return Ok(questions);
     }
 
     [HttpPost]
-    [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> CreateQuestion(SecureQuestionCreateRequest request, CancellationToken cancellationToken)
     {
-        if (request is null)
-            return BadRequest();
+        try
+        {
+            await _secureQuestionsService.CreateAsync(request, cancellationToken);
+            return StatusCode(StatusCodes.Status201Created);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
 
-        await _secureQuestionsService.CreateAsync(request, cancellationToken);
-
-        return StatusCode(StatusCodes.Status201Created);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] SecureQuestionUpdateRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateQuestion([FromRoute] int id, [FromBody] SecureQuestionUpdateRequest request, CancellationToken cancellationToken)
     {
-        if (request is null)
-            return BadRequest();
-
         try
         {
             await _secureQuestionsService.UpdateAsync(id, request, cancellationToken);
@@ -65,7 +67,7 @@ public class SecureQuestionsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete([FromRoute] int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteQuestion([FromRoute] int id, CancellationToken cancellationToken)
     {
         try
         {

@@ -25,12 +25,14 @@ public class SecureQuestionsService : ISecureQuestionsService
 
     public async Task CreateAsync(SecureQuestionCreateRequest request, CancellationToken cancellationToken)
     {
+        await EnsureQuestionNotExists(request, cancellationToken);
+
         var newQuestion = _mapper.Map<SecureQuestion>(request);
         _repositoryManager.SecureQuestionsRepository.Create(newQuestion);
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task<ICollection<SecureQuestionDto>> GetAllAsync(bool trackChanges, CancellationToken cancellationToken)
+    public async Task<ICollection<SecureQuestionDto>> GetAllAsync(CancellationToken cancellationToken)
     {
         var questions = await _repositoryManager.SecureQuestionsRepository.GetAllAsync(cancellationToken);
         var questionsDto = _mapper.Map<List<SecureQuestionDto>>(questions);
@@ -39,10 +41,12 @@ public class SecureQuestionsService : ISecureQuestionsService
 
     public async Task UpdateAsync(int id, SecureQuestionUpdateRequest request, CancellationToken cancellationToken)
     {
+        await EnsureQuestionNotExists(request, cancellationToken);
+
         var sq = await GetIfExistsAndNotInUse(id, cancellationToken);
 
         _mapper.Map(request, sq);
-        await _repositoryManager.SaveAsync();
+        await _repositoryManager.SaveAsync(cancellationToken);
     }
 
     public async Task DeleteAsync(int id, CancellationToken cancellationToken)
@@ -50,9 +54,16 @@ public class SecureQuestionsService : ISecureQuestionsService
         var sq = await GetIfExistsAndNotInUse(id, cancellationToken);
 
         _repositoryManager.SecureQuestionsRepository.Delete(sq);
-        await _repositoryManager.SaveAsync();
+        await _repositoryManager.SaveAsync(cancellationToken);
     }
 
+
+    private async Task EnsureQuestionNotExists(SecureQuestionForManipulationDto request, CancellationToken cancellationToken)
+    {
+        var allQuestions = await GetAllAsync(cancellationToken);
+        if (allQuestions.Any(q => q.Question.Equals(request.Question)))
+            throw new InvalidOperationException("Question already exists");
+    }
 
     private async Task<SecureQuestion> GetIfExistsAndNotInUse(int id, CancellationToken cancellationToken)
     {

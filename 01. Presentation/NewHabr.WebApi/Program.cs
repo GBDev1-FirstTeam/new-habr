@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using NewHabr.Business.Services;
 using NewHabr.Business.Configurations;
 using NewHabr.Business.AutoMapperProfiles;
@@ -42,6 +42,11 @@ public class Program
         #region Register services in DI
 
         services.AddScoped<IAuthenticationService, AuthenticationService>();
+        services.AddScoped<IRepositoryManager, RepositoryManager>();
+        services.AddScoped<IArticleService, ArticleService>();
+        services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<ITagService, TagService>();
+        services.AddScoped<ICommentService, CommentService>();
         services.AddScoped<ISecureQuestionsService, SecureQuestionsService>();
         services.AddScoped<IRepositoryManager, RepositoryManager>();
         services.AddScoped<IUserService, UserService>();
@@ -58,11 +63,6 @@ public class Program
         services.AddSwaggerGen();
 
         services.ConfigureAutoMapper(typeof(ArticleProfile).Assembly);
-
-        services.AddScoped<IRepositoryManager, RepositoryManager>();
-        services.AddScoped<IArticleService, ArticleService>();
-        services.AddScoped<ICategoryService, CategoryService>();
-        services.AddScoped<ITagService, TagService>();
 
         var app = builder.Build();
         UpdateDatabase(app);

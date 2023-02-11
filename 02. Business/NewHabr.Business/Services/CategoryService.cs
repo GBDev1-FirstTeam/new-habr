@@ -22,9 +22,12 @@ public class CategoryService : ICategoryService
         var categories = await _repositoryManager.CategoryRepository.GetAvaliableAsync(cancellationToken: cancellationToken);
         return _mapper.Map<List<CategoryDto>>(categories);
     }
-    public async Task CreateAsync(CreateCategoryRequest request, CancellationToken cancellationToken = default)
+
+    public async Task CreateAsync(CategoryCreateRequest request, CancellationToken cancellationToken = default)
     {
-        var category = _repositoryManager.CategoryRepository.FindByCondition(c => c.Name == request.Name && !c.Deleted).FirstOrDefault();
+        var category = await _repositoryManager
+            .CategoryRepository
+            .GetByNameAsync(request.Name, false, cancellationToken);
 
         if (category is not null)
         {
@@ -35,7 +38,8 @@ public class CategoryService : ICategoryService
         _repositoryManager.CategoryRepository.Create(newCategory);
         await _repositoryManager.SaveAsync(cancellationToken);
     }
-    public async Task UpdateAsync(int id, UpdateCategoryRequest categoryToUpdate, CancellationToken cancellationToken = default)
+
+    public async Task UpdateAsync(int id, CategoryUpdateRequest categoryToUpdate, CancellationToken cancellationToken = default)
     {
         var targetCategory = await _repositoryManager.CategoryRepository.GetByIdAsync(id, trackChanges: true, cancellationToken);
 
@@ -44,8 +48,9 @@ public class CategoryService : ICategoryService
             throw new CategoryNotFoundException();
         }
 
-        var categoryWithSameName = _repositoryManager.CategoryRepository
-            .FindByCondition(c => c.Name == categoryToUpdate.Name && !c.Deleted).FirstOrDefault();
+        var categoryWithSameName = await _repositoryManager
+            .CategoryRepository
+            .GetByNameAsync(categoryToUpdate.Name, false, cancellationToken);
 
         if (categoryWithSameName is not null)
         {
@@ -53,10 +58,10 @@ public class CategoryService : ICategoryService
         }
 
         _mapper.Map(categoryToUpdate, targetCategory);
-        targetCategory.Id = id;
 
         await _repositoryManager.SaveAsync(cancellationToken);
     }
+
     public async Task DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         var category = await _repositoryManager.CategoryRepository.GetByIdIncludeAsync(id, cancellationToken: cancellationToken);

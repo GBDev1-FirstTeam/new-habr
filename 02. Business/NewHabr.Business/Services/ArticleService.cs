@@ -43,6 +43,7 @@ public class ArticleService : IArticleService
 
         return comments;
     }
+
     public async Task<ArticleDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var article = await _repositoryManager.ArticleRepository.GetByIdIncludeAsync(id, cancellationToken: cancellationToken);
@@ -54,32 +55,37 @@ public class ArticleService : IArticleService
 
         return _mapper.Map<ArticleDto>(article);
     }
+
     public async Task<IReadOnlyCollection<ArticleDto>> GetUnpublishedAsync(CancellationToken cancellationToken = default)
     {
         var articles = (await _repositoryManager.ArticleRepository.GetUnpublishedIncludeAsync(cancellationToken: cancellationToken))
             .OrderByDescending(a => a.CreatedAt);
         return _mapper.Map<List<ArticleDto>>(articles);
     }
+
     public async Task<IReadOnlyCollection<ArticleDto>> GetDeletedAsync(CancellationToken cancellationToken = default)
     {
         var articles = (await _repositoryManager.ArticleRepository.GetDeletedIncludeAsync(cancellationToken: cancellationToken))
             .OrderByDescending(a => a.DeletedAt);
         return _mapper.Map<List<ArticleDto>>(articles);
     }
-    public async Task CreateAsync(CreateArticleRequest request, CancellationToken cancellationToken = default)
+
+    public async Task CreateAsync(ArticleCreateRequest request, Guid creatorId, CancellationToken cancellationToken = default)
     {
         var creationDateTime = DateTimeOffset.UtcNow;
         var article = _mapper.Map<Article>(request);
+        article.UserId = creatorId;
         article.CreatedAt = creationDateTime;
         article.ModifiedAt = creationDateTime;
 
-        UpdateCategores(article, request.Categories);
-        UpdateTags(article, request.Tags);
+        await UpdateCategoresAsync(article, request.Categories, cancellationToken);
+        await UpdateTagsAsync(article, request.Tags, cancellationToken);
 
         foreach (var tagDto in request.Tags)
         {
-            var existingTag = _repositoryManager.TagRepository.FindAll(true)
-                .FirstOrDefault(c => c.Name == tagDto.Name && !c.Deleted);
+            var existingTag = await _repositoryManager
+                .TagRepository
+                .GetByNameAsync(tagDto.Name, true, cancellationToken);
 
             article.Tags.Add(existingTag ?? _mapper.Map<Tag>(tagDto));
         }
@@ -87,23 +93,29 @@ public class ArticleService : IArticleService
         _repositoryManager.ArticleRepository.Create(article);
         await _repositoryManager.SaveAsync(cancellationToken);
     }
-    public async Task UpdateAsync(Guid id, UpdateArticleRequest articleToUpdate, CancellationToken cancellationToken = default)
+
+    public async Task UpdateAsync(Guid articleId, Guid modifierId, ArticleUpdateRequest articleToUpdate, CancellationToken cancellationToken = default)
     {
-        var article = await _repositoryManager.ArticleRepository.GetByIdIncludeAsync(id, trackChanges: true, cancellationToken);
+        var article = await _repositoryManager.ArticleRepository.GetByIdIncludeAsync(articleId, trackChanges: true, cancellationToken);
 
         if (article is null)
         {
             throw new ArticleNotFoundException();
         }
 
-        UpdateCategores(article, articleToUpdate.Categories);
-        UpdateTags(article, articleToUpdate.Tags);
+        if (article.UserId != modifierId)
+        {
+            throw new UnauthorizedAccessException();
+        }
+
+        await UpdateCategoresAsync(article, articleToUpdate.Categories, cancellationToken);
+        await UpdateTagsAsync(article, articleToUpdate.Tags, cancellationToken);
 
         _mapper.Map(articleToUpdate, article);
-        article.Id = id;
         article.ModifiedAt = DateTimeOffset.UtcNow;
         await _repositoryManager.SaveAsync(cancellationToken);
     }
+
     public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var article = await _repositoryManager.ArticleRepository.GetByIdIncludeAsync(id, true, cancellationToken);
@@ -119,6 +131,7 @@ public class ArticleService : IArticleService
         article.PublishedAt = null;
         await _repositoryManager.SaveAsync(cancellationToken);
     }
+
     public async Task SetPublicationStatusAsync(Guid id, bool publicationStatus, CancellationToken cancellationToken = default)
     {
         var article = await _repositoryManager.ArticleRepository.GetByIdAsync(id, trackChanges: true, cancellationToken);
@@ -150,6 +163,7 @@ public class ArticleService : IArticleService
 
         await _repositoryManager.SaveAsync(cancellationToken);
     }
+
     public async Task SetApproveStateAsync(Guid id, ApproveState state, CancellationToken cancellationToken = default)
     {
         var article = await _repositoryManager.ArticleRepository.GetByIdAsync(id, trackChanges: true, cancellationToken);
@@ -171,7 +185,7 @@ public class ArticleService : IArticleService
     /// If one of them doesn't contains in repository, throw exception.
     /// </remarks>
     /// <exception cref="CategoryNotFoundException"></exception>
-    private void UpdateCategores(Article article, UpdateCategoryRequest[] categoresDto)
+    private async Task UpdateCategoresAsync(Article article, CategoryUpdateRequest[] categoresDto, CancellationToken cancellationToken)
     {
         if (article.Categories.Count != 0)
         {
@@ -180,8 +194,9 @@ public class ArticleService : IArticleService
 
         foreach (var categoryDto in categoresDto)
         {
-            var existingCategory = _repositoryManager.CategoryRepository.FindAll(trackChanges: true)
-                .FirstOrDefault(c => c.Name == categoryDto.Name && !c.Deleted);
+            var existingCategory = await _repositoryManager
+                .CategoryRepository
+                .GetByNameAsync(categoryDto.Name, false, cancellationToken);
 
             article.Categories.Add(existingCategory ?? throw new CategoryNotFoundException());
         }
@@ -194,7 +209,7 @@ public class ArticleService : IArticleService
     /// In proccess of adding <paramref name="tagsDto"/>, comparing them with existing in tags repository.
     /// If one of them doesn't contains in repository, adding to both (Articles, Tags).
     /// </remarks>
-    private void UpdateTags(Article article, CreateTagRequest[] tagsDto)
+    private async Task UpdateTagsAsync(Article article, TagCreateRequest[] tagsDto, CancellationToken cancellationToken)
     {
         if (article.Tags.Count != 0)
         {
@@ -203,8 +218,9 @@ public class ArticleService : IArticleService
 
         foreach (var tagDto in tagsDto)
         {
-            var existingTag = _repositoryManager.TagRepository.FindAll(trackChanges: true)
-                .FirstOrDefault(c => c.Name == tagDto.Name && !c.Deleted);
+            var existingTag = await _repositoryManager
+                .TagRepository
+                .GetByNameAsync(tagDto.Name, true, cancellationToken);
 
             article.Tags.Add(existingTag ?? _mapper.Map<Tag>(tagDto));
         }
