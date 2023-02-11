@@ -70,7 +70,7 @@ public class ArticleService : IArticleService
         return _mapper.Map<List<ArticleDto>>(articles);
     }
 
-    public async Task CreateAsync(CreateArticleRequest request, Guid creatorId, CancellationToken cancellationToken = default)
+    public async Task CreateAsync(ArticleCreateRequest request, Guid creatorId, CancellationToken cancellationToken = default)
     {
         var creationDateTime = DateTimeOffset.UtcNow;
         var article = _mapper.Map<Article>(request);
@@ -94,7 +94,7 @@ public class ArticleService : IArticleService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task UpdateAsync(Guid articleId, Guid modifierId, UpdateArticleRequest articleToUpdate, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(Guid articleId, Guid modifierId, ArticleUpdateRequest articleToUpdate, CancellationToken cancellationToken = default)
     {
         var article = await _repositoryManager.ArticleRepository.GetByIdIncludeAsync(articleId, trackChanges: true, cancellationToken);
 

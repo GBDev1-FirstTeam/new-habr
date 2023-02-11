@@ -92,7 +92,7 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> Create([FromBody] CreateArticleRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult> Create([FromBody] ArticleCreateRequest request, CancellationToken cancellationToken)
     {
         var userId = User.Identity.IsAuthenticated ? User.GetUserId() : Guid.Empty;
         try
@@ -113,7 +113,7 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> Update([FromRoute] Guid id, [FromBody] UpdateArticleRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult> Update([FromRoute] Guid id, [FromBody] ArticleUpdateRequest request, CancellationToken cancellationToken)
     {
         var userId = User.Identity.IsAuthenticated ? User.GetUserId() : Guid.Empty;
         try
