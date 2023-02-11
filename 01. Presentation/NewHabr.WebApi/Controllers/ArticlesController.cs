@@ -3,6 +3,7 @@ using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Exceptions;
 using NewHabr.Domain.Models;
+using NewHabr.WebApi.Extensions;
 
 namespace NewHabr.WebApi.Controllers;
 
@@ -22,14 +23,15 @@ public class ArticlesController : ControllerBase
     [HttpGet("{id}/comments")]
     public async Task<ActionResult<IEnumerable<CommentWithLikedMark>>> GetCommentsWithLikedMark(
         [FromRoute] Guid id,
-        [FromQuery] Guid userId,
         CancellationToken cancellationToken)
     {
+        var userId = User.Identity?.IsAuthenticated ?? false ? User.GetUserId() : Guid.Empty;
+
         try
         {
             return Ok(await _articleService.GetCommentsWithLikedMarkAsync(id, userId, cancellationToken));
         }
-        catch(EntityNotFoundException ex)
+        catch (EntityNotFoundException ex)
         {
             _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}\nuser id: {userId}"), id, userId);
             return NotFound(ex.Message);
@@ -42,6 +44,7 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet("{id}")]
+
     public async Task<ActionResult<ArticleDto>> GetById([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         try
@@ -91,9 +94,10 @@ public class ArticlesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> Create([FromBody] CreateArticleRequest request, CancellationToken cancellationToken)
     {
+        var userId = User.Identity.IsAuthenticated ? User.GetUserId() : Guid.Empty;
         try
         {
-            await _articleService.CreateAsync(request, cancellationToken);
+            await _articleService.CreateAsync(request, userId, cancellationToken);
             return Ok();
         }
         catch (EntityNotFoundException ex)
@@ -111,9 +115,10 @@ public class ArticlesController : ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult> Update([FromRoute] Guid id, [FromBody] UpdateArticleRequest request, CancellationToken cancellationToken)
     {
+        var userId = User.Identity.IsAuthenticated ? User.GetUserId() : Guid.Empty;
         try
         {
-            await _articleService.UpdateAsync(id, request, cancellationToken);
+            await _articleService.UpdateAsync(id, userId, request, cancellationToken);
             return Ok();
         }
         catch (EntityNotFoundException ex)
