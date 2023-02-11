@@ -185,7 +185,7 @@ public class ArticleService : IArticleService
     /// If one of them doesn't contains in repository, throw exception.
     /// </remarks>
     /// <exception cref="CategoryNotFoundException"></exception>
-    private async Task UpdateCategoresAsync(Article article, UpdateCategoryRequest[] categoresDto, CancellationToken cancellationToken)
+    private async Task UpdateCategoresAsync(Article article, CategoryUpdateRequest[] categoresDto, CancellationToken cancellationToken)
     {
         if (article.Categories.Count != 0)
         {
