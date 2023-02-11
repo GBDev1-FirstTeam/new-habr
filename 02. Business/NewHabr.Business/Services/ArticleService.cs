@@ -98,8 +98,8 @@ public class ArticleService : IArticleService
             throw new ArticleNotFoundException();
         }
 
-        await UpdateCategoresAsync(article, articleToUpdate.Categories);
-        await UpdateTagsAsync(article, articleToUpdate.Tags);
+        await UpdateCategoresAsync(article, articleToUpdate.Categories, cancellationToken);
+        await UpdateTagsAsync(article, articleToUpdate.Tags, cancellationToken);
 
         _mapper.Map(articleToUpdate, article);
         article.ModifiedAt = DateTimeOffset.UtcNow;
@@ -173,14 +173,16 @@ public class ArticleService : IArticleService
     /// If one of them doesn't contains in repository, throw exception.
     /// </remarks>
     /// <exception cref="CategoryNotFoundException"></exception>
-    private async Task UpdateCategoresAsync(Article article, ICollection<CreateCategoryRequest> categoriesDto)
+    private async Task UpdateCategoresAsync(Article article,
+        ICollection<CreateCategoryRequest> categoriesDto,
+        CancellationToken cancellationToken = default)
     {
         if (article.Categories.Count != 0)
         {
             article.Categories.Clear();
         }
 
-        var existingCategories = await _repositoryManager.CategoryRepository.GetAvaliableAsync(trackChanges: true);
+        var existingCategories = await _repositoryManager.CategoryRepository.GetAvaliableAsync(trackChanges: true, cancellationToken);
 
         foreach (var categoryDto in categoriesDto)
         {
@@ -197,7 +199,9 @@ public class ArticleService : IArticleService
     /// In proccess of adding <paramref name="tagsDto"/>, comparing them with existing in tags repository.
     /// If one of them doesn't contains in repository, adding to both (Articles, Tags).
     /// </remarks>
-    private async Task UpdateTagsAsync(Article article, ICollection<CreateTagRequest> tagsDto)
+    private async Task UpdateTagsAsync(Article article,
+        ICollection<CreateTagRequest> tagsDto,
+        CancellationToken cancellationToken = default)
     {
         if (article.Tags.Count != 0)
         {
@@ -205,7 +209,7 @@ public class ArticleService : IArticleService
         }
 
         tagsDto = tagsDto.DistinctBy(t => t.Name).ToArray();
-        var existsTags = await _repositoryManager.TagRepository.GetAvaliableAsync(trackChanges: true);
+        var existsTags = await _repositoryManager.TagRepository.GetAvaliableAsync(trackChanges: true, cancellationToken);
 
         foreach (var tagDto in tagsDto)
         {
