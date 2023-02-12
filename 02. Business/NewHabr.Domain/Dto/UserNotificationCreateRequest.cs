@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NewHabr.Domain.Dto;
 
-public class NotificationCreateRequest
+public class UserNotificationCreateRequest
 {
     [Required]
     public Guid UserId { get; set; }
@@ -11,4 +11,3 @@ public class NotificationCreateRequest
     [Required]
     public string Text { get; set; }
 }
-
