@@ -34,7 +34,9 @@ public class SecureQuestionsService : ISecureQuestionsService
 
     public async Task<ICollection<SecureQuestionDto>> GetAllAsync(CancellationToken cancellationToken)
     {
-        var questions = await _repositoryManager.SecureQuestionsRepository.GetAllAsync(cancellationToken);
+        var questions = await _repositoryManager
+            .SecureQuestionsRepository
+            .GetAllAsync(cancellationToken);
         var questionsDto = _mapper.Map<List<SecureQuestionDto>>(questions);
         return questionsDto;
     }
@@ -67,12 +69,16 @@ public class SecureQuestionsService : ISecureQuestionsService
 
     private async Task<SecureQuestion> GetIfExistsAndNotInUse(int id, CancellationToken cancellationToken)
     {
-        var sq = await _repositoryManager.SecureQuestionsRepository.GetByIdAsync(id, true, cancellationToken);
+        var sq = await _repositoryManager
+            .SecureQuestionsRepository
+            .GetByIdAsync(id, true, cancellationToken);
         if (sq is null)
             throw new SecureQuestionNotFoundException();
 
         // users count using secure question with id
-        var usersCount = await _repositoryManager.UserRepository.GetUsersCountWithSecureQuestionId(id, cancellationToken);
+        var usersCount = await _repositoryManager
+            .UserRepository
+            .GetUsersCountWithSecureQuestionIdAsync(id, cancellationToken);
 
         if (usersCount > 0)
             throw new InvalidOperationException($"SecureQuestion({id}) is in use.");

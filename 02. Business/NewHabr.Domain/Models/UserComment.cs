@@ -1,9 +1,11 @@
-﻿using System;
+﻿#nullable disable
+
 namespace NewHabr.Domain.Models;
 
 public class UserComment
 {
     public Guid Id { get; set; }
+    public Guid UserId { get; set; }
     public Guid ArticleId { get; set; }
     public string Text { get; set; }
     public DateTimeOffset CreatedAt { get; set; }

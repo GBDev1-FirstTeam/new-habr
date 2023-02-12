@@ -31,7 +31,7 @@ public class UserRepository : RepositoryBase<User, Guid>, IUserRepository
         return await FindByCondition(u => u.Deleted).ToListAsync(cancellationToken);
     }
 
-    public async Task<int> GetReceivedLikesCount(Guid userId, CancellationToken cancellationToken)
+    public async Task<int> GetReceivedLikesCountAsync(Guid userId, CancellationToken cancellationToken)
     {
         return await GetById(userId, false)
             .Include(e => e.ReceivedLikes)
@@ -51,13 +51,14 @@ public class UserRepository : RepositoryBase<User, Guid>, IUserRepository
             .Where(user => user.ReceivedLikes.Any(u => u.UserId == userId))
             .Select(row => new UserLikedUser
             {
-                Id = row.Id,
+                UserId = userId, //кто поставил лайк
+                Id = row.Id,     //кому поставили лайк
                 UserName = row.UserName
             })
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<int> GetUsersCountWithSecureQuestionId(int id, CancellationToken cancellationToken)
+    public async Task<int> GetUsersCountWithSecureQuestionIdAsync(int id, CancellationToken cancellationToken)
     {
         return await FindByCondition(u => u.SecureQuestionId == id)
             .CountAsync(cancellationToken);

@@ -8,8 +8,8 @@ public interface IUserRepository : IRepository<User, Guid>
     Task<IReadOnlyCollection<User>> GetByRoleIdAsync(int roleId, CancellationToken cancellationToken = default);
     Task<IReadOnlyCollection<User>> GetDeletedUsersAsync(CancellationToken cancellationToken = default);
     Task<IReadOnlyCollection<User>> GetBannedUsersAsync(CancellationToken cancellationToken = default);
-    Task<int> GetUsersCountWithSecureQuestionId(int id, CancellationToken cancellationToken);
+    Task<int> GetUsersCountWithSecureQuestionIdAsync(int id, CancellationToken cancellationToken);
     Task<User?> GetByIdAsync(Guid id, bool trackChanges, CancellationToken cancellationToken);
     Task<ICollection<UserLikedUser>> GetUserLikedUsersAsync(Guid userId, CancellationToken cancellationToken);
-    Task<int> GetReceivedLikesCount(Guid userId, CancellationToken cancellationToken);
+    Task<int> GetReceivedLikesCountAsync(Guid userId, CancellationToken cancellationToken);
 }

@@ -125,7 +125,9 @@ public class UserService : IUserService
     {
         var user = await GetUserAndCheckIfItExistsAsync(userId, false, cancellationToken);
         var userDto = _mapper.Map<UserProfileDto>(user);
-        userDto.ReceivedLikes = await _repositoryManager.UserRepository.GetReceivedLikesCount(userId, cancellationToken);
+        userDto.ReceivedLikes = await _repositoryManager
+            .UserRepository
+            .GetReceivedLikesCountAsync(userId, cancellationToken);
 
         return userDto;
     }

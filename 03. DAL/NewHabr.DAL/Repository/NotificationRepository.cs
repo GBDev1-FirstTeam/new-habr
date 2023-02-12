@@ -13,9 +13,10 @@ public class NotificationRepository : RepositoryBase<UserNotification, Guid>, IN
     }
 
 
-    public async Task<UserNotification?> GetById(Guid id, CancellationToken cancellationToken)
+    public async Task<UserNotification?> GetByIdAsync(Guid id, bool trackChanges, CancellationToken cancellationToken)
     {
-        return await GetById(id, cancellationToken);
+        return await GetById(id, trackChanges)
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<ICollection<UserNotification>> GetUserNotificationsAsync(Guid userId, bool unreadOnly, bool trackChanges, CancellationToken cancellationToken)

@@ -48,6 +48,7 @@ public class CommentRepository : RepositoryBase<Comment, Guid>, ICommentReposito
             .Select(row => new UserComment
             {
                 Id = row.Id,
+                UserId = userId,
                 ArticleId = row.ArticleId,
                 Text = row.Text,
                 CreatedAt = row.CreatedAt,

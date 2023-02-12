@@ -5,7 +5,7 @@ namespace NewHabr.Domain.Contracts.Repositories;
 
 public interface INotificationRepository : IRepository<UserNotification, Guid>
 {
-    Task<UserNotification?> GetById(Guid id, CancellationToken cancellationToken);
+    Task<UserNotification?> GetByIdAsync(Guid id, bool trackChanges, CancellationToken cancellationToken);
     Task<ICollection<UserNotification>> GetUserNotificationsAsync(Guid userId, bool unreadOnly, bool trackChanges, CancellationToken cancellationToken);
 }
 

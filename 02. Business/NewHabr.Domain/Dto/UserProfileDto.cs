@@ -12,7 +12,7 @@ public class UserProfileDto : UserForManipulationDto
 
     public bool Banned { get; set; }
 
-    public string? BanReason { get; set; }
+    public string BanReason { get; set; }
 
     public long? BanExpiratonDate { get; set; }
 
