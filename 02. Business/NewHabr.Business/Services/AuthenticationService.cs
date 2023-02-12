@@ -91,6 +91,9 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<AuthorizationResponse> AuthenticateAsync()
     {
+        if (_user is null) // такого не может быть
+            throw new InvalidOperationException("Not authenticated");
+
         var tokenAsString = await CreateTokenAsync();
 
         var user = _mapper.Map<UserDto>(_user);
@@ -115,6 +118,9 @@ public class AuthenticationService : IAuthenticationService
 
     private async Task<List<Claim>> GetClaims()
     {
+        if (_user is null) // такого не может быть
+            throw new InvalidOperationException("Not authenticated");
+
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, _user.Id.ToString()),

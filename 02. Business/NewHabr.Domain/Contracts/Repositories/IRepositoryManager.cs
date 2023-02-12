@@ -1,4 +1,6 @@
-﻿namespace NewHabr.Domain.Contracts;
+﻿using NewHabr.Domain.Contracts.Repositories;
+
+namespace NewHabr.Domain.Contracts;
 
 public interface IRepositoryManager
 {
@@ -8,6 +10,7 @@ public interface IRepositoryManager
     public ICategoryRepository CategoryRepository { get; }
     public ITagRepository TagRepository { get; }
     public ISecureQuestionsRepository SecureQuestionsRepository { get; }
+    public INotificationRepository NotificationRepository { get; }
 
     public Task SaveAsync(CancellationToken cancellationToken = default);
 }

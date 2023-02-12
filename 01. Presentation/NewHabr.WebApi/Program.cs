@@ -49,6 +49,7 @@ public class Program
         services.AddScoped<ICommentService, CommentService>();
         services.AddScoped<ISecureQuestionsService, SecureQuestionsService>();
         services.AddScoped<IRepositoryManager, RepositoryManager>();
+        services.AddScoped<IUserService, UserService>();
 
         #endregion
 

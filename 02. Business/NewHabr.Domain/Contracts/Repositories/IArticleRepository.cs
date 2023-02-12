@@ -1,4 +1,5 @@
-﻿using NewHabr.Domain.Models;
+﻿using NewHabr.Domain.Dto;
+using NewHabr.Domain.Models;
 
 namespace NewHabr.Domain.Contracts;
 
@@ -36,4 +37,8 @@ public interface IArticleRepository : IRepository<Article, Guid>
         Guid id,
         bool trackChanges = false,
         CancellationToken cancellationToken = default);
+
+    Task<ICollection<UserArticle>> GetUserArticlesAsync(Guid userId, bool trackChanges, CancellationToken cancellationToken);
+
+    Task<ICollection<UserLikedArticle>> GetUserLikedArticlesAsync(Guid userId, CancellationToken cancellationToken);
 }

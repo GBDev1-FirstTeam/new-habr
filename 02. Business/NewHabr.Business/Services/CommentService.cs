@@ -32,7 +32,7 @@ public class CommentService : ICommentService
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var deleteComment = await _repositoryManager.CommentRepository.GetByIdAsync(id, cancellationToken: cancellationToken);
+        var deleteComment = await _repositoryManager.CommentRepository.GetByIdAsync(id, true, cancellationToken);
         if (deleteComment is null)
         {
             throw new CommentNotFoundException();
