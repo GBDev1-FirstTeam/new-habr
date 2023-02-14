@@ -1,5 +1,6 @@
 ﻿using System;
 using NewHabr.Domain.Dto;
+using NewHabr.Domain.Models;
 
 namespace NewHabr.Domain.Contracts.Services;
 
@@ -11,12 +12,19 @@ public interface INotificationService
     /// <param name="notificationId">Notification's Id</param>
     /// <param name="userId">User id requesting the notification</param>
     /// <returns></returns>
-    Task<UserNotificationDto> GetByIdAsync(Guid notificationId, Guid userId, CancellationToken cancellationToken);
+    Task<NotificationDto> GetByIdAsync(Guid notificationId, Guid userId, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Create Notification
+    /// Create Notification for collection of users
     /// </summary>
-    Task CreateAsync(UserNotificationCreateRequest request, CancellationToken cancellationToken);
+    /// <param name="users">Collection of receivers</param>
+    Task CreateAsync(NotificationCreateRequest request, ICollection<User> users, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Create Notification for collection of users
+    /// </summary>
+    /// <param name="users">Collection of receivers</param>
+    Task CreateAsync(NotificationCreateRequest request, User user, CancellationToken cancellationToken);
 
     /// <summary>
     /// Mark notification as read

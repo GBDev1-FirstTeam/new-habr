@@ -5,7 +5,7 @@ namespace NewHabr.Domain.Exceptions;
 
 public class NotificationNotFoundException : EntityNotFoundException
 {
-    public NotificationNotFoundException() : base(typeof(UserNotification))
+    public NotificationNotFoundException() : base(typeof(Notification))
     {
     }
 }

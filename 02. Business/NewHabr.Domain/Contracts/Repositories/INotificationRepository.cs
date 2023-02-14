@@ -3,9 +3,9 @@ using NewHabr.Domain.Models;
 
 namespace NewHabr.Domain.Contracts.Repositories;
 
-public interface INotificationRepository : IRepository<UserNotification, Guid>
+public interface INotificationRepository : IRepository<Notification, Guid>
 {
-    Task<UserNotification?> GetByIdAsync(Guid id, bool trackChanges, CancellationToken cancellationToken);
-    Task<ICollection<UserNotification>> GetUserNotificationsAsync(Guid userId, bool unreadOnly, bool trackChanges, CancellationToken cancellationToken);
+    Task<Notification?> GetByIdAsync(Guid notificationId, Guid userId, bool trackChanges, CancellationToken cancellationToken);
+    Task<ICollection<Notification>> GetUserNotificationsAsync(Guid userId, bool unreadOnly, bool trackChanges, CancellationToken cancellationToken);
 }
 
