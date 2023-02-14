@@ -2,12 +2,13 @@
     <div class="form-floating form-floating-title">
         <textarea class="form-control" placeholder="Leave a comment here" id="title" [(ngModel)]="post.Title">{{ post.Title }}</textarea>
     </div>
-    <div class="form-floating form-floating-img">
+    <div class="form-floating form-floating-img mb-2">
         <textarea class="form-control" placeholder="Leave a comment here" id="img" [(ngModel)]="post.ImgURL">{{ post.ImgURL }}</textarea>
         <img [attr.src]="post.ImgURL">
     </div>
     <div class="form-floating form-floating-content">
-        <textarea class="form-control" placeholder="Leave a comment here" id="content" [(ngModel)]="post.Content">{{ post.Content }}</textarea>
+        <div id="editor-container" class="mb-2"></div>
+        <!-- <textarea class="form-control" placeholder="Leave a comment here" id="content" [(ngModel)]="post.Content">{{ post.Content }}</textarea> -->
     </div>
     <button type="button" class="btn btn-outline-dark" (click)="save()">Сохранить</button>
 </div>

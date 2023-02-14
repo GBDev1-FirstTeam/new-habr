@@ -10,8 +10,8 @@
     <div class="image">
         <img [attr.src]="post?.ImgURL">
     </div>
-    <div class="preview">
-        <p>{{ post?.Content }}</p>
+    <div [innerHTML]="getInnerHtml()" style="width: 100%;">
+        <!-- <p>{{ post?.Content }}</p> -->
     </div>
     <app-like [likeData]="post!" [path]="'publications'"></app-like>
 

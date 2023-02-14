@@ -1,5 +1,11 @@
 @import '/src/assets/scss/mixins.scss';
 
+// @import url('../../../../../node_modules/quill/dist/quill.snow.css');
+// @import url('../../../../../node_modules/quill/dist/quill.core.css');
+
+// @import url("~quill/dist/quill.core.css");
+// @import url("~quill/dist/quill.snow.css");
+
 .post-container {
     @include card-container;
 
@@ -18,4 +24,14 @@
             width: 100%;
         }
     }
+
+    .ql-syntax {
+        background-color: #23241f;
+        color: #f8f8f2;
+        overflow: auto;
+      }
 }
+
+
+
+
