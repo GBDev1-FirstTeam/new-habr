@@ -22,7 +22,7 @@ public class User : IdentityUser<Guid>, IEntity<Guid>
 
     public ICollection<Comment> Comments { get; set; }
 
-    public ICollection<UserNotification> Notifications { get; set; }
+    public ICollection<Notification> Notifications { get; set; }
 
     public ICollection<LikedArticle> LikedArticles { get; set; }
 

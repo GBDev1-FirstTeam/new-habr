@@ -41,7 +41,8 @@ public class MapperProfile : Profile
         CreateMap<SecureQuestion, SecureQuestionDto>().ReverseMap();
         CreateMap<SecureQuestionUpdateRequest, SecureQuestion>();
 
-        CreateMap<UserNotification, UserNotificationDto>()
+        CreateMap<NotificationCreateRequest, Notification>();
+        CreateMap<Notification, NotificationDto>()
             .ReverseMap();
 
         CreateMap<UserComment, UserCommentDto>();

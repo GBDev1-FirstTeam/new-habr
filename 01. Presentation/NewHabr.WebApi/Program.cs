@@ -50,6 +50,7 @@ public class Program
         services.AddScoped<ISecureQuestionsService, SecureQuestionsService>();
         services.AddScoped<IRepositoryManager, RepositoryManager>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<INotificationService, NotificationService>();
 
         #endregion
 
