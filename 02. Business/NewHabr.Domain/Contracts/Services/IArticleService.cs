@@ -16,6 +16,8 @@ public interface IArticleService
     Task<ArticleDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     Task<IReadOnlyCollection<ArticleDto>> GetUnpublishedAsync(CancellationToken cancellationToken = default);
+    
+    Task<IReadOnlyCollection<ArticleDto>> GetPublishedAsync(int count, CancellationToken cancellationToken = default);
 
     Task<IReadOnlyCollection<ArticleDto>> GetDeletedAsync(CancellationToken cancellationToken = default);
 

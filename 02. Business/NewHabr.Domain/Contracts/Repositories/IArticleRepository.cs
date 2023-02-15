@@ -18,6 +18,11 @@ public interface IArticleRepository : IRepository<Article, Guid>
     Task<IReadOnlyCollection<Article>> GetUnpublishedIncludeAsync(
         bool trackChanges = false,
         CancellationToken cancellationToken = default);
+    
+    Task<IReadOnlyCollection<Article>> GetPublishedIncludeAsync(
+        int count,
+        bool trackChanges = false,
+        CancellationToken cancellationToken = default);
 
     Task<IReadOnlyCollection<Article>> GetDeletedIncludeAsync(
         bool trackChanges = false,

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { lastValueFrom, Observable } from 'rxjs';
 import { Publication } from 'src/app/core/models/Publication';
@@ -7,7 +7,8 @@ import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
 @Component({
   selector: 'app-articles',
   templateUrl: './articles.component.html',
-  styleUrls: ['./articles.component.scss']
+  styleUrls: ['./articles.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class ArticlesComponent implements OnInit {
 
@@ -30,8 +31,8 @@ export class ArticlesComponent implements OnInit {
   edit = (postId: string | undefined) => this.router.navigate(['accounts', this.accountId, 'articles', 'edit', postId]);
   create = () => this.router.navigate(['accounts', this.accountId, 'articles', 'create']);
   publish = (post: Publication) => {
-    post.PublishedAt = Date.now();
+    post.PublishedAt = +Date.now();
     post.IsPublished = true;
-    lastValueFrom(this.http.postPublication(post));
+    lastValueFrom(this.http.publishArticle(post.Id!));
   };
 }

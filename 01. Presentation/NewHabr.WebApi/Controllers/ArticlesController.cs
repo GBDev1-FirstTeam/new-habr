@@ -44,7 +44,6 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet("{id}")]
-
     public async Task<ActionResult<ArticleDto>> GetById([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         try
@@ -69,6 +68,20 @@ public class ArticlesController : ControllerBase
         try
         {
             return Ok(await _articleService.GetUnpublishedAsync(cancellationToken));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    [HttpGet("published/{count}")]
+    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetPublished(int count, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return Ok(await _articleService.GetPublishedAsync(count, cancellationToken));
         }
         catch (Exception ex)
         {
