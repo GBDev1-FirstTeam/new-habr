@@ -56,7 +56,7 @@ export class PostComponent implements OnInit, OnDestroy {
   addComment() {
     const comment: Commentary = {
       UserId: this.auth?.User.Id!,
-      UserLogin: this.auth?.User.Login!,
+      UserLogin: "sdjn",
       ArticleId: this.postId,
       Text: this.commentText,
       CreatedAt: Date.now(),
