@@ -10,3 +10,9 @@ export interface User extends Like {
     Age: number;
     Description: string;
 }
+
+export interface AuthUser {
+    Id: string;
+    UserName: string;
+    Roles: string[];
+}

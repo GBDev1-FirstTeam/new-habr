@@ -65,7 +65,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
           Title: this.post.Title,
           Content: this.post.Content,
           UserId: this.auth?.User.Id,
-          UserLogin: this.auth?.User.Login,
+          UserLogin: "sjdnf",
           CreatedAt: Date.now(),
           ModifyAt: Date.now(),
           ImgURL: this.post.ImgURL,

@@ -1,15 +1,17 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Backend } from '../models/Configuration';
 import { Publication } from '../models/Publication';
 import { Commentary } from '../models/Commentary';
 import { User } from '../models/User';
 import { ConfigurationService } from './ConfigurationService';
-import { AuthorizationRequest, Authorization } from '../models/Authorization';
 import { LikeRequest } from '../models/Like';
 import { Registration, RegistrationRequest } from '../models/Registration';
 import { Recovery, RecoveryChangePassword, RecoveryQuestion, RecoveryRequestAnswer, RecoveryRequestLogin } from '../models/Recovery';
+import { Authorization, LoginRequest, RegisterRequest } from '../models/Authorization';
+import { SecureQuestion } from '../models/SecureQuestion';
+import { AppStoreProvider } from '../store/store';
 
 @Injectable({
   providedIn: 'root',
@@ -17,17 +19,38 @@ import { Recovery, RecoveryChangePassword, RecoveryQuestion, RecoveryRequestAnsw
 export class HttpRequestService {
 
   backend: Backend;
+  auth: Authorization;
 
-  constructor(private http: HttpClient, private configService: ConfigurationService) {
+  constructor(
+    private http: HttpClient,
+    private configService: ConfigurationService,
+    private injector: Injector) {
     this.backend = this.configService.configuration.backend;
+    
+    setTimeout(() => {
+      const store = this.injector.get(AppStoreProvider);
+      store.getAuth().subscribe(auth => {
+        if (auth) {
+          this.auth = auth;
+        }
+      })
+    });
   }
 
   private get<Type>(url: string): Observable<Type> {
-    return this.http.get<Type>(url);
+    return this.http.get<Type>(url, {
+      headers: {
+        "Authorization": `Bearer ${this.auth?.Token}`
+      }
+    });
   }
   
   private post<InType, OutType>(url: string, body: InType): Observable<OutType> {
-    return this.http.post<OutType>(url, body);
+    return this.http.post<OutType>(url, body, {
+      headers: {
+        "Authorization": `Bearer ${this.auth?.Token}`
+      }
+    });
   }
 
 
@@ -54,11 +77,6 @@ export class HttpRequestService {
   getCommentsByPostId(id: string): Observable<Array<Commentary>> {
     const url = this.backend.baseURL + `/comments/${id}`;
     return this.get<Array<Commentary>>(url);
-  }
-
-  postAuthentication(body: AuthorizationRequest) {
-    const url = this.backend.baseURL + `/login`;
-    return this.post<AuthorizationRequest, Authorization>(url, body);
   }
 
   postRegistration(body: RegistrationRequest) {
@@ -95,4 +113,22 @@ export class HttpRequestService {
     let url = this.backend.baseURL + `/${path}/like`;
     return this.post<LikeRequest, any>(url, body);
   }
+
+  // #region /auth
+  register(body: RegisterRequest) {
+    const url = this.backend.baseURL + `/auth`;
+    return this.post<RegisterRequest, Authorization>(url, body);
+  }
+  login(body: LoginRequest) {
+    const url = this.backend.baseURL + `/auth/login`;
+    return this.post<LoginRequest, Authorization>(url, body);
+  }
+  // #endregion
+
+  // #region /SecureQuestions
+  getAllQuestions() {
+    const url = this.backend.baseURL + `/SecureQuestions`;
+    return this.get<Array<SecureQuestion>>(url);
+  }
+  // #endregion
 }

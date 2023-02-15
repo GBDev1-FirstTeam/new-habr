@@ -13,7 +13,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   subscribtions: Subscription[] = [];
 
-  login: string;
+  userName: string;
   password: string;
   auth: Authorization;
 
@@ -36,9 +36,12 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.subscribtions.forEach(element => element.unsubscribe());
   }
 
-  authenticate() {
-    if (!!this.login && !!this.password) {
-      this.store.authentication(this.login, this.password);
+  login() {
+    if (!!this.userName && !!this.password) {
+      this.store.login({
+        UserName: this.userName,
+        Password: this.password
+      })
     }
   }
 }

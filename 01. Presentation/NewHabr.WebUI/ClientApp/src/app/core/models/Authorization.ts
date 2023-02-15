@@ -1,12 +1,18 @@
-import { User } from "./User";
+import { AuthUser } from "./User";
 
-export interface AuthorizationRequest {
-    Login: string;
+export interface RegisterRequest {
+    UserName: string;
+    Password: string;
+    SecurityQuestionId: number;
+    SecurityQuestionAnswer: string;
+}
+
+export interface LoginRequest {
+    UserName: string;
     Password: string;
 }
 
 export interface Authorization {
     Token: string;
-    RefreshToken: string;
-    User: User;
+    User: AuthUser;
 }

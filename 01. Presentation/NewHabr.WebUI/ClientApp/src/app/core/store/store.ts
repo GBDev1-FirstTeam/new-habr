@@ -2,9 +2,8 @@ import { Publication } from "../models/Publication";
 import { createStore, withProps, Store, StoreDef, select } from '@ngneat/elf';
 import { Injectable } from "@angular/core";
 import { HttpRequestService } from "../services/HttpRequestService";
-import { Authorization } from "../models/Authorization";
-import { RegistrationRequest } from "../models/Registration";
 import { RecoveryRequestAnswer } from "../models/Recovery";
+import { Authorization, LoginRequest, RegisterRequest } from "../models/Authorization";
 
 export interface AppStore {
     publications: Array<Publication> | null,
@@ -32,7 +31,7 @@ export class AppStoreProvider {
                 publications: null,
                 post: null,
                 auth: auth,
-                isAuth: !!auth?.User && !!auth?.Token && !!auth?.RefreshToken
+                isAuth: !!auth?.User && !!auth?.Token
             })
         );
     }
@@ -78,7 +77,7 @@ export class AppStoreProvider {
     }
 
     private authSubscribtion = (auth: Authorization) => {
-        const isAuth = !!auth?.User && !!auth?.Token && !!auth?.RefreshToken;
+        const isAuth = !!auth?.User && !!auth?.Token;
         if (isAuth) {
             this.store.update(st => ({
                 ...st,
@@ -95,28 +94,25 @@ export class AppStoreProvider {
         this.saveToLocalStorage(auth);
     }
 
-    authentication(login: string, password: string) {
-        const authenticationSubscribtion = this.http.postAuthentication({
-            Login: login,
-            Password: password
-        }).subscribe(auth => {
+    login(loginData: LoginRequest) {
+        const loginSubscribtion = this.http.login(loginData).subscribe(auth => {
             this.authSubscribtion(auth);
-            authenticationSubscribtion.unsubscribe();
+            loginSubscribtion.unsubscribe();
         });
     }
     
-    register(registerData: RegistrationRequest) {
-        const registrationSubscribtion =
-            this.http.postRegistration(registerData).subscribe(auth => {
+    register(registerData: RegisterRequest) {
+        const registerSubscribtion =
+            this.http.register(registerData).subscribe(auth => {
             this.authSubscribtion(auth);
-            registrationSubscribtion.unsubscribe();
+            registerSubscribtion.unsubscribe();
         });
     }
 
     recovery(recoveryData: RecoveryRequestAnswer) {
         const recoverySubscribtion =
             this.http.postRecoveryAnswer(recoveryData).subscribe(auth => {
-            this.authSubscribtion(auth);
+            // this.authSubscribtion(auth);
             recoverySubscribtion.unsubscribe();
         });
     }
