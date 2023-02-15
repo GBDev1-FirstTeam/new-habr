@@ -23,5 +23,5 @@ public class Comment : BaseEntity<Guid>
 
     public DateTimeOffset ModifiedAt { get; set; }
 
-    public ICollection<LikedComment> Likes { get; set; }
+    public ICollection<User> Likes { get; set; }
 }

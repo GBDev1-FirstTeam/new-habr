@@ -12,4 +12,5 @@ public interface IUserRepository : IRepository<User, Guid>
     Task<User?> GetByIdAsync(Guid id, bool trackChanges, CancellationToken cancellationToken);
     Task<ICollection<UserLikedUser>> GetUserLikedUsersAsync(Guid userId, CancellationToken cancellationToken);
     Task<int> GetReceivedLikesCountAsync(Guid userId, CancellationToken cancellationToken);
+    Task<User?> GetByIdWithLikesAsync(Guid id, bool trackChanges, CancellationToken cancellationToken = default);
 }

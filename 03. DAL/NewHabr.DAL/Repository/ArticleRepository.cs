@@ -116,7 +116,7 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             .Include(article => article.Tags)
             .Include(article => article.Categories)
             .Include(article => article.Likes)
-            .Where(a => a.Likes.Any(like => like.UserId == userId))
+            .Where(a => a.Likes.Any(u => u.Id == userId))
             .Select(row => new UserLikedArticle
             {
                 Id = row.Id,
@@ -125,5 +125,12 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
                 Tags = row.Tags
             })
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<Article?> GetArticleWithLikesAsync(Guid articleId, bool trackChanges, CancellationToken cancellationToken)
+    {
+        return await GetById(articleId, trackChanges)
+            .Include(a => a.Likes)
+            .FirstOrDefaultAsync(cancellationToken);
     }
 }

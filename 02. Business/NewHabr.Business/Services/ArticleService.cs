@@ -37,7 +37,7 @@ public class ArticleService : IArticleService
             {
                 UserId = userId,
                 Comment = _mapper.Map<CommentDto>(comment),
-                IsLiked = comment.Likes.Any(l => l.UserId == userId),
+                IsLiked = comment.Likes.Any(u => u.Id == userId),
             });
         }
 
@@ -173,8 +173,65 @@ public class ArticleService : IArticleService
             throw new ArticleNotFoundException();
         }
 
-        article.ApproveState = state;
+        article.ApproveState = state; //TODO Это не работает
         await _repositoryManager.SaveAsync(cancellationToken);
+    }
+
+    public async Task SetLikeAsync(Guid articleId, Guid userId, CancellationToken cancellationToken)
+    {
+        var article = await _repositoryManager
+            .ArticleRepository
+            .GetArticleWithLikesAsync(articleId, true, cancellationToken);
+
+        if (article is null)
+            throw new ArticleNotFoundException();
+
+        if (article.UserId == userId)
+            return;
+
+        var user = await _repositoryManager.UserRepository.GetByIdAsync(userId, true, cancellationToken);
+
+        if (!article.Likes.Any(u => u.Id == user!.Id))
+        {
+            article.Likes.Add(user);
+            await _repositoryManager.SaveAsync(cancellationToken);
+        }
+    }
+
+    public async Task UnsetLikeAsync(Guid articleId, Guid userId, CancellationToken cancellationToken)
+    {
+        var article = await _repositoryManager
+            .ArticleRepository
+            .GetArticleWithLikesAsync(articleId, true, cancellationToken);
+
+        if (article is null)
+            throw new ArticleNotFoundException();
+
+        if (article.UserId == userId)
+            return;
+
+        var user = await _repositoryManager.UserRepository.GetByIdAsync(userId, true, cancellationToken);
+
+        if (article.Likes.Remove(article.Likes.SingleOrDefault(u => u.Id == user!.Id)))
+        {
+            await _repositoryManager.SaveAsync(cancellationToken);
+        }
+    }
+
+
+
+    private async Task<Article> GetArticleAndCheckIfItExistsAsync(Guid articleId, bool trackChanges, CancellationToken cancellationToken)
+    {
+        var article = await _repositoryManager
+            .ArticleRepository
+            .GetByIdAsync(articleId, trackChanges, cancellationToken);
+
+        if (article is null)
+        {
+            throw new ArticleNotFoundException();
+        }
+
+        return article;
     }
 
     /// <summary>
@@ -225,4 +282,5 @@ public class ArticleService : IArticleService
             article.Tags.Add(existingTag ?? _mapper.Map<Tag>(tagDto));
         }
     }
+
 }

@@ -21,6 +21,13 @@ public class UserRepository : RepositoryBase<User, Guid>, IUserRepository
         return await GetById(id, trackChanges).FirstOrDefaultAsync(cancellationToken);
     }
 
+    public async Task<User?> GetByIdWithLikesAsync(Guid id, bool trackChanges, CancellationToken cancellationToken = default)
+    {
+        return await GetById(id, trackChanges)
+            .Include(u => u.ReceivedLikes)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyCollection<User>> GetByRoleIdAsync(int id, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
@@ -48,7 +55,7 @@ public class UserRepository : RepositoryBase<User, Guid>, IUserRepository
     {
         return await FindByCondition(user => !user.Deleted)
             .Include(user => user.ReceivedLikes)
-            .Where(user => user.ReceivedLikes.Any(u => u.UserId == userId))
+            .Where(author => author.ReceivedLikes.Any(u => u.Id == userId))
             .Select(row => new UserLikedUser
             {
                 UserId = userId, //кто поставил лайк

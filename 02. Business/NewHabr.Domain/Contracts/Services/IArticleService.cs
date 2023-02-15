@@ -34,4 +34,14 @@ public interface IArticleService
 
     /// <exception cref="ArticleNotFoundException"></exception>
     Task SetApproveStateAsync(Guid id, ApproveState state, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Sets 'Like' mark at article
+    /// </summary>
+    Task SetLikeAsync(Guid articleId, Guid userId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Unsets 'Like' mark at article
+    /// </summary>
+    Task UnsetLikeAsync(Guid articleId, Guid userId, CancellationToken cancellationToken);
 }

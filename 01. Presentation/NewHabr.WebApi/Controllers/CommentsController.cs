@@ -94,5 +94,35 @@ public class CommentsController : ControllerBase
         }
     }
 
-    //todo Ставить лайки на комментарии
+    [Authorize]
+    [HttpPut("{commentId}/like")]
+    public async Task<IActionResult> SetLike([FromRoute] Guid commentId, CancellationToken cancellationToken)
+    {
+        var userId = User.GetUserId();
+        try
+        {
+            await _commentService.SetLikeAsync(commentId, userId, cancellationToken);
+            return NoContent();
+        }
+        catch (CommentNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
+
+    [Authorize]
+    [HttpPut("{commentId}/unlike")]
+    public async Task<IActionResult> UnsetLike([FromRoute] Guid commentId, CancellationToken cancellationToken)
+    {
+        var userId = User.GetUserId();
+        try
+        {
+            await _commentService.UnsetLikeAsync(commentId, userId, cancellationToken);
+            return NoContent();
+        }
+        catch (CommentNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
 }

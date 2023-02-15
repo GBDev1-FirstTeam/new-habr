@@ -15,4 +15,6 @@ public interface ICommentRepository : IRepository<Comment, Guid>
     Task<Comment?> GetByIdAsync(Guid id, bool trackChanges, CancellationToken cancellationToken = default);
 
     Task<IReadOnlyCollection<Comment>> GetAllAsync(bool trackChanges = false, CancellationToken cancellationToken = default);
+
+    Task<Comment?> GetByIdWithLikesAsync(Guid id, bool trackChanges, CancellationToken cancellationToken = default);
 }
