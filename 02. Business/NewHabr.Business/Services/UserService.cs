@@ -137,37 +137,6 @@ public class UserService : IUserService
         return userDto;
     }
 
-
-    private async Task<User> GetUserAndCheckIfItExistsAsync(Guid id, bool trackChanges, CancellationToken cancellationToken)
-    {
-        var user = await _repositoryManager.UserRepository.GetByIdAsync(id, trackChanges, cancellationToken);
-
-        if (user is null)
-        {
-            throw new UserNotFoundException();
-        }
-
-        return user;
-    }
-
-    private async Task CheckIfUserRolesExist(ICollection<string> roles)
-    {
-        ICollection<string> rolesNotExist = new List<string>(roles.Count);
-        foreach (var role in roles)
-        {
-            bool exist = await _roleManager.RoleExistsAsync(role);
-            if (!exist)
-                rolesNotExist.Add(role);
-        }
-        if (rolesNotExist.Count > 0)
-            throw new ArgumentException($"Specified roles could not be found: {string.Join(", ", rolesNotExist)}");
-    }
-
-    private async Task<ICollection<string>> GetUserRoles(User user)
-    {
-        return await _userManager.GetRolesAsync(user);
-    }
-
     public async Task SetLikeAsync(Guid userId, Guid authUserId, CancellationToken cancellationToken)
     {
         if (userId == authUserId)
@@ -210,5 +179,36 @@ public class UserService : IUserService
         likeReceiverUser.ReceivedLikes.Remove(likeReceiverUser.ReceivedLikes.FirstOrDefault(lsu => lsu.Id == likeSenderUser!.Id));
         await _repositoryManager.SaveAsync(cancellationToken);
     }
-}
 
+
+
+    private async Task<User> GetUserAndCheckIfItExistsAsync(Guid id, bool trackChanges, CancellationToken cancellationToken)
+    {
+        var user = await _repositoryManager.UserRepository.GetByIdAsync(id, trackChanges, cancellationToken);
+
+        if (user is null)
+        {
+            throw new UserNotFoundException();
+        }
+
+        return user;
+    }
+
+    private async Task CheckIfUserRolesExist(ICollection<string> roles)
+    {
+        ICollection<string> rolesNotExist = new List<string>(roles.Count);
+        foreach (var role in roles)
+        {
+            bool exist = await _roleManager.RoleExistsAsync(role);
+            if (!exist)
+                rolesNotExist.Add(role);
+        }
+        if (rolesNotExist.Count > 0)
+            throw new ArgumentException($"Specified roles could not be found: {string.Join(", ", rolesNotExist)}");
+    }
+
+    private async Task<ICollection<string>> GetUserRoles(User user)
+    {
+        return await _userManager.GetRolesAsync(user);
+    }
+}
