@@ -2,6 +2,8 @@
 using System.Xml.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using NewHabr.Domain.ConfigurationModels;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Contracts.Services;
 using NewHabr.Domain.Dto;
@@ -16,9 +18,11 @@ public class UserService : IUserService
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<UserRole> _roleManager;
     private readonly IMapper _mapper;
+    private readonly AppSettings _appSettings;
 
 
     public UserService(
+        IOptions<AppSettings> appSettings,
         IMapper mapper,
         IRepositoryManager repositoryManager,
         UserManager<User> userManager,
@@ -28,6 +32,7 @@ public class UserService : IUserService
         _userManager = userManager;
         _roleManager = roleManager;
         _mapper = mapper;
+        _appSettings = appSettings.Value;
     }
 
 
@@ -56,7 +61,7 @@ public class UserService : IUserService
         user.Banned = true;
         user.BannedAt = DateTimeOffset.UtcNow;
         user.BanReason = userBanDto.BanReason;
-
+        user.BanExpiratonDate = user.BannedAt.Value.AddDays(_appSettings.UserBanExpiresInDays);
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
