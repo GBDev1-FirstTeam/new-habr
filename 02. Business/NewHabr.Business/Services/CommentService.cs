@@ -63,6 +63,9 @@ public class CommentService : ICommentService
 
         var user = await _repositoryManager.UserRepository.GetByIdAsync(userId, true, cancellationToken);
 
+        if (user!.Banned)
+            throw new UserBannedException(user.BannedAt!.Value);
+
         comment.Likes.Add(user);
 
         await _repositoryManager.SaveAsync(cancellationToken);

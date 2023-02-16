@@ -224,6 +224,10 @@ public class UsersController : ControllerBase
         {
             return NotFound(ex.Message);
         }
+        catch (UserBannedException ex)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
+        }
     }
 
     [Authorize]

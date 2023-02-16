@@ -184,6 +184,9 @@ public class UserService : IUserService
             .UserRepository
             .GetByIdAsync(authUserId, true, cancellationToken);
 
+        if (likeSenderUser!.Banned)
+            throw new UserBannedException(likeSenderUser.BannedAt!.Value);
+
         likeReceiverUser.ReceivedLikes.Add(likeSenderUser);
         await _repositoryManager.SaveAsync(cancellationToken);
     }

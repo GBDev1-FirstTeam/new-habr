@@ -191,6 +191,9 @@ public class ArticleService : IArticleService
 
         var user = await _repositoryManager.UserRepository.GetByIdAsync(userId, true, cancellationToken);
 
+        if (user!.Banned)
+            throw new UserBannedException(user.BannedAt!.Value);
+
         if (!article.Likes.Any(u => u.Id == user!.Id))
         {
             article.Likes.Add(user);
