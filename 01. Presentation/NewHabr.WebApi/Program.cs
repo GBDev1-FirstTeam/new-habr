@@ -62,6 +62,8 @@ public class Program
 
         #endregion
 
+        services.Configure<AppSettings>(builder.Configuration.GetSection(AppSettings.Section));
+
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
 
