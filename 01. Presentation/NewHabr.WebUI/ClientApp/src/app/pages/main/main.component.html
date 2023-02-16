@@ -25,7 +25,7 @@
                     Ваша роль - <strong>{{ auth?.User!.Roles[0] }}</strong>
                 </div>
                 <div class="nav">
-                    <button type="button" class="btn btn-light" (click)="navigate(['accounts', auth?.User?.Id])">Мой профиль</button>
+                    <button type="button" class="btn btn-light" (click)="navigate(['accounts', auth?.User?.Id, 'profile'])">Мой профиль</button>
                     <button type="button" class="btn btn-light" (click)="navigate(['accounts', auth?.User?.Id, 'articles'])">Мои статьи</button>
                     <button type="button" class="btn btn-light" (click)="logout()">Выйти</button>
                 </div>

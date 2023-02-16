@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { Backend } from '../models/Configuration';
 import { Publication } from '../models/Publication';
 import { Commentary } from '../models/Commentary';
-import { User } from '../models/User';
+import { PutUserInfo, User, UserInfo } from '../models/User';
 import { ConfigurationService } from './ConfigurationService';
 import { LikeRequest } from '../models/Like';
 import { Registration, RegistrationRequest } from '../models/Registration';
@@ -47,6 +47,14 @@ export class HttpRequestService {
   
   private post<InType, OutType>(url: string, body: InType): Observable<OutType> {
     return this.http.post<OutType>(url, body, {
+      headers: {
+        "Authorization": `Bearer ${this.auth?.Token}`
+      }
+    });
+  }
+
+  private put<InType, OutType>(url: string, body: InType): Observable<OutType> {
+    return this.http.put<OutType>(url, body, {
       headers: {
         "Authorization": `Bearer ${this.auth?.Token}`
       }
@@ -129,6 +137,17 @@ export class HttpRequestService {
   getAllQuestions() {
     const url = this.backend.baseURL + `/SecureQuestions`;
     return this.get<Array<SecureQuestion>>(url);
+  }
+  // #endregion
+
+  // #region /Users
+  putUserInfo(id: string, body: PutUserInfo) {
+    const url = this.backend.baseURL + `/Users/${id}`;
+    return this.put<PutUserInfo, any>(url, body);
+  }
+  getUserInfo(id: string) {
+    const url = this.backend.baseURL + `/Users/${id}`;
+    return this.get<UserInfo>(url);
   }
   // #endregion
 }

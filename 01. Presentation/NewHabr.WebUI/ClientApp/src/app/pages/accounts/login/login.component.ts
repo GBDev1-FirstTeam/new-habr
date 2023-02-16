@@ -25,7 +25,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     const authSubscribtion = this.store.getAuth().subscribe(auth => {
       if (auth) {
         this.auth = auth;
-        this.router.navigate(['accounts', auth.User.Id]);
+        this.router.navigate(['accounts', auth.User.Id, 'profile']);
       }
     })
 

@@ -1,3 +1,4 @@
+import { UserInfo } from './../models/User';
 import { Publication } from "../models/Publication";
 import { createStore, withProps, Store, StoreDef, select } from '@ngneat/elf';
 import { Injectable } from "@angular/core";
@@ -9,7 +10,8 @@ export interface AppStore {
     publications: Array<Publication> | null,
     post: Publication | null,
     auth: Authorization | null,
-    isAuth: boolean
+    isAuth: boolean,
+    userInfo: UserInfo | null
 }
 
 @Injectable({
@@ -31,7 +33,8 @@ export class AppStoreProvider {
                 publications: null,
                 post: null,
                 auth: auth,
-                isAuth: !!auth?.User && !!auth?.Token
+                isAuth: !!auth?.User && !!auth?.Token,
+                userInfo: null
             })
         );
     }
@@ -135,5 +138,29 @@ export class AppStoreProvider {
     
     private readFromLocalStorage(): Authorization | null {
         return JSON.parse(localStorage.getItem(this.authObjectName)!) as Authorization | null;
+    }
+
+    loadUserInfo(id: string) {
+        if (this.store.getValue().userInfo == null) {
+            const userInfoSubscribtion = this.http.getUserInfo(id).subscribe(info => {
+                if (info) {
+                    this.updateUserInfo(info);
+                    userInfoSubscribtion.unsubscribe();
+                }
+            });
+        }
+    }
+    private updateUserInfo(userInfo: UserInfo) {
+        this.store.update(st => ({
+            ...st,
+            userInfo: userInfo
+        }))
+    }
+    getUserInfo = () => this.store.pipe(select((state => state.userInfo)));
+    clearUserInfo() {
+        this.store.update(st => ({
+            ...st,
+            userInfo: null
+        }))
     }
 }
