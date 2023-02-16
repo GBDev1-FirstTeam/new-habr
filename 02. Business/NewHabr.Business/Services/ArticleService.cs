@@ -63,6 +63,13 @@ public class ArticleService : IArticleService
         return _mapper.Map<List<ArticleDto>>(articles);
     }
 
+    public async Task<IReadOnlyCollection<ArticleDto>> GetPublishedAsync(int count, CancellationToken cancellationToken = default)
+    {
+        var articles = (await _repositoryManager.ArticleRepository.GetPublishedIncludeAsync(count, cancellationToken: cancellationToken))
+            .OrderByDescending(a => a.CreatedAt);
+        return _mapper.Map<List<ArticleDto>>(articles);
+    }
+
     public async Task<IReadOnlyCollection<ArticleDto>> GetDeletedAsync(CancellationToken cancellationToken = default)
     {
         var articles = (await _repositoryManager.ArticleRepository.GetDeletedIncludeAsync(cancellationToken: cancellationToken))

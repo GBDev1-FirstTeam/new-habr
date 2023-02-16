@@ -1,6 +1,5 @@
 ﻿#nullable disable
 
-using System;
 
 namespace NewHabr.Domain.Dto;
 
@@ -9,6 +8,10 @@ public class UserArticleDto
     public Guid Id { get; set; }
 
     public string Title { get; set; }
+
+    public string Content { get; set; }
+
+    public string ImgURL { get; set; }
 
     public ICollection<CategoryDto> Categories { get; set; }
 

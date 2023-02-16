@@ -10,7 +10,7 @@ namespace NewHabr.DAL.EF;
 public class ApplicationContext : IdentityDbContext<User, UserRole, Guid>
 {
     public DbSet<Article> Articles { get; set; }
-    public DbSet<UserNotification> UserNotifications { get; set; }
+    public DbSet<Notification> UserNotifications { get; set; }
     public DbSet<Tag> Tags { get; set; }
     public DbSet<SecureQuestion> SecureQuestions { get; set; }
     public DbSet<LikedUser> LikedUsers { get; set; }

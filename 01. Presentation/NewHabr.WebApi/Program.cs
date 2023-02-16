@@ -19,9 +19,11 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
         var services = builder.Services;
 
-        var logPath = builder.Configuration["Log:RestAPIPath"];
-        if (!string.IsNullOrEmpty(logPath))
-            builder.UseSerilog("api", logPath);
+        #region Configure logger
+
+        builder.UseSerilog("ui", builder.Configuration["Log:RestAPIPath"]);
+
+        #endregion Configure logger
 
         services.ConfigureDbContext(builder.Configuration);
 
@@ -50,6 +52,7 @@ public class Program
         services.AddScoped<ISecureQuestionsService, SecureQuestionsService>();
         services.AddScoped<IRepositoryManager, RepositoryManager>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<INotificationService, NotificationService>();
 
         #endregion
 
@@ -73,6 +76,10 @@ public class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+
+        app.UseCors(
+               options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowAnyHeader().AllowCredentials()
+           );
 
         app.UseAuthentication();
         app.UseAuthorization();

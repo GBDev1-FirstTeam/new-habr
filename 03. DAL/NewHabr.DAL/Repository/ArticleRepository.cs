@@ -47,6 +47,19 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyCollection<Article>> GetPublishedIncludeAsync(
+        int count,
+        bool trackChanges = false,
+        CancellationToken cancellationToken = default)
+    {
+        return await FindByCondition(a => a.Published && !a.Deleted, trackChanges)
+            .Include(a => a.Categories)
+            .Include(a => a.Tags)
+            .Include(a => a.Comments)
+            .Take(count)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyCollection<Article>> GetDeletedIncludeAsync(
         bool trackChanges = false,
         CancellationToken cancellationToken = default)
@@ -92,13 +105,15 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
 
     public async Task<ICollection<UserArticle>> GetUserArticlesAsync(Guid userId, bool trackChanges, CancellationToken cancellationToken)
     {
-        return await FindByCondition(article => article.UserId == userId && article.Published && !article.Deleted)
+        return await FindByCondition(article => article.UserId == userId && !article.Deleted) // ToDo && article.Published
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .Select(row => new UserArticle
             {
                 Id = row.Id,
                 Title = row.Title,
+                Content = row.Content,
+                ImgURL = row.ImgURL,
                 Categories = row.Categories,
                 Tags = row.Tags,
                 CommentsCount = row.Comments.Count,

@@ -14,6 +14,8 @@ public class Article : BaseEntity<Guid>
     [Required]
     public Guid UserId { get; set; }
 
+    public string ImgURL { get; set; } = string.Empty;
+
     public User User { get; set; }
 
     public ICollection<Category> Categories { get; set; } = new HashSet<Category>();

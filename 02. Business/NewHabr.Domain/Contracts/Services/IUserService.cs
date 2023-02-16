@@ -67,7 +67,7 @@ public interface IUserService
     /// </summary>
     /// <param name="userId">user id who got a notification</param>
     /// <returns></returns>
-    Task<ICollection<UserNotificationDto>> GetUserNotificationsAsync(Guid id, bool unreadOnly, CancellationToken cancellationToken);
+    Task<ICollection<NotificationDto>> GetUserNotificationsAsync(Guid id, bool unreadOnly, CancellationToken cancellationToken);
 
     /// <summary>
     /// Get list of articles where 'like' was set

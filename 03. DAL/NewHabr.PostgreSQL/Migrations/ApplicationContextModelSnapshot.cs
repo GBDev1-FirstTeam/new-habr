@@ -303,6 +303,30 @@ namespace NewHabr.PostgreSQL.Migrations
                     b.ToTable("LikedUsers");
                 });
 
+            modelBuilder.Entity("NewHabr.Domain.Models.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserNotifications");
+                });
+
             modelBuilder.Entity("NewHabr.Domain.Models.SecureQuestion", b =>
                 {
                     b.Property<int>("Id")
@@ -455,35 +479,6 @@ namespace NewHabr.PostgreSQL.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("NewHabr.Domain.Models.UserNotification", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserNotifications");
-                });
-
             modelBuilder.Entity("NewHabr.Domain.Models.UserRole", b =>
                 {
                     b.Property<Guid>("Id")
@@ -514,24 +509,39 @@ namespace NewHabr.PostgreSQL.Migrations
                         new
                         {
                             Id = new Guid("00a98c8e-6a15-4447-9343-063f4f1efefc"),
-                            ConcurrencyStamp = "47190aa0-f667-4dff-8075-1bf171362f2a",
+                            ConcurrencyStamp = "ba0afb06-a697-42ef-9d20-6eb89a0008d8",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = new Guid("1bfc496b-ebd2-4c5a-b3e8-4b2c1e334391"),
-                            ConcurrencyStamp = "1e8d0071-5be1-4df9-910b-7f454b371f66",
+                            ConcurrencyStamp = "0d212ed5-0e79-4cfc-8f3f-1f5bd6fa6ff9",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         },
                         new
                         {
                             Id = new Guid("aec1eede-5f3f-43ba-9ec3-454a3002c013"),
-                            ConcurrencyStamp = "f5b31db5-723d-40d2-8c6d-3ebd882dd3a3",
+                            ConcurrencyStamp = "e61137fc-a9dc-4d41-9b47-bf58326fac5f",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
+                });
+
+            modelBuilder.Entity("NotificationUser", b =>
+                {
+                    b.Property<Guid>("NotificationsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UsersId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("NotificationsId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("NotificationUser");
                 });
 
             modelBuilder.Entity("ArticleCategory", b =>
@@ -713,15 +723,19 @@ namespace NewHabr.PostgreSQL.Migrations
                     b.Navigation("SecureQuestion");
                 });
 
-            modelBuilder.Entity("NewHabr.Domain.Models.UserNotification", b =>
+            modelBuilder.Entity("NotificationUser", b =>
                 {
-                    b.HasOne("NewHabr.Domain.Models.User", "User")
-                        .WithMany("Notifications")
-                        .HasForeignKey("UserId")
+                    b.HasOne("NewHabr.Domain.Models.Notification", null)
+                        .WithMany()
+                        .HasForeignKey("NotificationsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.HasOne("NewHabr.Domain.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("NewHabr.Domain.Models.Article", b =>
@@ -745,8 +759,6 @@ namespace NewHabr.PostgreSQL.Migrations
                     b.Navigation("LikedComments");
 
                     b.Navigation("LikedUsers");
-
-                    b.Navigation("Notifications");
 
                     b.Navigation("ReceivedLikes");
                 });

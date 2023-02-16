@@ -33,4 +33,6 @@ public class ArticleDto
     public bool Published { get; set; }
 
     public ApproveState ApproveState { get; set; }
+
+    public string ImgURL { get; set; }
 }

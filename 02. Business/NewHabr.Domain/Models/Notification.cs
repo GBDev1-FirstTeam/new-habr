@@ -3,13 +3,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NewHabr.Domain.Models;
 
-public class UserNotification : BaseEntity<Guid>
+public class Notification : BaseEntity<Guid>
 {
     [Required]
-    public Guid UserId { get; set; }
-
-    [Required]
-    public User User { get; set; }
+    public ICollection<User> Users { get; set; }
 
     [Required]
     public string Text { get; set; }

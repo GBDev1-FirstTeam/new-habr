@@ -52,6 +52,14 @@ export class HttpRequestService {
       }
     });
   }
+  
+  private put<InType, OutType>(url: string, body: InType): Observable<OutType> {
+    return this.http.put<OutType>(url, body, {
+      headers: {
+        "Authorization": `Bearer ${this.auth?.Token}`
+      }
+    });
+  }
 
   private put<InType, OutType>(url: string, body: InType): Observable<OutType> {
     return this.http.put<OutType>(url, body, {
@@ -63,17 +71,22 @@ export class HttpRequestService {
 
 
   getPublications(): Observable<Publication[]> {
-    const url = this.backend.baseURL + `/publications`;
+    const url = this.backend.baseURL + `/articles/published/10`; //ToDo продумать, откуда брать количество
     return this.get<Array<Publication>>(url);
+  }
+
+  publishArticle(id: string) {
+    const url = this.backend.baseURL + `/articles/${id}/publish`;
+    return this.put<any, any>(url, undefined);
   }
   
   getAccountPublications(id: string): Observable<Publication[]> {
-    const url = this.backend.baseURL + `/users/${id}/publications`;
+    const url = this.backend.baseURL + `/users/${id}/articles`;
     return this.get<Array<Publication>>(url);
   }
   
   getPostById(id: string): Observable<Publication> {
-    const url = this.backend.baseURL + `/publications/${id}`;
+    const url = this.backend.baseURL + `/articles/${id}`;
     return this.get<Publication>(url);
   }
   
@@ -112,9 +125,14 @@ export class HttpRequestService {
     return this.post<Commentary, any>(url, body);
   }
   
-  postPublication(body: Publication) {
-    const url = this.backend.baseURL + `/publications/add`;
+  postCreatePublication(body: Publication) {
+    const url = this.backend.baseURL + `/articles`;
     return this.post<Publication, any>(url, body);
+  }
+  
+  postUpdatePublication(id: string, body: Publication) {
+    const url = this.backend.baseURL + `/articles/${id}`;
+    return this.put<Publication, any>(url, body);
   }
   
   postLike(body: LikeRequest, path: string) {
