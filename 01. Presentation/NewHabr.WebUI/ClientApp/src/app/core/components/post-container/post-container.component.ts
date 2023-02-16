@@ -15,9 +15,9 @@ export class PostContainerComponent {
   
   constructor(private router: Router, private sanitizer: DomSanitizer) { }
 
-getInnerHtml(){
-  return this.sanitizer.bypassSecurityTrustHtml(this.post?.Content as any);
-}
+  getInnerHtml() {
+    return this.sanitizer.bypassSecurityTrustHtml(this.post?.Content as any);
+  }
 
   navigate = (id: string | undefined) => this.router.navigate(['users', id]);
 }

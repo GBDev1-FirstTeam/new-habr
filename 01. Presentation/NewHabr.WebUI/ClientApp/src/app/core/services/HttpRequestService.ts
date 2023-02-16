@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, Injector } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Backend } from '../models/Configuration';
-import { Publication } from '../models/Publication';
+import { Publication, PublicationRequest } from '../models/Publication';
 import { Commentary } from '../models/Commentary';
 import { PutUserInfo, User, UserInfo } from '../models/User';
 import { ConfigurationService } from './ConfigurationService';
@@ -61,15 +61,6 @@ export class HttpRequestService {
     });
   }
 
-  private put<InType, OutType>(url: string, body: InType): Observable<OutType> {
-    return this.http.put<OutType>(url, body, {
-      headers: {
-        "Authorization": `Bearer ${this.auth?.Token}`
-      }
-    });
-  }
-
-
   getPublications(): Observable<Publication[]> {
     const url = this.backend.baseURL + `/articles/published/10`; //ToDo продумать, откуда брать количество
     return this.get<Array<Publication>>(url);
@@ -124,12 +115,7 @@ export class HttpRequestService {
     const url = this.backend.baseURL + `/comments/add`;
     return this.post<Commentary, any>(url, body);
   }
-  
-  postCreatePublication(body: Publication) {
-    const url = this.backend.baseURL + `/articles`;
-    return this.post<Publication, any>(url, body);
-  }
-  
+   
   postUpdatePublication(id: string, body: Publication) {
     const url = this.backend.baseURL + `/articles/${id}`;
     return this.put<Publication, any>(url, body);
@@ -166,6 +152,13 @@ export class HttpRequestService {
   getUserInfo(id: string) {
     const url = this.backend.baseURL + `/Users/${id}`;
     return this.get<UserInfo>(url);
+  }
+  // #endregion
+
+  // #region /Articles
+  createPublication(body: PublicationRequest) {
+    const url = this.backend.baseURL + `/Articles`;
+    return this.post<PublicationRequest, any>(url, body);
   }
   // #endregion
 }

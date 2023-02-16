@@ -1,11 +1,12 @@
-import { AfterViewInit, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import Quill from 'quill';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { Authorization } from 'src/app/core/models/Authorization';
-import { Publication } from 'src/app/core/models/Publication';
+import { Publication, PublicationRequest } from 'src/app/core/models/Publication';
 import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
 import { AppStoreProvider } from 'src/app/core/store/store';
+import Quill from 'quill';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-article',
@@ -25,6 +26,10 @@ export class ArticleComponent implements OnInit, OnDestroy, AfterViewInit {
   mode: Mode;
   auth: Authorization | null;
   quill: Quill;
+
+  maxTagCounter = 4;
+  tags: string[] = [];
+  cats: string[] = [];
   
   constructor(
     private http: HttpRequestService,
@@ -61,7 +66,6 @@ export class ArticleComponent implements OnInit, OnDestroy, AfterViewInit {
   save() {
     switch (this.mode) {
       case Mode.Edit:
-        this.post.ModifyAt = +Date.now();
         this.post.Content = this.quill.root.innerHTML;
         lastValueFrom(this.http.postUpdatePublication(this.post.Id!, this.post));
         break;
@@ -69,30 +73,33 @@ export class ArticleComponent implements OnInit, OnDestroy, AfterViewInit {
         const post = {
           Title: this.post.Title,
           Content: this.quill.root.innerHTML,
-          //UserId: this.auth?.User.Id,
-          //UserLogin: "sjdnf",
-          CreatedAt: +Date.now(),
-          ModifyAt: +Date.now(),
           ImgURL: this.post.ImgURL,
-          //IsPublished: false
-        } as Publication
-        lastValueFrom(this.http.postCreatePublication(post));
+          Categories: this.cats.map(c => {
+            return {
+              Name: c
+            }
+          }),
+          Tags: this.tags.map(c => {
+            return {
+              Name: c
+            }
+          }),
+        } as PublicationRequest;
+        lastValueFrom(this.http.createPublication(post));
         break;
     }
   }
 
   ngAfterViewInit(): void {
     var toolbar= [
-      ['bold', 'italic', 'underline', 'strike'],       
+      ['bold', 'italic', 'underline', 'strike'],
       ['blockquote', 'code-block'],
-  
-      [{ 'color': [] }, { 'background': [] }],         
+      [{ 'color': [] }, { 'background': [] }],
       [{ 'font': [] }],
       [{ 'align': [] }],
-  
-      ['clean'],                                        
-      ['image'] //add image here
-  ];
+      ['clean'],
+      ['image']
+    ];
 
     var formats = [
       'background',
@@ -114,8 +121,8 @@ export class ArticleComponent implements OnInit, OnDestroy, AfterViewInit {
       'direction',
       'code-block',
       'formula',
-    'image'
-  ];
+      'image'
+    ];
 
     this.quill = new Quill('#editor-container', {
       modules: {
@@ -129,7 +136,7 @@ export class ArticleComponent implements OnInit, OnDestroy, AfterViewInit {
       placeholder: 'Текст статьи...',
       theme: 'snow',
       formats: formats
-    });
+    })
   }
 
   imageHandler() {
@@ -147,7 +154,6 @@ export class ArticleComponent implements OnInit, OnDestroy, AfterViewInit {
         this.quill.insertEmbed(range.index, 'image', value, Quill.sources.USER);
       }
     };
-    // Called on hide and save.
     tooltip.hide = function () {
       tooltip.save = originalSave;
       tooltip.hide = originalHide;
@@ -160,12 +166,15 @@ export class ArticleComponent implements OnInit, OnDestroy, AfterViewInit {
     tooltip.textbox.value = ''
   }
 
-  //@HostListener('paste', ['$event'])
-  //private pasteFromClipboard(event: any): void {
-  //  if (event.clipboardData?.files && event.clipboardData.files.length && event.clipboardData.files[0].type.search(/^image\//i) === 0) {
-  //    event.preventDefault();
-  //  }
-  //}
+  addElement(item: string, items: string[], input: HTMLInputElement) {
+    if(_.some(items, i => i === item) === false && !!item && items.length < this.maxTagCounter) {
+      items.push(item);
+      input.value = '';
+    }
+  }
+  deleteElement(item: string, items: string[]) {
+    _.remove(items, i => i === item);
+  }
 }
 
 enum Mode {

@@ -12,3 +12,15 @@ export interface Publication extends Like {
     ImgURL: string;
     IsPublished: boolean;
 }
+
+export interface PublicationRequest {
+    Title: string;
+    Content: string;
+    ImgURL: string;
+    Categories: CT[];
+    Tags: CT[];
+}
+
+export interface CT {
+    Name: string;
+}

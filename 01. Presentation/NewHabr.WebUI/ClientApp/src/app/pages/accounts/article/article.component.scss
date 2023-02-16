@@ -12,9 +12,9 @@
 }
 
 .form-control {
-    margin: 10px 0px;
-    padding: 5px !important;
-    line-height: unset !important;
+  margin: 10px 0px;
+  padding: 5px !important;
+  line-height: unset !important;
 }
 
 .form-floating {
@@ -51,4 +51,12 @@
   }
 }
 
+.tag-btn,
+.cat-btn {
+  max-width: 150px;
+}
 
+.del {
+  color: red;
+  cursor: pointer;
+}
