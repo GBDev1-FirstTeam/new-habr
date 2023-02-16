@@ -19,6 +19,8 @@ public class CommentService : ICommentService
 
     public async Task CreateAsync(Guid CreatorId, CommentCreateRequest data, CancellationToken cancellationToken = default)
     {
+        await CheckIfUserNotBannedOrThrow(CreatorId, cancellationToken);
+
         var newComment = _mapper.Map<Comment>(data);
         newComment.UserId = CreatorId;
 
@@ -61,10 +63,9 @@ public class CommentService : ICommentService
         if (comment.UserId == userId)
             return; // нечего лайкать свои комментарии
 
-        var user = await _repositoryManager.UserRepository.GetByIdAsync(userId, true, cancellationToken);
+        await CheckIfUserNotBannedOrThrow(userId, cancellationToken);
 
-        if (user!.Banned)
-            throw new UserBannedException(user.BannedAt!.Value);
+        var user = await _repositoryManager.UserRepository.GetByIdAsync(userId, true, cancellationToken);
 
         comment.Likes.Add(user);
 
@@ -90,6 +91,8 @@ public class CommentService : ICommentService
 
     public async Task UpdateAsync(Guid commentId, Guid modifierId, CommentUpdateRequest updatedComment, CancellationToken cancellationToken = default)
     {
+        await CheckIfUserNotBannedOrThrow(modifierId, cancellationToken);
+
         var comment = await _repositoryManager.CommentRepository.GetByIdAsync(commentId, true, cancellationToken: cancellationToken);
 
         if (comment is null)
@@ -106,5 +109,15 @@ public class CommentService : ICommentService
         comment.ModifiedAt = DateTimeOffset.UtcNow;
 
         await _repositoryManager.SaveAsync(cancellationToken);
+    }
+
+
+
+    private async Task CheckIfUserNotBannedOrThrow(Guid userId, CancellationToken cancellationToken)
+    {
+        var user = await _repositoryManager.UserRepository.GetByIdAsync(userId, true, cancellationToken);
+
+        if (user!.Banned)
+            throw new UserBannedException(user.BannedAt!.Value);
     }
 }

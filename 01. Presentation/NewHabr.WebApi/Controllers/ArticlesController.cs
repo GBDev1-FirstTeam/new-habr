@@ -105,6 +105,10 @@ public class ArticlesController : ControllerBase
             _logger.LogInformation(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
             return BadRequest(ex.Message);
         }
+        catch (UserBannedException ex)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
@@ -125,6 +129,10 @@ public class ArticlesController : ControllerBase
         {
             _logger.LogInformation(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
             return NotFound(ex.Message);
+        }
+        catch (UserBannedException ex)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
         }
         catch (Exception ex)
         {

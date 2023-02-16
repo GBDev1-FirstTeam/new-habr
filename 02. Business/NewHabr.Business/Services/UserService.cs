@@ -142,6 +142,8 @@ public class UserService : IUserService
         if (userId == authUserId)
             return;
 
+        await CheckIfUserNotBannedOrThrow(authUserId, cancellationToken);
+
         var likeReceiverUser = await _repositoryManager
             .UserRepository
             .GetByIdWithLikesAsync(userId, true, cancellationToken);
@@ -152,9 +154,6 @@ public class UserService : IUserService
         var likeSenderUser = await _repositoryManager
             .UserRepository
             .GetByIdAsync(authUserId, true, cancellationToken);
-
-        if (likeSenderUser!.Banned)
-            throw new UserBannedException(likeSenderUser.BannedAt!.Value);
 
         likeReceiverUser.ReceivedLikes.Add(likeSenderUser);
         await _repositoryManager.SaveAsync(cancellationToken);
@@ -210,5 +209,13 @@ public class UserService : IUserService
     private async Task<ICollection<string>> GetUserRoles(User user)
     {
         return await _userManager.GetRolesAsync(user);
+    }
+
+    private async Task CheckIfUserNotBannedOrThrow(Guid userId, CancellationToken cancellationToken)
+    {
+        var user = await _repositoryManager.UserRepository.GetByIdAsync(userId, true, cancellationToken);
+
+        if (user!.Banned)
+            throw new UserBannedException(user.BannedAt!.Value);
     }
 }

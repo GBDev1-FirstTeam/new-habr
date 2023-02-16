@@ -72,6 +72,8 @@ public class ArticleService : IArticleService
 
     public async Task CreateAsync(ArticleCreateRequest request, Guid creatorId, CancellationToken cancellationToken = default)
     {
+        await CheckIfUserNotBannedOrThrow(creatorId, cancellationToken);
+
         var creationDateTime = DateTimeOffset.UtcNow;
         var article = _mapper.Map<Article>(request);
         article.UserId = creatorId;
@@ -96,6 +98,8 @@ public class ArticleService : IArticleService
 
     public async Task UpdateAsync(Guid articleId, Guid modifierId, ArticleUpdateRequest articleToUpdate, CancellationToken cancellationToken = default)
     {
+        await CheckIfUserNotBannedOrThrow(modifierId, cancellationToken);
+
         var article = await _repositoryManager.ArticleRepository.GetByIdIncludeAsync(articleId, trackChanges: true, cancellationToken);
 
         if (article is null)
@@ -189,10 +193,9 @@ public class ArticleService : IArticleService
         if (article.UserId == userId)
             return;
 
-        var user = await _repositoryManager.UserRepository.GetByIdAsync(userId, true, cancellationToken);
+        await CheckIfUserNotBannedOrThrow(userId, cancellationToken);
 
-        if (user!.Banned)
-            throw new UserBannedException(user.BannedAt!.Value);
+        var user = await _repositoryManager.UserRepository.GetByIdAsync(userId, true, cancellationToken);
 
         if (!article.Likes.Any(u => u.Id == user!.Id))
         {
@@ -222,6 +225,15 @@ public class ArticleService : IArticleService
     }
 
 
+
+
+    private async Task CheckIfUserNotBannedOrThrow(Guid userId, CancellationToken cancellationToken)
+    {
+        var user = await _repositoryManager.UserRepository.GetByIdAsync(userId, true, cancellationToken);
+
+        if (user!.Banned)
+            throw new UserBannedException(user.BannedAt!.Value);
+    }
 
     private async Task<Article> GetArticleAndCheckIfItExistsAsync(Guid articleId, bool trackChanges, CancellationToken cancellationToken)
     {

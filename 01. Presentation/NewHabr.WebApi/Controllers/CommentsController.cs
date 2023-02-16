@@ -44,6 +44,10 @@ public class CommentsController : ControllerBase
             await _commentService.CreateAsync(userId, newComment, cancellationToken);
             return Ok();
         }
+        catch (UserBannedException ex)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, string.Concat(ex.Message, "\nuser id: {id}:"), userId);
@@ -66,6 +70,10 @@ public class CommentsController : ControllerBase
         {
             _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return NotFound(ex.Message);
+        }
+        catch (UserBannedException ex)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
         }
         catch (Exception ex)
         {
