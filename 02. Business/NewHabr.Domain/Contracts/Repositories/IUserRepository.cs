@@ -5,6 +5,7 @@ namespace NewHabr.Domain.Contracts;
 public interface IUserRepository : IRepository<User, Guid>
 {
     Task<User?> GetUserByLoginAsync(string login, CancellationToken cancellationToken = default);
+    Task<ICollection<User>> GetUsersByLoginAsync(ICollection<string> usernames, bool trackChanges, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<User>> GetByRoleIdAsync(int roleId, CancellationToken cancellationToken = default);
     Task<IReadOnlyCollection<User>> GetDeletedUsersAsync(CancellationToken cancellationToken = default);
     Task<IReadOnlyCollection<User>> GetBannedUsersAsync(CancellationToken cancellationToken = default);
