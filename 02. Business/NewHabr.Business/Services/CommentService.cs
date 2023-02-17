@@ -19,6 +19,8 @@ public class CommentService : ICommentService
 
     public async Task CreateAsync(Guid CreatorId, CommentCreateRequest data, CancellationToken cancellationToken = default)
     {
+        await CheckIfUserNotBannedOrThrow(CreatorId, cancellationToken);
+
         var newComment = _mapper.Map<Comment>(data);
         newComment.UserId = CreatorId;
 
@@ -49,8 +51,48 @@ public class CommentService : ICommentService
         return _mapper.Map<List<CommentDto>>(comments);
     }
 
+    public async Task SetLikeAsync(Guid commentId, Guid userId, CancellationToken cancellationToken)
+    {
+        var comment = await _repositoryManager.CommentRepository.GetByIdWithLikesAsync(commentId, true, cancellationToken);
+
+        if (comment is null)
+        {
+            throw new CommentNotFoundException();
+        }
+
+        if (comment.UserId == userId)
+            return; // нечего лайкать свои комментарии
+
+        await CheckIfUserNotBannedOrThrow(userId, cancellationToken);
+
+        var user = await _repositoryManager.UserRepository.GetByIdAsync(userId, true, cancellationToken);
+
+        comment.Likes.Add(user);
+
+        await _repositoryManager.SaveAsync(cancellationToken);
+    }
+
+    public async Task UnsetLikeAsync(Guid commentId, Guid userId, CancellationToken cancellationToken)
+    {
+        var comment = await _repositoryManager.CommentRepository.GetByIdWithLikesAsync(commentId, true, cancellationToken);
+
+        if (comment is null)
+        {
+            throw new CommentNotFoundException();
+        }
+
+        if (comment.UserId == userId)
+            return; // нечего лайкать свои комментарии
+
+        var user = await _repositoryManager.UserRepository.GetByIdAsync(userId, true, cancellationToken);
+        comment.Likes.Remove(comment.Likes.FirstOrDefault(u => u.Id == user!.Id));
+        await _repositoryManager.SaveAsync(cancellationToken);
+    }
+
     public async Task UpdateAsync(Guid commentId, Guid modifierId, CommentUpdateRequest updatedComment, CancellationToken cancellationToken = default)
     {
+        await CheckIfUserNotBannedOrThrow(modifierId, cancellationToken);
+
         var comment = await _repositoryManager.CommentRepository.GetByIdAsync(commentId, true, cancellationToken: cancellationToken);
 
         if (comment is null)
@@ -67,5 +109,15 @@ public class CommentService : ICommentService
         comment.ModifiedAt = DateTimeOffset.UtcNow;
 
         await _repositoryManager.SaveAsync(cancellationToken);
+    }
+
+
+
+    private async Task CheckIfUserNotBannedOrThrow(Guid userId, CancellationToken cancellationToken)
+    {
+        var user = await _repositoryManager.UserRepository.GetByIdAsync(userId, true, cancellationToken);
+
+        if (user!.Banned)
+            throw new UserBannedException(user.BannedAt!.Value);
     }
 }

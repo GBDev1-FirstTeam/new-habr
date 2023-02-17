@@ -44,6 +44,10 @@ public class CommentsController : ControllerBase
             await _commentService.CreateAsync(userId, newComment, cancellationToken);
             return Ok();
         }
+        catch (UserBannedException ex)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, string.Concat(ex.Message, "\nuser id: {id}:"), userId);
@@ -66,6 +70,10 @@ public class CommentsController : ControllerBase
         {
             _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
             return NotFound(ex.Message);
+        }
+        catch (UserBannedException ex)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
         }
         catch (Exception ex)
         {
@@ -94,5 +102,39 @@ public class CommentsController : ControllerBase
         }
     }
 
-    //todo Ставить лайки на комментарии
+    [Authorize]
+    [HttpPut("{commentId}/like")]
+    public async Task<IActionResult> SetLike([FromRoute] Guid commentId, CancellationToken cancellationToken)
+    {
+        var userId = User.GetUserId();
+        try
+        {
+            await _commentService.SetLikeAsync(commentId, userId, cancellationToken);
+            return NoContent();
+        }
+        catch (CommentNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (UserBannedException ex)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
+        }
+    }
+
+    [Authorize]
+    [HttpPut("{commentId}/unlike")]
+    public async Task<IActionResult> UnsetLike([FromRoute] Guid commentId, CancellationToken cancellationToken)
+    {
+        var userId = User.GetUserId();
+        try
+        {
+            await _commentService.UnsetLikeAsync(commentId, userId, cancellationToken);
+            return NoContent();
+        }
+        catch (CommentNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
 }

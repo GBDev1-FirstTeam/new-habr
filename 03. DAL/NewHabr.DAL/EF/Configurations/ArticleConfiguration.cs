@@ -12,5 +12,16 @@ public class ArticleConfiguration : IEntityTypeConfiguration<Article>
         builder
             .Property(m => m.ApproveState)
             .HasConversion(new EnumToStringConverter<ApproveState>());
+
+        builder
+            .HasOne<User>(a => a.User)
+            .WithMany(u => u.AuthoredArticles)
+            .HasForeignKey(a => a.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder
+            .HasMany<User>(a => a.Likes)
+            .WithMany(u => u.LikedArticles)
+            .UsingEntity(join => join.ToTable("UserLikesArticle"));
     }
 }

@@ -34,6 +34,13 @@ public class CommentRepository : RepositoryBase<Comment, Guid>, ICommentReposito
         return await GetById(id, trackChanges).FirstOrDefaultAsync(cancellationToken);
     }
 
+    public async Task<Comment?> GetByIdWithLikesAsync(Guid id, bool trackChanges, CancellationToken cancellationToken = default)
+    {
+        return await GetById(id, trackChanges)
+            .Include(c => c.Likes)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyCollection<Comment>> GetByUserIdAsync(
         Guid userId,
         bool trackChanges = false,
@@ -63,7 +70,7 @@ public class CommentRepository : RepositoryBase<Comment, Guid>, ICommentReposito
         return await FindByCondition(comment => !comment.Deleted)
             .Include(comment => comment.Article)
             .Include(comment => comment.Likes)
-            .Where(comment => comment.Article.Published && !comment.Article.Deleted && comment.Likes.Any(like => like.UserId == userId))
+            .Where(comment => comment.Article.Published && !comment.Article.Deleted && comment.Likes.Any(u => u.Id == userId))
             .Select(row => new UserLikedComment
             {
                 Id = row.Id,

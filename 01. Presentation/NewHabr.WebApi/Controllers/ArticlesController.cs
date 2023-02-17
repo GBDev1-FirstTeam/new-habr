@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Exceptions;
@@ -44,7 +45,6 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet("{id}")]
-
     public async Task<ActionResult<ArticleDto>> GetById([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         try
@@ -105,6 +105,10 @@ public class ArticlesController : ControllerBase
             _logger.LogInformation(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
             return BadRequest(ex.Message);
         }
+        catch (UserBannedException ex)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
@@ -125,6 +129,10 @@ public class ArticlesController : ControllerBase
         {
             _logger.LogInformation(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
             return NotFound(ex.Message);
+        }
+        catch (UserBannedException ex)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
         }
         catch (Exception ex)
         {
@@ -198,6 +206,42 @@ public class ArticlesController : ControllerBase
         {
             _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}\napprove state: {approveState}"), id, approveState);
             return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    [Authorize]
+    [HttpPut("{articleId}/like")]
+    public async Task<IActionResult> SetLike([FromRoute] Guid articleId, CancellationToken cancellationToken)
+    {
+        var userId = User.GetUserId();
+        try
+        {
+            await _articleService.SetLikeAsync(articleId, userId, cancellationToken);
+            return NoContent();
+        }
+        catch (ArticleNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (UserBannedException ex)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
+        }
+    }
+
+    [Authorize]
+    [HttpPut("{articleId}/unlike")]
+    public async Task<IActionResult> UnsetLike([FromRoute] Guid articleId, CancellationToken cancellationToken)
+    {
+        var userId = User.GetUserId();
+        try
+        {
+            await _articleService.UnsetLikeAsync(articleId, userId, cancellationToken);
+            return NoContent();
+        }
+        catch (ArticleNotFoundException ex)
+        {
+            return NotFound(ex.Message);
         }
     }
 
