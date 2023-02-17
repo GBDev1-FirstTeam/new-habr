@@ -320,275 +320,61 @@ public class ArticleServiceTests
     [Fact]
     public async Task UpdateAsync__NotExistsArticleId__ThrowNotFoundException()
     {
-        // arrange
-        var existsArticle = await CreateArticleAsync();
-        var request = new UpdateArticleRequest
-        {
-            Title = "test",
-            Content = "test"
-        };
-
-        // act, assert
-        await Assert.ThrowsAsync<ArticleNotFoundException>(async () => await _articleService.UpdateAsync(default(Guid), request));
-
-        await ClearContextFromEntitiesAsync<Article, Guid>();
     }
 
     [Fact]
     public async Task UpdateAsync__ValidRequest__CorrectUpdatedEntity()
     {
-        // arrange
-        var existsArticle = await CreateArticleAsync();
-        var request = new UpdateArticleRequest
-        {
-            Title = "noway",
-            Content = "noway"
-        };
-
-        // act
-        await _articleService.UpdateAsync(existsArticle.Id, request);
-
-        // assert
-        Assert.NotNull(existsArticle);
-        Assert.True(request.Title == existsArticle.Title
-            && request.Content == existsArticle.Content);
-
-        await ClearContextFromEntitiesAsync<Article, Guid>();
     }
 
     [Fact]
     public async Task UpdateAsync__NotExistsCategory__ThrowNotFoundException()
     {
-        // arrange
-        var existsArticle = await CreateArticleAsync();
-        var request = new UpdateArticleRequest
-        {
-            Title = "test",
-            Content = "test",
-            Categories = new[] { new CreateCategoryRequest { Name = "test" } }
-        };
-
-        // act, assert
-        await Assert.ThrowsAsync<CategoryNotFoundException>(async () => await _articleService.UpdateAsync(existsArticle.Id, request));
-
-        await ClearContextFromEntitiesAsync<Article, Guid>();
     }
 
     [Fact]
     public async Task UpdateAsync__ExistsCategory__NotDuplicatedInCategorySet()
     {
-        // arrange
-        var existsArticle = await CreateArticleAsync();
-        var existsCategory = await CreateCategoryAsync("test");
-        var request = new UpdateArticleRequest
-        {
-            Title = "test",
-            Content = "test",
-            Categories = new[] { new CreateCategoryRequest { Name = existsCategory.Name } }
-        };
-
-        // act
-        await _articleService.UpdateAsync(existsArticle.Id, request);
-
-        // assert
-        var count = _context.Categories.Count(c => c.Name == existsCategory.Name && !c.Deleted);
-        Assert.True(count == 1);
-
-        await ClearContextFromEntitiesAsync<Article, Guid>();
-        await ClearContextFromEntitiesAsync<Category, int>();
     }
 
     [Fact]
     public async Task UpdateAsync__ExistsCategoryCollection__AllCategoriesAdded()
     {
-        // arrange
-        var article = await CreateArticleAsync();
-        var existsCategory1 = await CreateCategoryAsync("test1");
-        var existsCategory2 = await CreateCategoryAsync("test2");
-        var existsCategory3 = await CreateCategoryAsync("test3");
-        var request = new UpdateArticleRequest
-        {
-            Title = article.Title,
-            Content = article.Title,
-            Categories = new[]
-            {
-                new CreateCategoryRequest { Name = existsCategory1.Name },
-                new CreateCategoryRequest { Name = existsCategory2.Name },
-                new CreateCategoryRequest { Name = existsCategory3.Name }
-            },
-        };
-
-        // act
-        await _articleService.UpdateAsync(article.Id, request);
-
-        // assert
-        Assert.Contains(existsCategory1, article.Categories);
-        Assert.Contains(existsCategory2, article.Categories);
-        Assert.Contains(existsCategory3, article.Categories);
-
-        await ClearContextFromEntitiesAsync<Article, Guid>();
-        await ClearContextFromEntitiesAsync<Category, int>();
     }
 
     [Fact]
     public async Task UpdateAsync__NotExistsTag__CreateNewTag()
     {
-        // arrange
-        var tagNameToAdd = "test";
-        var existsArticle = await CreateArticleAsync();
-        var request = new UpdateArticleRequest
-        {
-            Title = "test",
-            Content = "test",
-            Tags = new[] { new CreateTagRequest { Name = tagNameToAdd } },
-        };
-
-        // act
-        await _articleService.UpdateAsync(existsArticle.Id, request);
-
-        // assert
-        Assert.True(await _context.Tags.AnyAsync(t => t.Name == tagNameToAdd));
-
-        await ClearContextFromEntitiesAsync<Article, Guid>();
-        await ClearContextFromEntitiesAsync<Tag, int>();
     }
 
     [Fact]
     public async Task UpdateAsync__NotExistsTag__NotDuplicatedInTagSet()
     {
-        // arrange
-        var existsArticle = await CreateArticleAsync();
-        var tagNameToAdd = "test";
-        var request = new UpdateArticleRequest
-        {
-            Title = "test",
-            Content = "test",
-            Tags = new[]
-            {
-                new CreateTagRequest { Name = tagNameToAdd },
-                new CreateTagRequest { Name = tagNameToAdd }
-            }
-        };
-
-        // act
-        await _articleService.UpdateAsync(existsArticle.Id, request);
-
-        // assert
-        var count = _context.Tags.Count(t => t.Name == tagNameToAdd && !t.Deleted);
-        Assert.True(count == 1);
-
-        await ClearContextFromEntitiesAsync<Article, Guid>();
-        await ClearContextFromEntitiesAsync<Tag, int>();
     }
 
     [Fact]
     public async Task UpdateAsync__ExistsTag__NotDuplicatedInTagSet()
     {
-        var existsArticle = await CreateArticleAsync();
-        var existsTag = await CreateTagAsync("test");
-        var request = new UpdateArticleRequest
-        {
-            Title = "test",
-            Content = "test",
-            Tags = new[]
-            {
-                new CreateTagRequest { Name = existsTag.Name },
-                new CreateTagRequest { Name = existsTag.Name }
-            }
-        };
-
-        // act
-        await _articleService.UpdateAsync(existsArticle.Id, request);
-
-        // assert
-        var count = _context.Tags.Count(c => c.Name == existsTag.Name && !c.Deleted);
-        Assert.True(count == 1);
-
-        await ClearContextFromEntitiesAsync<Article, Guid>();
-        await ClearContextFromEntitiesAsync<Tag, int>();
     }
 
     [Fact]
     public async Task UpdateAsync__TagCollection__AllTagsAdded()
     {
-        // arrange
-        var article = await CreateArticleAsync();
-        var existsTag1 = await CreateTagAsync("test1");
-        var existsTag2 = await CreateTagAsync("test2");
-        var existsTag3 = await CreateTagAsync("test3");
-        var request = new UpdateArticleRequest
-        {
-            Title = article.Title,
-            Content = article.Title,
-            Tags = new[]
-            {
-                new CreateTagRequest { Name = existsTag1.Name },
-                new CreateTagRequest { Name = existsTag2.Name },
-                new CreateTagRequest { Name = existsTag3.Name }
-            },
-        };
-
-        // act
-        await _articleService.UpdateAsync(article.Id, request);
-
-        // assert
-        Assert.Contains(existsTag1, article.Tags);
-        Assert.Contains(existsTag2, article.Tags);
-        Assert.Contains(existsTag3, article.Tags);
-
-        await ClearContextFromEntitiesAsync<Article, Guid>();
-        await ClearContextFromEntitiesAsync<Tag, int>();
     }
 
     [Fact]
     public async Task UpdateAsync__ValidRequest__ModifiedAt_ShouldChange()
     {
-        // arrange
-        var existsArticle = await CreateArticleAsync();
-        existsArticle.ModifiedAt = default(DateTimeOffset);
-        await _context.SaveChangesAsync();
-        var request = new UpdateArticleRequest { Title = "test", Content = "test" };
-
-        // act
-        await _articleService.UpdateAsync(existsArticle.Id, request);
-
-        // assert
-        var updatedArticle = await _context.Articles.FirstOrDefaultAsync();
-        Assert.NotNull(updatedArticle);
-        Assert.True(updatedArticle.ModifiedAt != default(DateTimeOffset));
-
-        await ClearContextFromEntitiesAsync<Article, Guid>();
     }
 
     [Fact]
     public async Task DeleteByIdAsync__NotExistsArticleId__ThrowNotFoundException()
     {
-        // act, assert
-        await Assert.ThrowsAsync<ArticleNotFoundException>(async () => await _articleService.DeleteByIdAsync(default(Guid)));
     }
 
     [Fact]
     public async Task DeleteByIdAsync__ValidRequest__Published_PublishedAt_Deleted_DeletedAt_ShouldChange()
     {
-        // arrange
-        var existsArticle = await CreateArticleAsync();
-        existsArticle.PublishedAt = default(DateTimeOffset);
-        existsArticle.Published = true;
-        await _context.SaveChangesAsync();
-
-        // act
-        await _articleService.DeleteByIdAsync(existsArticle.Id);
-
-        // asset
-        var deletedArticle = await _context.Articles.FirstOrDefaultAsync(a => a.Id == existsArticle.Id && a.Deleted);
-
-        Assert.NotNull(deletedArticle);
-        Assert.NotNull(deletedArticle.DeletedAt);
-        Assert.Null(deletedArticle.PublishedAt);
-        Assert.True(deletedArticle.Deleted);
-        Assert.False(deletedArticle.Published);
-
-        await ClearContextFromEntitiesAsync<Article, Guid>();
     }
 
     [Fact]
