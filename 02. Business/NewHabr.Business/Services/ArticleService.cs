@@ -318,9 +318,10 @@ public class ArticleService : IArticleService
 
         var notification = new NotificationCreateRequest
         {
-            Text = $"Вас упомянули в статье {article.Title}"
+            Text = $"Вас упомянули в статье '{article.Title}'"
         };
-        await _notificationService.CreateAsync(notification, users, cancellationToken);
+        await _notificationService
+            .CreateAsync(notification, users, cancellationToken);
     }
 
 }
