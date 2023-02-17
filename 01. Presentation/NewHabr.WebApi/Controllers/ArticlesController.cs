@@ -44,7 +44,6 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet("{id}")]
-
     public async Task<ActionResult<ArticleDto>> GetById([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         try
@@ -64,11 +63,13 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet("unpublished")]
-    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetUnpublished(CancellationToken cancellationToken)
+    public async Task<ActionResult<ArticleGetResponse>> GetUnpublished(
+        [FromQuery] ArticleQueryParameters queryParams,
+        CancellationToken cancellationToken)
     {
         try
         {
-            return Ok(await _articleService.GetUnpublishedAsync(cancellationToken));
+            return Ok(await _articleService.GetUnpublishedAsync(queryParams, cancellationToken));
         }
         catch (Exception ex)
         {

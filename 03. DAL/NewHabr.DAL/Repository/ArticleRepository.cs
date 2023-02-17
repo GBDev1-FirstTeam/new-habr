@@ -14,8 +14,8 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
 
     public async Task<IReadOnlyCollection<Article>> GetByTitleIncludeAsync(
         string title,
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default)
+        bool trackChanges,
+        CancellationToken cancellationToken)
     {
         return await FindByCondition(a => a.Title.ToLower() == title.ToLower() && !a.Deleted, trackChanges)
             .Include(a => a.Categories)
@@ -26,8 +26,8 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
 
     public async Task<IReadOnlyCollection<Article>> GetByUserIdIncludeAsync(
         Guid userId,
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default)
+        bool trackChanges,
+        CancellationToken cancellationToken)
     {
         return await FindByCondition(a => a.UserId == userId && !a.Deleted, trackChanges)
             .Include(a => a.Categories)
@@ -37,19 +37,24 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
     }
 
     public async Task<IReadOnlyCollection<Article>> GetUnpublishedIncludeAsync(
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default)
+        ArticleQueryParameters queryParams,
+        bool trackChanges,
+        CancellationToken cancellationToken)
     {
         return await FindByCondition(a => !a.Published && !a.Deleted, trackChanges)
+            .Skip((queryParams.PageNumber - 1) * queryParams.PageSize)
+            .Take(queryParams.PageSize)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
-            .Include(a => a.Comments)
+            .Include(a => a.Comments
+                .OrderBy(c => c.CreatedAt))
+            .OrderByDescending(a => a.CreatedAt)
             .ToListAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyCollection<Article>> GetDeletedIncludeAsync(
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default)
+        bool trackChanges,
+        CancellationToken cancellationToken)
     {
         return await GetDeleted(trackChanges)
             .Include(a => a.Categories)
@@ -60,16 +65,16 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
 
     public async Task<Article?> GetByIdAsync(
         Guid id,
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default)
+        bool trackChanges,
+        CancellationToken cancellationToken)
     {
         return await GetById(id, trackChanges).FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<Article?> GetByIdIncludeAsync(
         Guid id,
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default)
+        bool trackChanges,
+        CancellationToken cancellationToken)
     {
         return await FindByCondition(a => a.Id == id && !a.Deleted, trackChanges)
             .Include(a => a.Categories)
@@ -80,8 +85,8 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
 
     public async Task<Article?> GetByIdIncludeCommentLikesAsync(
         Guid id,
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default)
+        bool trackChanges,
+        CancellationToken cancellationToken)
     {
         return await FindByCondition(a => a.Id == id && !a.Deleted, trackChanges)
             .Include(a => a.Categories)
@@ -125,5 +130,15 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
                 Tags = row.Tags
             })
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<int> GetUnpublishedPageCountAsync(int pageSize, CancellationToken cancellationToken)
+    {
+        var articlesCount = await FindByCondition(a => !a.Published && !a.Deleted).CountAsync(cancellationToken);
+        var pageCount = articlesCount / pageSize;
+
+        return articlesCount % pageSize == 0
+            ? pageCount
+            : pageCount + 1;
     }
 }
