@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Exceptions;
@@ -7,6 +8,7 @@ using NewHabr.WebApi.Extensions;
 
 namespace NewHabr.WebApi.Controllers;
 
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class ArticlesController : ControllerBase
@@ -20,6 +22,7 @@ public class ArticlesController : ControllerBase
         _logger = logger;
     }
 
+    [AllowAnonymous]
     [HttpGet("{id}/comments")]
     public async Task<ActionResult<IEnumerable<CommentWithLikedMark>>> GetCommentsWithLikedMark(
         [FromRoute] Guid id,
@@ -42,6 +45,7 @@ public class ArticlesController : ControllerBase
         }
     }
 
+    [AllowAnonymous]
     [HttpGet("{id}")]
     public async Task<ActionResult<ArticleDto>> GetById([FromRoute] Guid id, CancellationToken cancellationToken)
     {
@@ -64,6 +68,7 @@ public class ArticlesController : ControllerBase
         }
     }
 
+    [AllowAnonymous]
     [HttpGet("unpublished")]
     public async Task<ActionResult<IEnumerable<ArticleDto>>> GetUnpublished(CancellationToken cancellationToken)
     {
@@ -78,6 +83,7 @@ public class ArticlesController : ControllerBase
         }
     }
 
+    [AllowAnonymous]
     [HttpGet("deleted")]
     public async Task<ActionResult<IEnumerable<ArticleDto>>> GetDeleted(CancellationToken cancellationToken)
     {

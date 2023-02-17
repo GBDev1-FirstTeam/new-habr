@@ -1,14 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
-using NewHabr.Business.Services;
-using NewHabr.Business.Configurations;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using NewHabr.Business.AutoMapperProfiles;
+using NewHabr.Business.Configurations;
+using NewHabr.Business.Services;
 using NewHabr.DAL.EF;
 using NewHabr.DAL.Repository;
 using NewHabr.Domain.ConfigurationModels;
 using NewHabr.Domain.Contracts;
+using NewHabr.Domain.Contracts.Services;
 using NewHabr.WebApi.Extensions;
 using Serilog;
-using NewHabr.Domain.Contracts.Services;
 
 namespace NewHabr.WebApi;
 
@@ -59,7 +61,36 @@ public class Program
         #endregion
 
         services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
+
+        #region Configure Swagger
+
+        services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "NewHabr", Version = "v1" });
+            c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme()
+            {
+                Description = "JWT Authorization header using the Bearer scheme(Example: 'Bearer 1234abcdef')",
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = JwtBearerDefaults.AuthenticationScheme
+            });
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+            {
+                {
+                    new OpenApiSecurityScheme()
+                    {
+                        Reference = new OpenApiReference()
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = JwtBearerDefaults.AuthenticationScheme
+                        }
+                    },Array.Empty<string>()
+                }
+            });
+        });
+
+        #endregion
 
         services.ConfigureAutoMapper(typeof(ArticleProfile).Assembly);
 
