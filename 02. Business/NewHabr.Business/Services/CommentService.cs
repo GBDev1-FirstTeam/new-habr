@@ -28,9 +28,11 @@ public class CommentService : ICommentService
     public async Task CreateAsync(Guid CreatorId, CommentCreateRequest data, CancellationToken cancellationToken = default)
     {
         await CheckIfUserNotBannedOrThrow(CreatorId, cancellationToken);
+
         var article = await _repositoryManager
             .ArticleRepository
-            .GetByIdIncludeAsync(data.ArticleId, true, cancellationToken);
+            .GetByIdAsync(data.ArticleId, true, cancellationToken);
+
         if (article is null)
             throw new ArticleNotFoundException();
 
@@ -42,7 +44,6 @@ public class CommentService : ICommentService
         newComment.ModifiedAt = createDate;
 
         article.Comments.Add(newComment);
-        //_repositoryManager.CommentRepository.Create(newComment);
         await _repositoryManager.SaveAsync(cancellationToken);
 
         await CreateNotificationIfMentionSomeoneAsync(article, newComment, cancellationToken);
