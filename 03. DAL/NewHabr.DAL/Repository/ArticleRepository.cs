@@ -23,7 +23,7 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             .Include(a => a.Comments)
             .OrderByDescending(a => a.CreatedAt);
 
-        await articlesQuery.ForEachAsync(a => a.Comments.OrderByDescending(a => a.CreatedAt), cancellationToken);
+        await articlesQuery.ForEachAsync(a => a.Comments = a.Comments.OrderBy(c => c.CreatedAt).ToList(), cancellationToken);
 
         return await articlesQuery.ToListAsync(cancellationToken);
     }
@@ -40,7 +40,7 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             .Include(a => a.Comments)
             .OrderByDescending(a => a.CreatedAt);
 
-        await articlesQuery.ForEachAsync(a => a.Comments.OrderByDescending(a => a.CreatedAt), cancellationToken);
+        await articlesQuery.ForEachAsync(a => a.Comments = a.Comments.OrderBy(c => c.CreatedAt).ToList(), cancellationToken);
 
         return await articlesQuery.ToListAsync(cancellationToken);
     }
@@ -56,7 +56,7 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             .Include(a => a.Comments)
             .OrderByDescending(a => a.CreatedAt);
 
-        await articlesQuery.ForEachAsync(a => a.Comments.OrderByDescending(a => a.CreatedAt), cancellationToken);
+        await articlesQuery.ForEachAsync(a => a.Comments = a.Comments.OrderBy(c => c.CreatedAt).ToList(), cancellationToken);
 
         return await articlesQuery.ToListAsync(cancellationToken);
     }
@@ -72,7 +72,7 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             .Include(a => a.Comments)
             .OrderByDescending(a => a.CreatedAt);
 
-        await articlesQuery.ForEachAsync(a => a.Comments.OrderByDescending(a => a.CreatedAt), cancellationToken);
+        await articlesQuery.ForEachAsync(a => a.Comments = a.Comments.OrderBy(c => c.CreatedAt).ToList(), cancellationToken);
 
         return await articlesQuery.ToListAsync(cancellationToken);
     }
@@ -97,7 +97,7 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             .Include(a => a.Comments)
             .OrderByDescending(a => a.CreatedAt);
 
-        await articleQuery.ForEachAsync(a => a.Comments.OrderByDescending(a => a.CreatedAt), cancellationToken);
+        await articleQuery.ForEachAsync(a => a.Comments = a.Comments.OrderBy(c => c.CreatedAt).ToList(), cancellationToken);
 
         return await articleQuery.FirstOrDefaultAsync(cancellationToken);
     }
@@ -114,7 +114,7 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             .Include(a => a.Comments).ThenInclude(c => c.Likes)
             .OrderByDescending(c => c.CreatedAt);
 
-        await articleQuery.ForEachAsync(a => a.Comments.OrderByDescending(a => a.CreatedAt), cancellationToken);
+        await articleQuery.ForEachAsync(a => a.Comments = a.Comments.OrderBy(c => c.CreatedAt).ToList(), cancellationToken);
 
         return await articleQuery.FirstOrDefaultAsync(cancellationToken);
     }

@@ -19,15 +19,19 @@ public interface IArticleService
 
     Task<IReadOnlyCollection<ArticleDto>> GetDeletedAsync(CancellationToken cancellationToken = default);
 
+    /// <exception cref="UserBannedException"></exception>
     /// <exception cref="CategoryNotFoundException"></exception>
-    Task CreateAsync(Guid userId, CreateArticleRequest request, CancellationToken cancellationToken = default);
+    Task<ArticleDto> CreateAsync(Guid authorId, CreateArticleRequest request, CancellationToken cancellationToken = default);
 
+    /// <exception cref="UserBannedException"></exception>
     /// <exception cref="ArticleNotFoundException"></exception>
     /// <exception cref="CategoryNotFoundException"></exception>
-    Task UpdateAsync(Guid id, UpdateArticleRequest articleToUpdate, CancellationToken cancellationToken = default);
+    /// <exception cref="InteractionOutsidePermissionException"></exception>
+    Task UpdateAsync(Guid articleId, Guid authorId, UpdateArticleRequest articleToUpdate, CancellationToken cancellationToken = default);
 
     /// <exception cref="ArticleNotFoundException"></exception>
-    Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    /// <exception cref="InteractionOutsidePermissionException"></exception>
+    Task DeleteByIdAsync(Guid articleId, Guid authorId, CancellationToken cancellationToken = default);
 
     /// <exception cref="ArticleNotFoundException"></exception>
     /// <exception cref="ArticleIsNotApprovedException"></exception>

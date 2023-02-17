@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Exceptions;
@@ -48,7 +47,10 @@ public class ArticlesController : ControllerBase
     {
         try
         {
-            return Ok(await _articleService.GetByIdAsync(id, cancellationToken));
+            var article = await _articleService.GetByIdAsync(id, cancellationToken);
+            return article is not null
+                ? Ok(article)
+                : NoContent();
         }
         catch (EntityNotFoundException ex)
         {
@@ -95,13 +97,18 @@ public class ArticlesController : ControllerBase
     {
         try
         {
-            await _articleService.CreateAsync(User.GetUserId(), request, cancellationToken);
-            return StatusCode(StatusCodes.Status201Created);
+            var createdArticle = await _articleService.CreateAsync(User.GetUserId(), request, cancellationToken);
+            return StatusCode(StatusCodes.Status201Created, createdArticle);
+        }
+        catch (UserBannedException ex)
+        {
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
+            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
         }
         catch (EntityNotFoundException ex)
         {
             _logger.LogInformation(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
-            return BadRequest(ex.Message);
+            return NotFound(ex.Message);
         }
         catch (Exception ex)
         {
@@ -115,17 +122,27 @@ public class ArticlesController : ControllerBase
     {
         try
         {
-            await _articleService.UpdateAsync(id, request, cancellationToken);
+            await _articleService.UpdateAsync(id, User.GetUserId(), request, cancellationToken);
             return Ok();
+        }
+        catch (UserBannedException ex)
+        {
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nrequest: {@request}\narticle id: {id}"), request, id);
+            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nrequest: {@request}\narticle id: {id}"), request, id);
             return NotFound(ex.Message);
+        }
+        catch (InteractionOutsidePermissionException<object, object> ex)
+        {
+            _logger.LogWarning(ex, string.Concat(ex.Message, "\nrequest: {@request}\narticle id: {id}"), request, id);
+            return BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
+            _logger.LogError(ex, string.Concat(ex.Message, "\nrequest: {@request}\narticle id: {id}"), request, id);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
@@ -203,7 +220,7 @@ public class ArticlesController : ControllerBase
     {
         try
         {
-            await _articleService.DeleteByIdAsync(id, cancellationToken);
+            await _articleService.DeleteByIdAsync(id, User.GetUserId(), cancellationToken);
             return Ok();
         }
         catch (EntityNotFoundException ex)

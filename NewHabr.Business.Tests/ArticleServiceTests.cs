@@ -672,6 +672,32 @@ public class ArticleServiceTests
         await ClearContextFromEntitiesAsync<Article, Guid>();
     }
 
+    [Fact]
+    public async Task GetUnpublished()
+    {
+        var article = await CreateArticleAsync();
+
+        for (int i = 0; i < 3; i++)
+        {
+            await Task.Delay(1000);
+            _context.Comments.Add(new Comment
+            {
+                ArticleId = article.Id,
+                CreatedAt = DateTime.UtcNow,
+                Text = "test"
+            });
+        }
+        await _context.SaveChangesAsync();
+
+        var result = await _articleService.GetUnpublishedAsync();
+        var received = result.FirstOrDefault();
+
+        foreach (var item in received.Comments)
+        {
+            Console.WriteLine(item.CreatedAt);
+        }
+    }
+
 
     private async Task<Article> CreateArticleAsync(bool saveChanges = true)
     {

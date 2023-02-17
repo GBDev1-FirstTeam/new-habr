@@ -63,43 +63,72 @@ public class ArticleService : IArticleService
         var articles = await _repositoryManager.ArticleRepository.GetDeletedIncludeAsync(cancellationToken: cancellationToken);
         return _mapper.Map<List<ArticleDto>>(articles);
     }
-    public async Task CreateAsync(Guid userId, CreateArticleRequest request, CancellationToken cancellationToken = default)
+    public async Task<ArticleDto> CreateAsync(Guid authorId, CreateArticleRequest request, CancellationToken cancellationToken = default)
     {
+        var user = await _repositoryManager.UserRepository.GetByIdAsync(authorId, cancellationToken);
+
+        if (user.Banned)
+        {
+            throw new UserBannedException();
+        }
+
         var article = _mapper.Map<Article>(request);
         var creationDateTime = DateTimeOffset.UtcNow;
         article.CreatedAt = creationDateTime;
         article.ModifiedAt = creationDateTime;
-        article.UserId = userId;
+        article.UserId = authorId;
 
         await UpdateCategoresAsync(article, request.Categories, cancellationToken);
         await UpdateTagsAsync(article, request.Tags, cancellationToken);
 
         _repositoryManager.ArticleRepository.Create(article);
         await _repositoryManager.SaveAsync(cancellationToken);
+
+        return _mapper.Map<ArticleDto>(article);
     }
-    public async Task UpdateAsync(Guid id, UpdateArticleRequest articleToUpdate, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(Guid articleId, Guid authorId, UpdateArticleRequest articleToUpdate, CancellationToken cancellationToken = default)
     {
-        var article = await _repositoryManager.ArticleRepository.GetByIdIncludeAsync(id, trackChanges: true, cancellationToken);
+        var user = await _repositoryManager.UserRepository.GetByIdAsync(authorId, cancellationToken);
+
+        if (user.Banned)
+        {
+            throw new UserBannedException();
+        }
+
+        var article = await _repositoryManager.ArticleRepository.GetByIdIncludeAsync(articleId, trackChanges: true, cancellationToken);
 
         if (article is null)
         {
             throw new ArticleNotFoundException();
+        }
+        else if (article.UserId != authorId)
+        {
+            throw new InteractionOutsidePermissionException<User, Article>("A user cannot update an article, if they are not the author.");
         }
 
         await UpdateCategoresAsync(article, articleToUpdate.Categories, cancellationToken);
         await UpdateTagsAsync(article, articleToUpdate.Tags, cancellationToken);
 
         _mapper.Map(articleToUpdate, article);
+
         article.ModifiedAt = DateTimeOffset.UtcNow;
+        article.ApproveState = ApproveState.NotApproved;
+        article.Published = false;
+        article.PublishedAt = null;
+
         await _repositoryManager.SaveAsync(cancellationToken);
     }
-    public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task DeleteByIdAsync(Guid articleId, Guid authorId, CancellationToken cancellationToken = default)
     {
-        var article = await _repositoryManager.ArticleRepository.GetByIdIncludeAsync(id, true, cancellationToken);
+        var article = await _repositoryManager.ArticleRepository.GetByIdIncludeAsync(articleId, true, cancellationToken);
 
         if (article is null)
         {
             throw new ArticleNotFoundException();
+        }
+        else if (article.UserId != authorId)
+        {
+            throw new InteractionOutsidePermissionException<User, Article>("A user cannot delete an article, if they are not the author.");
         }
 
         article.Deleted = true;

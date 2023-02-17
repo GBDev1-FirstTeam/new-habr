@@ -35,6 +35,7 @@ public class CommentsController : ControllerBase
         }
     }
 
+    [AllowAnonymous]
     [HttpPost]
     public async Task<ActionResult> Create([FromBody] CreateCommentRequest newComment, CancellationToken cancellationToken)
     {
