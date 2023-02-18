@@ -197,6 +197,7 @@ public class ArticleService : IArticleService
 
         article.ApproveState = state; //TODO Это не работает
         await _repositoryManager.SaveAsync(cancellationToken);
+        await CreateNotificationOnApprove(article, cancellationToken);
     }
 
     public async Task SetLikeAsync(Guid articleId, Guid userId, CancellationToken cancellationToken)
@@ -346,4 +347,21 @@ public class ArticleService : IArticleService
             .CreateAsync(notification, users, cancellationToken);
     }
 
+    private async Task CreateNotificationOnApprove(Article article, CancellationToken cancellationToken)
+    {
+        var user = await _repositoryManager
+            .UserRepository
+            .GetByIdAsync(article.UserId, true, cancellationToken);
+
+        if (user is null)
+            throw new UserNotFoundException();
+
+        var notification = new NotificationCreateRequest
+        {
+            Text = $"Ваша статья '{article.Title}' была согласована модератором"
+        };
+
+        await _notificationService
+            .CreateAsync(notification, user, cancellationToken);
+    }
 }
