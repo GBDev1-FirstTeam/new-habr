@@ -22,11 +22,12 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet("{id}/comments")]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<CommentWithLikedMark>>> GetCommentsWithLikedMark(
         [FromRoute] Guid id,
         CancellationToken cancellationToken)
     {
-        var userId = User.Identity?.IsAuthenticated ?? false ? User.GetUserId() : Guid.Empty;
+        var userId = User.GetUserId();
 
         try
         {
@@ -112,9 +113,10 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<ActionResult> Create([FromBody] ArticleCreateRequest request, CancellationToken cancellationToken)
     {
-        var userId = User.Identity.IsAuthenticated ? User.GetUserId() : Guid.Empty;
+        var userId = User.GetUserId();
         try
         {
             await _articleService.CreateAsync(request, userId, cancellationToken);
@@ -137,12 +139,13 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize]
     public async Task<ActionResult> Update(
         [FromRoute] Guid id,
         [FromBody] ArticleUpdateRequest request,
         CancellationToken cancellationToken)
     {
-        var userId = User.Identity.IsAuthenticated ? User.GetUserId() : Guid.Empty;
+        var userId = User.GetUserId();
         try
         {
             await _articleService.UpdateAsync(id, userId, request, cancellationToken);

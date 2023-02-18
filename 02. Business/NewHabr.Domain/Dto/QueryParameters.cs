@@ -7,6 +7,6 @@ public class QueryParameters
     [Range(1, int.MaxValue)]
     public virtual int PageNumber { get; set; } = 1;
 
-    [Range(1, int.MaxValue)]
+    [Range(1, 30)]
     public virtual int PageSize { get; set; } = 10;
 }
