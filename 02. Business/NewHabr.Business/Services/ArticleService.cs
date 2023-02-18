@@ -20,18 +20,17 @@ public class ArticleService : IArticleService
     public async Task<IReadOnlyCollection<CommentWithLikedMark>> GetCommentsWithLikedMarkAsync(
         Guid id,
         Guid userId,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
-        var article = await _repositoryManager.ArticleRepository.GetByIdIncludeCommentLikesAsync(id, cancellationToken: cancellationToken);
+        var article = await _repositoryManager.ArticleRepository.GetByIdIncludeCommentLikesAsync(id, false, cancellationToken);
 
         if (article is null)
         {
             throw new ArticleNotFoundException();
         }
 
-        var articleComments = article.Comments.OrderByDescending(c => c.CreatedAt);
         var comments = new List<CommentWithLikedMark>(article.Comments.Count);
-        foreach (var comment in articleComments)
+        foreach (var comment in article.Comments)
         {
             comments.Add(new CommentWithLikedMark
             {
@@ -44,9 +43,9 @@ public class ArticleService : IArticleService
         return comments;
     }
 
-    public async Task<ArticleDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<ArticleDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var article = await _repositoryManager.ArticleRepository.GetByIdIncludeAsync(id, cancellationToken: cancellationToken);
+        var article = await _repositoryManager.ArticleRepository.GetByIdIncludeAsync(id, false, cancellationToken);
 
         if (article is null)
         {
@@ -56,21 +55,43 @@ public class ArticleService : IArticleService
         return _mapper.Map<ArticleDto>(article);
     }
 
-    public async Task<IReadOnlyCollection<ArticleDto>> GetUnpublishedAsync(CancellationToken cancellationToken = default)
+    public async Task<ArticlesGetResponse> GetPublishedAsync(
+        ArticleQueryParameters queryParams,
+        CancellationToken cancellationToken)
     {
-        var articles = (await _repositoryManager.ArticleRepository.GetUnpublishedIncludeAsync(cancellationToken: cancellationToken))
-            .OrderByDescending(a => a.CreatedAt);
-        return _mapper.Map<List<ArticleDto>>(articles);
+        var articles = await _repositoryManager.ArticleRepository.GetPublishedIncludeAsync(queryParams, false, cancellationToken);
+        return new ArticlesGetResponse
+        {
+            Metadata = articles.Metadata,
+            Articles = _mapper.Map<List<ArticleDto>>(articles.ToList())
+        };
     }
 
-    public async Task<IReadOnlyCollection<ArticleDto>> GetDeletedAsync(CancellationToken cancellationToken = default)
+    public async Task<ArticlesGetResponse> GetUnpublishedAsync(
+        ArticleQueryParameters queryParams,
+        CancellationToken cancellationToken)
     {
-        var articles = (await _repositoryManager.ArticleRepository.GetDeletedIncludeAsync(cancellationToken: cancellationToken))
-            .OrderByDescending(a => a.DeletedAt);
-        return _mapper.Map<List<ArticleDto>>(articles);
+        var articles = await _repositoryManager.ArticleRepository.GetUnpublishedIncludeAsync(queryParams, false, cancellationToken);
+        return new ArticlesGetResponse
+        {
+            Metadata = articles.Metadata,
+            Articles = _mapper.Map<List<ArticleDto>>(articles.ToList())
+        };
     }
 
-    public async Task CreateAsync(ArticleCreateRequest request, Guid creatorId, CancellationToken cancellationToken = default)
+    public async Task<ArticlesGetResponse> GetDeletedAsync(
+        ArticleQueryParameters queryParams,
+        CancellationToken cancellationToken)
+    {
+        var articles = await _repositoryManager.ArticleRepository.GetDeletedIncludeAsync(queryParams, false, cancellationToken);
+        return new ArticlesGetResponse
+        {
+            Metadata = articles.Metadata,
+            Articles = _mapper.Map<List<ArticleDto>>(articles.ToList())
+        };
+    }
+
+    public async Task CreateAsync(ArticleCreateRequest request, Guid creatorId, CancellationToken cancellationToken)
     {
         await CheckIfUserNotBannedOrThrow(creatorId, cancellationToken);
 
@@ -83,20 +104,11 @@ public class ArticleService : IArticleService
         await UpdateCategoresAsync(article, request.Categories, cancellationToken);
         await UpdateTagsAsync(article, request.Tags, cancellationToken);
 
-        foreach (var tagDto in request.Tags)
-        {
-            var existingTag = await _repositoryManager
-                .TagRepository
-                .GetByNameAsync(tagDto.Name, true, cancellationToken);
-
-            article.Tags.Add(existingTag ?? _mapper.Map<Tag>(tagDto));
-        }
-
         _repositoryManager.ArticleRepository.Create(article);
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task UpdateAsync(Guid articleId, Guid modifierId, ArticleUpdateRequest articleToUpdate, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(Guid articleId, Guid modifierId, ArticleUpdateRequest articleToUpdate, CancellationToken cancellationToken)
     {
         await CheckIfUserNotBannedOrThrow(modifierId, cancellationToken);
 
@@ -120,7 +132,7 @@ public class ArticleService : IArticleService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var article = await _repositoryManager.ArticleRepository.GetByIdIncludeAsync(id, true, cancellationToken);
 
@@ -136,7 +148,7 @@ public class ArticleService : IArticleService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task SetPublicationStatusAsync(Guid id, bool publicationStatus, CancellationToken cancellationToken = default)
+    public async Task SetPublicationStatusAsync(Guid id, bool publicationStatus, CancellationToken cancellationToken)
     {
         var article = await _repositoryManager.ArticleRepository.GetByIdAsync(id, trackChanges: true, cancellationToken);
 
@@ -168,7 +180,7 @@ public class ArticleService : IArticleService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task SetApproveStateAsync(Guid id, ApproveState state, CancellationToken cancellationToken = default)
+    public async Task SetApproveStateAsync(Guid id, ApproveState state, CancellationToken cancellationToken)
     {
         var article = await _repositoryManager.ArticleRepository.GetByIdAsync(id, trackChanges: true, cancellationToken);
 
@@ -264,13 +276,18 @@ public class ArticleService : IArticleService
             article.Categories.Clear();
         }
 
+        var existsCategories = await _repositoryManager.CategoryRepository.GetAvaliableAsync(trackChanges: true, cancellationToken);
+
         foreach (var categoryDto in categoresDto)
         {
-            var existingCategory = await _repositoryManager
-                .CategoryRepository
-                .GetByNameAsync(categoryDto.Name, false, cancellationToken);
+            var category = existsCategories.FirstOrDefault(c => c.Name == categoryDto.Name);
 
-            article.Categories.Add(existingCategory ?? throw new CategoryNotFoundException());
+            if (category is null)
+            {
+                throw new CategoryNotFoundException();
+            }
+
+            article.Categories.Add(category);
         }
     }
 
@@ -288,13 +305,18 @@ public class ArticleService : IArticleService
             article.Tags.Clear();
         }
 
+        tagsDto = tagsDto.DistinctBy(t => t.Name).ToArray();
+        var existsTags = await _repositoryManager.TagRepository.GetAvaliableAsync(trackChanges: true, cancellationToken);
+
         foreach (var tagDto in tagsDto)
         {
-            var existingTag = await _repositoryManager
-                .TagRepository
-                .GetByNameAsync(tagDto.Name, true, cancellationToken);
+            var tag = existsTags.FirstOrDefault(c => c.Name == tagDto.Name);
 
-            article.Tags.Add(existingTag ?? _mapper.Map<Tag>(tagDto));
+            if (tag is null)
+            {
+                tag = _mapper.Map<Tag>(tagDto);
+            }
+            article.Tags.Add(tag);
         }
     }
 

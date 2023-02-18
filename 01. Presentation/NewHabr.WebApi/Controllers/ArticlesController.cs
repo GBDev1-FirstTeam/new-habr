@@ -22,11 +22,12 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet("{id}/comments")]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<CommentWithLikedMark>>> GetCommentsWithLikedMark(
         [FromRoute] Guid id,
         CancellationToken cancellationToken)
     {
-        var userId = User.Identity?.IsAuthenticated ?? false ? User.GetUserId() : Guid.Empty;
+        var userId = User.GetUserId();
 
         try
         {
@@ -63,12 +64,30 @@ public class ArticlesController : ControllerBase
         }
     }
 
-    [HttpGet("unpublished")]
-    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetUnpublished(CancellationToken cancellationToken)
+    [HttpGet]
+    public async Task<ActionResult<ArticlesGetResponse>> GetPublished(
+        [FromQuery] ArticleQueryParameters queryParams,
+        CancellationToken cancellationToken)
     {
         try
         {
-            return Ok(await _articleService.GetUnpublishedAsync(cancellationToken));
+            return Ok(await _articleService.GetPublishedAsync(queryParams, cancellationToken));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    [HttpGet("unpublished")]
+    public async Task<ActionResult<ArticlesGetResponse>> GetUnpublished(
+        [FromQuery] ArticleQueryParameters queryParams,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            return Ok(await _articleService.GetUnpublishedAsync(queryParams, cancellationToken));
         }
         catch (Exception ex)
         {
@@ -78,11 +97,13 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet("deleted")]
-    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetDeleted(CancellationToken cancellationToken)
+    public async Task<ActionResult<ArticlesGetResponse>> GetDeleted(
+        [FromQuery] ArticleQueryParameters queryParams,
+        CancellationToken cancellationToken)
     {
         try
         {
-            return Ok(await _articleService.GetDeletedAsync(cancellationToken));
+            return Ok(await _articleService.GetDeletedAsync(queryParams, cancellationToken));
         }
         catch (Exception ex)
         {
@@ -92,9 +113,10 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<ActionResult> Create([FromBody] ArticleCreateRequest request, CancellationToken cancellationToken)
     {
-        var userId = User.Identity.IsAuthenticated ? User.GetUserId() : Guid.Empty;
+        var userId = User.GetUserId();
         try
         {
             await _articleService.CreateAsync(request, userId, cancellationToken);
@@ -117,9 +139,13 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> Update([FromRoute] Guid id, [FromBody] ArticleUpdateRequest request, CancellationToken cancellationToken)
+    [Authorize]
+    public async Task<ActionResult> Update(
+        [FromRoute] Guid id,
+        [FromBody] ArticleUpdateRequest request,
+        CancellationToken cancellationToken)
     {
-        var userId = User.Identity.IsAuthenticated ? User.GetUserId() : Guid.Empty;
+        var userId = User.GetUserId();
         try
         {
             await _articleService.UpdateAsync(id, userId, request, cancellationToken);

@@ -5,38 +5,38 @@ namespace NewHabr.Domain.Contracts;
 
 public interface IArticleRepository : IRepository<Article, Guid>
 {
-    Task<IReadOnlyCollection<Article>> GetByTitleIncludeAsync(
+    Task<PagedList<Article>> GetPublishedIncludeAsync(
+        ArticleQueryParameters queryParams,
+        bool trackChanges,
+        CancellationToken cancellationToken);
+
+    Task<PagedList<Article>> GetByTitleIncludeAsync(
         string title,
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default);
+        ArticleQueryParameters queryParams,
+        bool trackChanges,
+        CancellationToken cancellationToken);
 
-    Task<IReadOnlyCollection<Article>> GetByUserIdIncludeAsync(
+    Task<PagedList<Article>> GetByUserIdIncludeAsync(
         Guid userId,
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default);
+        ArticleQueryParameters queryParams,
+        bool trackChanges,
+        CancellationToken cancellationToken);
 
-    Task<IReadOnlyCollection<Article>> GetUnpublishedIncludeAsync(
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default);
+    Task<PagedList<Article>> GetUnpublishedIncludeAsync(
+        ArticleQueryParameters queryParams,
+        bool trackChanges,
+        CancellationToken cancellationToken);
 
-    Task<IReadOnlyCollection<Article>> GetDeletedIncludeAsync(
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default);
+    Task<PagedList<Article>> GetDeletedIncludeAsync(
+        ArticleQueryParameters queryParams,
+        bool trackChanges,
+        CancellationToken cancellationToken);
 
-    Task<Article?> GetByIdIncludeAsync(
-        Guid id,
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default);
+    Task<Article?> GetByIdIncludeAsync(Guid id, bool trackChanges, CancellationToken cancellationToken);
 
-    Task<Article?> GetByIdAsync(
-        Guid id,
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default);
+    Task<Article?> GetByIdAsync(Guid id, bool trackChanges, CancellationToken cancellationToken);
 
-    Task<Article?> GetByIdIncludeCommentLikesAsync(
-        Guid id,
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default);
+    Task<Article?> GetByIdIncludeCommentLikesAsync(Guid id, bool trackChanges, CancellationToken cancellationToken);
 
     Task<ICollection<UserArticle>> GetUserArticlesAsync(Guid userId, bool trackChanges, CancellationToken cancellationToken);
 

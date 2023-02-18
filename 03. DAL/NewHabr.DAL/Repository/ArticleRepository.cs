@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NewHabr.DAL.EF;
+using NewHabr.DAL.Extensions;
+using NewHabr.Domain;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Models;
@@ -12,64 +14,90 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
     {
     }
 
-    public async Task<IReadOnlyCollection<Article>> GetByTitleIncludeAsync(
+    public async Task<PagedList<Article>> GetPublishedIncludeAsync(
+        ArticleQueryParameters queryParams,
+        bool trackChanges,
+        CancellationToken cancellationToken)
+    {
+        return await FindByCondition(a => a.Published && !a.Deleted, trackChanges)
+            .Include(a => a.Categories)
+            .Include(a => a.Tags)
+            .Include(a => a.Comments
+                .OrderBy(c => c.CreatedAt))
+            .OrderByDescending(a => a.CreatedAt)
+            .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
+    }
+
+    public async Task<PagedList<Article>> GetByTitleIncludeAsync(
         string title,
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default)
+        ArticleQueryParameters queryParams,
+        bool trackChanges,
+        CancellationToken cancellationToken)
     {
         return await FindByCondition(a => a.Title.ToLower() == title.ToLower() && !a.Deleted, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
-            .Include(a => a.Comments)
-            .ToListAsync(cancellationToken);
+            .Include(a => a.Comments
+                .OrderBy(c => c.CreatedAt))
+            .OrderByDescending(a => a.CreatedAt)
+            .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<Article>> GetByUserIdIncludeAsync(
+    public async Task<PagedList<Article>> GetByUserIdIncludeAsync(
         Guid userId,
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default)
+        ArticleQueryParameters queryParams,
+        bool trackChanges,
+        CancellationToken cancellationToken)
     {
         return await FindByCondition(a => a.UserId == userId && !a.Deleted, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
-            .Include(a => a.Comments)
-            .ToListAsync(cancellationToken);
+            .Include(a => a.Comments
+                .OrderBy(c => c.CreatedAt))
+            .OrderByDescending(a => a.CreatedAt)
+            .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<Article>> GetUnpublishedIncludeAsync(
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default)
+    public async Task<PagedList<Article>> GetUnpublishedIncludeAsync(
+        ArticleQueryParameters queryParams,
+        bool trackChanges,
+        CancellationToken cancellationToken)
     {
         return await FindByCondition(a => !a.Published && !a.Deleted, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
-            .Include(a => a.Comments)
-            .ToListAsync(cancellationToken);
+            .Include(a => a.Comments
+                .OrderBy(c => c.CreatedAt))
+            .OrderByDescending(a => a.CreatedAt)
+            .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<Article>> GetDeletedIncludeAsync(
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default)
+    public async Task<PagedList<Article>> GetDeletedIncludeAsync(
+        ArticleQueryParameters queryParams,
+        bool trackChanges,
+        CancellationToken cancellationToken)
     {
         return await GetDeleted(trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
-            .Include(a => a.Comments)
-            .ToListAsync(cancellationToken);
+            .Include(a => a.Comments
+                .OrderBy(c => c.CreatedAt))
+            .OrderBy(a => a.DeletedAt)
+            .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }
 
     public async Task<Article?> GetByIdAsync(
         Guid id,
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default)
+        bool trackChanges,
+        CancellationToken cancellationToken)
     {
         return await GetById(id, trackChanges).FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<Article?> GetByIdIncludeAsync(
         Guid id,
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default)
+        bool trackChanges,
+        CancellationToken cancellationToken)
     {
         return await FindByCondition(a => a.Id == id && !a.Deleted, trackChanges)
             .Include(a => a.Categories)
@@ -80,13 +108,15 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
 
     public async Task<Article?> GetByIdIncludeCommentLikesAsync(
         Guid id,
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default)
+        bool trackChanges,
+        CancellationToken cancellationToken)
     {
         return await FindByCondition(a => a.Id == id && !a.Deleted, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
-            .Include(a => a.Comments).ThenInclude(c => c.Likes)
+            .Include(a => a.Comments
+                .OrderBy(c => c.CreatedAt))
+                .ThenInclude(c => c.Likes)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
