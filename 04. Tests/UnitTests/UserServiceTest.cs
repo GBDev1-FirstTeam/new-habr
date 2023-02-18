@@ -88,8 +88,9 @@ public class UserServiceTest
     public async Task UpdateUserProfileAsync_UserNotExist_ThrowUserNotFoundException()
     {
         // arrange
-        UserForManipulationDto dto = null!;
+        var dto = new UserForManipulationDto();
         _userRepositoryMock.Reset();
+
         // act
         async Task Act() => await _userService.UpdateUserProfileAsync(_user.Id, dto, CancellationToken.None);
 
@@ -140,7 +141,7 @@ public class UserServiceTest
 
         // assert
         await Assert.ThrowsAsync<ArgumentException>(Act);
-        _repositoryManagerMock.Verify(r => r.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _repositoryManagerMock.Verify(r => r.SaveAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]

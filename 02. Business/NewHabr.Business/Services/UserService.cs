@@ -67,6 +67,9 @@ public class UserService : IUserService
 
     public async Task UpdateUserProfileAsync(Guid id, UserForManipulationDto userDataDto, CancellationToken cancellationToken)
     {
+        if (userDataDto.BirthDay.HasValue && (userDataDto.BirthDay.Value < -62135596800000 || userDataDto.BirthDay.Value > 253402300799999))
+            throw new ArgumentException("DateTime out of range", nameof(userDataDto));
+
         var user = await GetUserAndCheckIfItExistsAsync(id, true, cancellationToken);
         _mapper.Map(userDataDto, user);
         await _repositoryManager.SaveAsync();
