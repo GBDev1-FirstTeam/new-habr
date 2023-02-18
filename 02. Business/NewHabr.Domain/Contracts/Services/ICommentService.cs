@@ -53,4 +53,14 @@ public interface ICommentService
     ///// <param name="cancellationToken"></param>
     ///// <returns></returns>
     //Task<IReadOnlyCollection<CommentDto>> GetByArticleIdAsync(Guid articleId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Sets 'Like' mark at comment
+    /// </summary>
+    Task SetLikeAsync(Guid commentId, Guid userId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Unsets 'Like' mark at comment
+    /// </summary>
+    Task UnsetLikeAsync(Guid commentId, Guid userId, CancellationToken cancellationToken);
 }

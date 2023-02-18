@@ -1,4 +1,5 @@
 ﻿using NewHabr.Domain.Dto;
+using NewHabr.Domain.Exceptions;
 using NewHabr.Domain.Models;
 
 namespace NewHabr.Domain.Contracts;
@@ -26,5 +27,16 @@ public interface IArticleService
 
     Task SetPublicationStatusAsync(Guid id, bool publicationStatus, CancellationToken cancellationToken);
 
-    Task SetApproveStateAsync(Guid id, ApproveState state, CancellationToken cancellationToken);
+    /// <exception cref="ArticleNotFoundException"></exception>
+    Task SetApproveStateAsync(Guid id, ApproveState state, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Sets 'Like' mark at article
+    /// </summary>
+    Task SetLikeAsync(Guid articleId, Guid userId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Unsets 'Like' mark at article
+    /// </summary>
+    Task UnsetLikeAsync(Guid articleId, Guid userId, CancellationToken cancellationToken);
 }

@@ -2,9 +2,11 @@
 using System.Threading;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NewHabr.Business.Services;
 using NewHabr.Domain.Contracts.Services;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Exceptions;
+using NewHabr.WebApi.Extensions;
 
 namespace NewHabr.WebApi.Controllers;
 
@@ -207,5 +209,40 @@ public class UsersController : ControllerBase
         }
         return NoContent();
     }
-}
 
+    [Authorize]
+    [HttpPut("{userId}/like")]
+    public async Task<IActionResult> SetLike([FromRoute] Guid userId, CancellationToken cancellationToken)
+    {
+        var authUserId = User.GetUserId();
+        try
+        {
+            await _userService.SetLikeAsync(userId, authUserId, cancellationToken);
+            return NoContent();
+        }
+        catch (CommentNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (UserBannedException ex)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
+        }
+    }
+
+    [Authorize]
+    [HttpPut("{userId}/unlike")]
+    public async Task<IActionResult> UnsetLike([FromRoute] Guid userId, CancellationToken cancellationToken)
+    {
+        var authUserId = User.GetUserId();
+        try
+        {
+            await _userService.UnsetLikeAsync(userId, authUserId, cancellationToken);
+            return NoContent();
+        }
+        catch (CommentNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
+}

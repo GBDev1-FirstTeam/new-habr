@@ -137,6 +137,49 @@ public class UserService : IUserService
         return userDto;
     }
 
+    public async Task SetLikeAsync(Guid userId, Guid authUserId, CancellationToken cancellationToken)
+    {
+        if (userId == authUserId)
+            return;
+
+        await CheckIfUserNotBannedOrThrow(authUserId, cancellationToken);
+
+        var likeReceiverUser = await _repositoryManager
+            .UserRepository
+            .GetByIdWithLikesAsync(userId, true, cancellationToken);
+
+        if (likeReceiverUser is null)
+            throw new UserNotFoundException();
+
+        var likeSenderUser = await _repositoryManager
+            .UserRepository
+            .GetByIdAsync(authUserId, true, cancellationToken);
+
+        likeReceiverUser.ReceivedLikes.Add(likeSenderUser);
+        await _repositoryManager.SaveAsync(cancellationToken);
+    }
+
+    public async Task UnsetLikeAsync(Guid userId, Guid authUserId, CancellationToken cancellationToken)
+    {
+        if (userId == authUserId)
+            return;
+
+        var likeReceiverUser = await _repositoryManager
+            .UserRepository
+            .GetByIdWithLikesAsync(userId, true, cancellationToken);
+
+        if (likeReceiverUser is null)
+            throw new UserNotFoundException();
+
+        var likeSenderUser = await _repositoryManager
+            .UserRepository
+            .GetByIdAsync(authUserId, true, cancellationToken);
+
+        likeReceiverUser.ReceivedLikes.Remove(likeReceiverUser.ReceivedLikes.FirstOrDefault(lsu => lsu.Id == likeSenderUser!.Id));
+        await _repositoryManager.SaveAsync(cancellationToken);
+    }
+
+
 
     private async Task<User> GetUserAndCheckIfItExistsAsync(Guid id, bool trackChanges, CancellationToken cancellationToken)
     {
@@ -167,5 +210,12 @@ public class UserService : IUserService
     {
         return await _userManager.GetRolesAsync(user);
     }
-}
 
+    private async Task CheckIfUserNotBannedOrThrow(Guid userId, CancellationToken cancellationToken)
+    {
+        var user = await _repositoryManager.UserRepository.GetByIdAsync(userId, true, cancellationToken);
+
+        if (user!.Banned)
+            throw new UserBannedException(user.BannedAt!.Value);
+    }
+}

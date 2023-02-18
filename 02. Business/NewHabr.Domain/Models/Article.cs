@@ -22,7 +22,7 @@ public class Article : BaseEntity<Guid>
 
     public ICollection<Tag> Tags { get; set; } = new HashSet<Tag>();
 
-    public ICollection<LikedArticle> Likes { get; set; }
+    public ICollection<User> Likes { get; set; }
 
     public DateTimeOffset CreatedAt { get; set; }
 

@@ -20,17 +20,19 @@ public class User : IdentityUser<Guid>, IEntity<Guid>
     [MaxLength(200)]
     public string Description { get; set; }
 
+    public ICollection<Article> AuthoredArticles { get; set; }
+
     public ICollection<Comment> Comments { get; set; }
 
     public ICollection<Notification> Notifications { get; set; }
 
-    public ICollection<LikedArticle> LikedArticles { get; set; }
+    public ICollection<Article> LikedArticles { get; set; }
 
-    public ICollection<LikedComment> LikedComments { get; set; }
+    public ICollection<Comment> LikedComments { get; set; }
 
-    public ICollection<LikedUser> LikedUsers { get; set; }
+    public ICollection<User> LikedUsers { get; set; }
 
-    public ICollection<LikedUser> ReceivedLikes { get; set; }
+    public ICollection<User> ReceivedLikes { get; set; }
 
     public bool Banned { get; set; }
 
