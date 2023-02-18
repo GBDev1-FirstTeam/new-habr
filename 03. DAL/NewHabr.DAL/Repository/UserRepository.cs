@@ -51,6 +51,12 @@ public class UserRepository : RepositoryBase<User, Guid>, IUserRepository
         return await FindByCondition(u => u.UserName == login && !u.Deleted).SingleOrDefaultAsync(cancellationToken);
     }
 
+    public async Task<ICollection<User>> GetUsersByLoginAsync(ICollection<string> usernames, bool trackChanges, CancellationToken cancellationToken)
+    {
+        return await FindByCondition(user => !user.Deleted && usernames.Contains(user.UserName), trackChanges)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<ICollection<UserLikedUser>> GetUserLikedUsersAsync(Guid userId, CancellationToken cancellationToken)
     {
         return await FindByCondition(user => !user.Deleted)

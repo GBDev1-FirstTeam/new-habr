@@ -36,6 +36,7 @@ public class CommentsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<ActionResult> Create([FromBody] CommentCreateRequest newComment, CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
@@ -56,6 +57,7 @@ public class CommentsController : ControllerBase
     }
 
     [HttpPut("id")] //todo кто может изменять? автор
+    [Authorize]
     public async Task<ActionResult> Update([FromRoute] Guid id,
         [FromBody] CommentUpdateRequest updateComment,
         CancellationToken cancellationToken)
@@ -83,6 +85,7 @@ public class CommentsController : ControllerBase
     }
 
     [HttpDelete("id")] //todo кто может удалять? автор, модератор, админ
+    [Authorize]
     public async Task<ActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         try

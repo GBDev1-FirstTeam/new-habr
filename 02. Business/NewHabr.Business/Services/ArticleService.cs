@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using NewHabr.Business.Extensions;
 using NewHabr.Domain.Contracts;
+using NewHabr.Domain.Contracts.Services;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Exceptions;
 using NewHabr.Domain.Models;
@@ -10,11 +13,13 @@ public class ArticleService : IArticleService
 {
     private readonly IRepositoryManager _repositoryManager;
     private readonly IMapper _mapper;
+    private readonly INotificationService _notificationService;
 
-    public ArticleService(IRepositoryManager repositoryManager, IMapper mapper)
+    public ArticleService(IRepositoryManager repositoryManager, IMapper mapper, INotificationService notificationService)
     {
         _repositoryManager = repositoryManager;
         _mapper = mapper;
+        _notificationService = notificationService;
     }
 
     public async Task<IReadOnlyCollection<CommentWithLikedMark>> GetCommentsWithLikedMarkAsync(
@@ -106,6 +111,7 @@ public class ArticleService : IArticleService
 
         _repositoryManager.ArticleRepository.Create(article);
         await _repositoryManager.SaveAsync(cancellationToken);
+        await CreateNotificationIfMentionSomeoneAsync(article, cancellationToken);
     }
 
     public async Task UpdateAsync(Guid articleId, Guid modifierId, ArticleUpdateRequest articleToUpdate, CancellationToken cancellationToken)
@@ -318,6 +324,26 @@ public class ArticleService : IArticleService
             }
             article.Tags.Add(tag);
         }
+    }
+
+    private async Task CreateNotificationIfMentionSomeoneAsync(Article article, CancellationToken cancellationToken)
+    {
+        var usernames = article.Content.FindMentionedUsers();
+        if (usernames.Count == 0)
+            return;
+
+        var users = await _repositoryManager
+            .UserRepository
+            .GetUsersByLoginAsync(usernames, true, cancellationToken);
+        if (users.Count == 0)
+            return;
+
+        var notification = new NotificationCreateRequest
+        {
+            Text = $"Вас упомянули в статье '{article.Title}'"
+        };
+        await _notificationService
+            .CreateAsync(notification, users, cancellationToken);
     }
 
 }
