@@ -20,7 +20,7 @@ public class ArticleService : IArticleService
     public async Task<IReadOnlyCollection<CommentWithLikedMark>> GetCommentsWithLikedMarkAsync(
         Guid id,
         Guid userId,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         var article = await _repositoryManager.ArticleRepository.GetByIdIncludeCommentLikesAsync(id, false, cancellationToken);
 
@@ -29,9 +29,8 @@ public class ArticleService : IArticleService
             throw new ArticleNotFoundException();
         }
 
-        var articleComments = article.Comments.OrderByDescending(c => c.CreatedAt);
         var comments = new List<CommentWithLikedMark>(article.Comments.Count);
-        foreach (var comment in articleComments)
+        foreach (var comment in article.Comments)
         {
             comments.Add(new CommentWithLikedMark
             {
@@ -44,7 +43,7 @@ public class ArticleService : IArticleService
         return comments;
     }
 
-    public async Task<ArticleDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<ArticleDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var article = await _repositoryManager.ArticleRepository.GetByIdIncludeAsync(id, false, cancellationToken);
 
@@ -54,6 +53,18 @@ public class ArticleService : IArticleService
         }
 
         return _mapper.Map<ArticleDto>(article);
+    }
+
+    public async Task<ArticlesGetResponse> GetPublishedAsync(
+        ArticleQueryParameters queryParams,
+        CancellationToken cancellationToken)
+    {
+        var articles = await _repositoryManager.ArticleRepository.GetPublishedIncludeAsync(queryParams, false, cancellationToken);
+        return new ArticlesGetResponse
+        {
+            Metadata = articles.Metadata,
+            Articles = _mapper.Map<List<ArticleDto>>(articles.ToList())
+        };
     }
 
     public async Task<ArticlesGetResponse> GetUnpublishedAsync(
@@ -68,14 +79,19 @@ public class ArticleService : IArticleService
         };
     }
 
-    public async Task<IReadOnlyCollection<ArticleDto>> GetDeletedAsync(CancellationToken cancellationToken = default)
+    public async Task<ArticlesGetResponse> GetDeletedAsync(
+        ArticleQueryParameters queryParams,
+        CancellationToken cancellationToken)
     {
-        var articles = (await _repositoryManager.ArticleRepository.GetDeletedIncludeAsync(false, cancellationToken))
-            .OrderByDescending(a => a.DeletedAt);
-        return _mapper.Map<List<ArticleDto>>(articles);
+        var articles = await _repositoryManager.ArticleRepository.GetDeletedIncludeAsync(queryParams, false, cancellationToken);
+        return new ArticlesGetResponse
+        {
+            Metadata = articles.Metadata,
+            Articles = _mapper.Map<List<ArticleDto>>(articles.ToList())
+        };
     }
 
-    public async Task CreateAsync(ArticleCreateRequest request, Guid creatorId, CancellationToken cancellationToken = default)
+    public async Task CreateAsync(ArticleCreateRequest request, Guid creatorId, CancellationToken cancellationToken)
     {
         var creationDateTime = DateTimeOffset.UtcNow;
         var article = _mapper.Map<Article>(request);
@@ -90,7 +106,7 @@ public class ArticleService : IArticleService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task UpdateAsync(Guid articleId, Guid modifierId, ArticleUpdateRequest articleToUpdate, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(Guid articleId, Guid modifierId, ArticleUpdateRequest articleToUpdate, CancellationToken cancellationToken)
     {
         var article = await _repositoryManager.ArticleRepository.GetByIdIncludeAsync(articleId, trackChanges: true, cancellationToken);
 
@@ -112,7 +128,7 @@ public class ArticleService : IArticleService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var article = await _repositoryManager.ArticleRepository.GetByIdIncludeAsync(id, true, cancellationToken);
 
@@ -128,7 +144,7 @@ public class ArticleService : IArticleService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task SetPublicationStatusAsync(Guid id, bool publicationStatus, CancellationToken cancellationToken = default)
+    public async Task SetPublicationStatusAsync(Guid id, bool publicationStatus, CancellationToken cancellationToken)
     {
         var article = await _repositoryManager.ArticleRepository.GetByIdAsync(id, trackChanges: true, cancellationToken);
 
@@ -160,7 +176,7 @@ public class ArticleService : IArticleService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task SetApproveStateAsync(Guid id, ApproveState state, CancellationToken cancellationToken = default)
+    public async Task SetApproveStateAsync(Guid id, ApproveState state, CancellationToken cancellationToken)
     {
         var article = await _repositoryManager.ArticleRepository.GetByIdAsync(id, trackChanges: true, cancellationToken);
 
@@ -226,13 +242,9 @@ public class ArticleService : IArticleService
 
             if (tag is null)
             {
-                var newTag = _mapper.Map<Tag>(tagDto);
-                article.Tags.Add(newTag);
+                tag = _mapper.Map<Tag>(tagDto);
             }
-            else
-            {
-                article.Tags.Add(tag);
-            }
+            article.Tags.Add(tag);
         }
     }
 }

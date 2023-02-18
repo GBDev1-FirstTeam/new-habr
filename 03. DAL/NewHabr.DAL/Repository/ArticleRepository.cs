@@ -14,28 +14,48 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
     {
     }
 
-    public async Task<IReadOnlyCollection<Article>> GetByTitleIncludeAsync(
+    public async Task<PagedList<Article>> GetPublishedIncludeAsync(
+        ArticleQueryParameters queryParams,
+        bool trackChanges,
+        CancellationToken cancellationToken)
+    {
+        return await FindByCondition(a => a.Published && !a.Deleted, trackChanges)
+            .Include(a => a.Categories)
+            .Include(a => a.Tags)
+            .Include(a => a.Comments
+                .OrderBy(c => c.CreatedAt))
+            .OrderByDescending(a => a.CreatedAt)
+            .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
+    }
+
+    public async Task<PagedList<Article>> GetByTitleIncludeAsync(
         string title,
+        ArticleQueryParameters queryParams,
         bool trackChanges,
         CancellationToken cancellationToken)
     {
         return await FindByCondition(a => a.Title.ToLower() == title.ToLower() && !a.Deleted, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
-            .Include(a => a.Comments)
-            .ToListAsync(cancellationToken);
+            .Include(a => a.Comments
+                .OrderBy(c => c.CreatedAt))
+            .OrderByDescending(a => a.CreatedAt)
+            .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<Article>> GetByUserIdIncludeAsync(
+    public async Task<PagedList<Article>> GetByUserIdIncludeAsync(
         Guid userId,
+        ArticleQueryParameters queryParams,
         bool trackChanges,
         CancellationToken cancellationToken)
     {
         return await FindByCondition(a => a.UserId == userId && !a.Deleted, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
-            .Include(a => a.Comments)
-            .ToListAsync(cancellationToken);
+            .Include(a => a.Comments
+                .OrderBy(c => c.CreatedAt))
+            .OrderByDescending(a => a.CreatedAt)
+            .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }
 
     public async Task<PagedList<Article>> GetUnpublishedIncludeAsync(
@@ -52,15 +72,18 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<Article>> GetDeletedIncludeAsync(
+    public async Task<PagedList<Article>> GetDeletedIncludeAsync(
+        ArticleQueryParameters queryParams,
         bool trackChanges,
         CancellationToken cancellationToken)
     {
         return await GetDeleted(trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
-            .Include(a => a.Comments)
-            .ToListAsync(cancellationToken);
+            .Include(a => a.Comments
+                .OrderBy(c => c.CreatedAt))
+            .OrderBy(a => a.DeletedAt)
+            .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }
 
     public async Task<Article?> GetByIdAsync(
@@ -91,7 +114,9 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
         return await FindByCondition(a => a.Id == id && !a.Deleted, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
-            .Include(a => a.Comments).ThenInclude(c => c.Likes)
+            .Include(a => a.Comments
+                .OrderBy(c => c.CreatedAt))
+                .ThenInclude(c => c.Likes)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
@@ -130,15 +155,5 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
                 Tags = row.Tags
             })
             .ToListAsync(cancellationToken);
-    }
-
-    public async Task<int> GetUnpublishedPageCountAsync(int pageSize, CancellationToken cancellationToken)
-    {
-        var articlesCount = await FindByCondition(a => !a.Published && !a.Deleted).CountAsync(cancellationToken);
-        var pageCount = articlesCount / pageSize;
-
-        return articlesCount % pageSize == 0
-            ? pageCount
-            : pageCount + 1;
     }
 }

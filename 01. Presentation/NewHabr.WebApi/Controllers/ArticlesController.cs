@@ -62,6 +62,22 @@ public class ArticlesController : ControllerBase
         }
     }
 
+    [HttpGet]
+    public async Task<ActionResult<ArticlesGetResponse>> GetPublished(
+        [FromQuery] ArticleQueryParameters queryParams,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            return Ok(await _articleService.GetPublishedAsync(queryParams, cancellationToken));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
     [HttpGet("unpublished")]
     public async Task<ActionResult<ArticlesGetResponse>> GetUnpublished(
         [FromQuery] ArticleQueryParameters queryParams,
@@ -79,11 +95,13 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet("deleted")]
-    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetDeleted(CancellationToken cancellationToken)
+    public async Task<ActionResult<ArticlesGetResponse>> GetDeleted(
+        [FromQuery] ArticleQueryParameters queryParams,
+        CancellationToken cancellationToken)
     {
         try
         {
-            return Ok(await _articleService.GetDeletedAsync(cancellationToken));
+            return Ok(await _articleService.GetDeletedAsync(queryParams, cancellationToken));
         }
         catch (Exception ex)
         {
@@ -114,7 +132,10 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> Update([FromRoute] Guid id, [FromBody] ArticleUpdateRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult> Update(
+        [FromRoute] Guid id,
+        [FromBody] ArticleUpdateRequest request,
+        CancellationToken cancellationToken)
     {
         var userId = User.Identity.IsAuthenticated ? User.GetUserId() : Guid.Empty;
         try
