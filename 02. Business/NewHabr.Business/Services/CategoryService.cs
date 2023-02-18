@@ -17,13 +17,13 @@ public class CategoryService : ICategoryService
         _mapper = mapper;
     }
 
-    public async Task<IReadOnlyCollection<CategoryDto>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<CategoryDto>> GetAllAsync(CancellationToken cancellationToken)
     {
-        var categories = await _repositoryManager.CategoryRepository.GetAvaliableAsync(cancellationToken: cancellationToken);
+        var categories = await _repositoryManager.CategoryRepository.GetAvaliableAsync(false, cancellationToken);
         return _mapper.Map<List<CategoryDto>>(categories);
     }
 
-    public async Task CreateAsync(CategoryCreateRequest request, CancellationToken cancellationToken = default)
+    public async Task CreateAsync(CategoryCreateRequest request, CancellationToken cancellationToken)
     {
         var category = await _repositoryManager
             .CategoryRepository
@@ -41,7 +41,7 @@ public class CategoryService : ICategoryService
 
     public async Task UpdateAsync(int id, CategoryUpdateRequest categoryToUpdate, CancellationToken cancellationToken = default)
     {
-        var targetCategory = await _repositoryManager.CategoryRepository.GetByIdAsync(id, trackChanges: true, cancellationToken);
+        var targetCategory = await _repositoryManager.CategoryRepository.GetByIdAsync(id, true, cancellationToken);
 
         if (targetCategory is null)
         {
@@ -62,16 +62,17 @@ public class CategoryService : ICategoryService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task DeleteByIdAsync(int id, CancellationToken cancellationToken)
     {
-        var category = await _repositoryManager.CategoryRepository.GetByIdIncludeAsync(id, cancellationToken: cancellationToken);
+        var category = await _repositoryManager.CategoryRepository.GetByIdIncludeAsync(id, true, cancellationToken);
 
         if (category is null)
         {
             throw new CategoryNotFoundException();
         }
 
-        _repositoryManager.CategoryRepository.Delete(category);
+        category.Deleted = true;
+        category.Articles = null;
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 }
