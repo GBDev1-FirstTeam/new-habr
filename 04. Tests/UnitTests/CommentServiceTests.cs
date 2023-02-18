@@ -41,7 +41,7 @@ public class CommentServiceTests
             .ReturnsAsync(_user);
 
         _articleRepositoryMock
-            .Setup(ar => ar.GetByIdIncludeAsync(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+            .Setup(ar => ar.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Article { Id = Guid.NewGuid(), Title = "Mocked Article Title", Content = "Mocked Article Content" });
 
         _repositoryManagerMock
