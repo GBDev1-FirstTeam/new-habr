@@ -9,7 +9,7 @@ public interface IArticleRepository : IRepository<Article, Guid>
 
     Task<IReadOnlyCollection<Article>> GetByUserIdIncludeAsync(Guid userId, bool trackChanges, CancellationToken cancellationToken);
 
-    Task<IReadOnlyCollection<Article>> GetUnpublishedIncludeAsync(ArticleQueryParameters queryParams, bool trackChanges, CancellationToken cancellationToken);
+    Task<PagedList<Article>> GetUnpublishedIncludeAsync(ArticleQueryParameters queryParams, bool trackChanges, CancellationToken cancellationToken);
 
     Task<IReadOnlyCollection<Article>> GetDeletedIncludeAsync(bool trackChanges, CancellationToken cancellationToken);
 

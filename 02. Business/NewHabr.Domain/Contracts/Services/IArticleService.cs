@@ -9,7 +9,7 @@ public interface IArticleService
 
     Task<ArticleDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
-    Task<ArticleGetResponse> GetUnpublishedAsync(ArticleQueryParameters queryParams, CancellationToken cancellationToken);
+    Task<ArticlesGetResponse> GetUnpublishedAsync(ArticleQueryParameters queryParams, CancellationToken cancellationToken);
 
     Task<IReadOnlyCollection<ArticleDto>> GetDeletedAsync(CancellationToken cancellationToken = default);
 

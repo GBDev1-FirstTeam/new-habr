@@ -56,19 +56,15 @@ public class ArticleService : IArticleService
         return _mapper.Map<ArticleDto>(article);
     }
 
-    public async Task<ArticleGetResponse> GetUnpublishedAsync(
+    public async Task<ArticlesGetResponse> GetUnpublishedAsync(
         ArticleQueryParameters queryParams,
         CancellationToken cancellationToken)
     {
         var articles = await _repositoryManager.ArticleRepository.GetUnpublishedIncludeAsync(queryParams, false, cancellationToken);
-        var pageCount = await _repositoryManager.ArticleRepository.GetUnpublishedPageCountAsync(queryParams.PageSize, cancellationToken);
-
-        return new ArticleGetResponse
+        return new ArticlesGetResponse
         {
-            PageNumber = queryParams.PageNumber,
-            PageSize = queryParams.PageSize,
-            PageCount = pageCount,
-            Articles = _mapper.Map<List<ArticleDto>>(articles)
+            Metadata = articles.Metadata,
+            Articles = _mapper.Map<List<ArticleDto>>(articles.ToList())
         };
     }
 

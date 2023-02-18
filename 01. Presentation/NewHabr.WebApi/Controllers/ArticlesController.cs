@@ -63,7 +63,7 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet("unpublished")]
-    public async Task<ActionResult<ArticleGetResponse>> GetUnpublished(
+    public async Task<ActionResult<ArticlesGetResponse>> GetUnpublished(
         [FromQuery] ArticleQueryParameters queryParams,
         CancellationToken cancellationToken)
     {

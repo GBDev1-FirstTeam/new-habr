@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NewHabr.DAL.EF;
+using NewHabr.DAL.Extensions;
+using NewHabr.Domain;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Models;
@@ -36,20 +38,18 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<Article>> GetUnpublishedIncludeAsync(
+    public async Task<PagedList<Article>> GetUnpublishedIncludeAsync(
         ArticleQueryParameters queryParams,
         bool trackChanges,
         CancellationToken cancellationToken)
     {
         return await FindByCondition(a => !a.Published && !a.Deleted, trackChanges)
-            .Skip((queryParams.PageNumber - 1) * queryParams.PageSize)
-            .Take(queryParams.PageSize)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .Include(a => a.Comments
                 .OrderBy(c => c.CreatedAt))
             .OrderByDescending(a => a.CreatedAt)
-            .ToListAsync(cancellationToken);
+            .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }
 
     public async Task<IReadOnlyCollection<Article>> GetDeletedIncludeAsync(
