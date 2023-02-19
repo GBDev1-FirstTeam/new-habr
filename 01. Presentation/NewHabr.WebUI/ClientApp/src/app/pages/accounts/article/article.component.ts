@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { Authorization } from 'src/app/core/models/Authorization';
 import { Publication, PublicationRequest } from 'src/app/core/models/Publication';
+import { Category } from 'src/app/core/models/Category';
 import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
 import { AppStoreProvider } from 'src/app/core/store/store';
 import Quill from 'quill';
@@ -18,9 +19,10 @@ export class ArticleComponent implements OnInit, OnDestroy, AfterViewInit {
   subscribtions: Subscription[] = [];
   post: Publication = {
     Title: '',
+    Categories: [],
+    Tags: [],
     Content: '',
-    ImgURL: '',
-    IsPublished: false
+    ImgURL: ''
   };
   text: string;
   mode: Mode;
@@ -30,6 +32,8 @@ export class ArticleComponent implements OnInit, OnDestroy, AfterViewInit {
   maxTagCounter = 4;
   tags: string[] = [];
   cats: string[] = [];
+
+  categories: Array<Category>;
   
   constructor(
     private http: HttpRequestService,
@@ -41,12 +45,14 @@ export class ArticleComponent implements OnInit, OnDestroy, AfterViewInit {
       const postId = params.id;
 
       if (postId) {
-        const postSubscribtion = this.http.getPostById(params.id).subscribe(post => {
+        const postSubscribtion = this.http.getPublicationById(params.id).subscribe(post => {
           if (post) {
             this.post = post;
-            this.subscribtions.push(postSubscribtion);
-            const delta = this.quill.clipboard.convert(this.post.Content as any)
+            this.tags = post.Tags.map(t => t.Name);
+            this.cats = post.Categories.map(c => c.Name);
+            const delta = this.quill.clipboard.convert(post.Content as any)
             this.quill.setContents(delta);
+            this.subscribtions.push(postSubscribtion);
           }
         })
         this.mode = Mode.Edit;
@@ -55,8 +61,15 @@ export class ArticleComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     })
 
+    const categoriesSubscribtion = this.http.getCategories().subscribe(categories => {
+      if (categories) {
+        this.categories = categories;
+      }
+    })
+
     const authSubscribtion = this.store.getAuth().subscribe(auth => this.auth = auth);
     this.subscribtions.push(authSubscribtion);
+    this.subscribtions.push(categoriesSubscribtion);
   }
 
   ngOnDestroy(): void {
@@ -166,7 +179,7 @@ export class ArticleComponent implements OnInit, OnDestroy, AfterViewInit {
     tooltip.textbox.value = ''
   }
 
-  addElement(item: string, items: string[], input: HTMLInputElement) {
+  addElement(item: string, items: string[], input: HTMLInputElement | HTMLSelectElement) {
     if(_.some(items, i => i === item) === false && !!item && items.length < this.maxTagCounter) {
       items.push(item);
       input.value = '';

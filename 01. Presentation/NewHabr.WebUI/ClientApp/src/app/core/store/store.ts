@@ -53,7 +53,7 @@ export class AppStoreProvider {
     loadPublicationById(id: string) {
         const post = this.store.getValue().post;
         if (post == null || post.Id !== id) {
-            const postSubscribtion = this.http.getPostById(id).subscribe(post => {
+            const postSubscribtion = this.http.getPublicationById(id).subscribe(post => {
                 if (post) {
                     this.updatePost(post);
                     postSubscribtion.unsubscribe();

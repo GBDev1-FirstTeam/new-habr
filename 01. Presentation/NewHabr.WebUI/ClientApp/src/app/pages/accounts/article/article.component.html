@@ -24,7 +24,9 @@
     <div class="form-floating form-floating-content">
         <span class="badge bg-secondary" *ngFor="let cat of cats">{{cat}} <span class="del" (click)="deleteElement(cat, cats)">[x]</span></span>
         <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Введите имя категории" #newcat>
+            <select class="form-select" #newcat>
+                <option *ngFor="let category of categories">{{ category.Name }}</option>
+            </select>
             <button class="btn btn-outline-secondary form-control cat-btn" type="button" (click)="addElement(newcat.value, cats, newcat)">Добавить</button>
         </div>
     </div>

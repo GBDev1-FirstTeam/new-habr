@@ -32,7 +32,7 @@ export class PostComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.activeRoute.params.subscribe(params => {
       this.postId = params.id;
-      this.post$ = this.http.getPostById(this.postId);
+      this.post$ = this.http.getPublicationById(this.postId);
       
       const commentsSubscribtion = this.http.getCommentsByPostId(this.postId).subscribe(comments => {
         if (comments) {

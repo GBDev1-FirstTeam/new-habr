@@ -11,7 +11,8 @@
     }
 }
 
-.form-control {
+.form-control,
+.form-select {
   margin: 10px 0px;
   padding: 5px !important;
   line-height: unset !important;
@@ -59,4 +60,8 @@
 .del {
   color: red;
   cursor: pointer;
+}
+
+.badge {
+  margin-right: 5px;
 }

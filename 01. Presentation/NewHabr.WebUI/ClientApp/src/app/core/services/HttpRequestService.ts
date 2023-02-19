@@ -12,6 +12,7 @@ import { Recovery, RecoveryChangePassword, RecoveryQuestion, RecoveryRequestAnsw
 import { Authorization, LoginRequest, RegisterRequest } from '../models/Authorization';
 import { SecureQuestion } from '../models/SecureQuestion';
 import { AppStoreProvider } from '../store/store';
+import { Category } from '../models/Category';
 
 @Injectable({
   providedIn: 'root',
@@ -74,11 +75,6 @@ export class HttpRequestService {
   getAccountPublications(id: string): Observable<Publication[]> {
     const url = this.backend.baseURL + `/users/${id}/articles`;
     return this.get<Array<Publication>>(url);
-  }
-  
-  getPostById(id: string): Observable<Publication> {
-    const url = this.backend.baseURL + `/articles/${id}`;
-    return this.get<Publication>(url);
   }
   
   getUserById(id: string): Observable<User> {
@@ -159,6 +155,18 @@ export class HttpRequestService {
   createPublication(body: PublicationRequest) {
     const url = this.backend.baseURL + `/Articles`;
     return this.post<PublicationRequest, any>(url, body);
+  }
+
+  getPublicationById(id: string): Observable<Publication> {
+    const url = this.backend.baseURL + `/Articles/${id}`;
+    return this.get<Publication>(url);
+  }
+  // #endregion
+
+  // #region /Categories
+  getCategories() {
+    const url = this.backend.baseURL + `/Categories`;
+    return this.get<Array<Category>>(url);
   }
   // #endregion
 }

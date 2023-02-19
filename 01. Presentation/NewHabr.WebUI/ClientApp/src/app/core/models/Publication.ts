@@ -1,16 +1,20 @@
+import { Category } from "./Category";
 import { Like } from "./Like";
+import { Tag } from "./Tag";
 
 export interface Publication extends Like {
     Id?: string;
-    Title: string;
-    Content: string;
     UserId?: string;
-    UserLogin?: string;
+    Title: string;
+    Categories: Array<Category>;
+    Tags: Array<Tag>;
+    Comments?: Array<Comment>;
+    Content: string;
     CreatedAt?: number;
     ModifyAt?: number;
     PublishedAt?: number;
+    ApproveState?: number;
     ImgURL: string;
-    IsPublished: boolean;
 }
 
 export interface PublicationRequest {

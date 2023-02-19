@@ -32,7 +32,7 @@ export class ArticlesComponent implements OnInit {
   create = () => this.router.navigate(['accounts', this.accountId, 'articles', 'create']);
   publish = (post: Publication) => {
     post.PublishedAt = +Date.now();
-    post.IsPublished = true;
+    // post.IsPublished = true;
     lastValueFrom(this.http.publishArticle(post.Id!));
   };
 }
