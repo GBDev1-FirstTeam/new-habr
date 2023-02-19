@@ -245,4 +245,50 @@ public class UsersController : ControllerBase
             return NotFound(ex.Message);
         }
     }
+
+    [Authorize]
+    [HttpPut("{userId}/username")]
+    public async Task<IActionResult> ChangeUsername([FromRoute] Guid userId, [FromBody] UsernameChangeRequest request, CancellationToken cancellationToken)
+    {
+        var authUserId = User.GetUserId();
+        if (userId != authUserId)
+            return BadRequest();
+
+        try
+        {
+            var result = await _userService.ChangeUsername(authUserId, request, cancellationToken);
+            if (result.Succeeded)
+            {
+                return NoContent();
+            }
+            return BadRequest(result.Errors.Select(e => e.Description));
+        }
+        catch (UserNotFoundException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [Authorize]
+    [HttpPut("{userId}/password")]
+    public async Task<IActionResult> ChangePassword([FromRoute] Guid userId, [FromBody] UserPasswordChangeRequest request, CancellationToken cancellationToken)
+    {
+        var authUserId = User.GetUserId();
+        if (userId != authUserId)
+            return BadRequest();
+
+        try
+        {
+            var result = await _userService.ChangePassword(authUserId, request, cancellationToken);
+            if (result.Succeeded)
+            {
+                return NoContent();
+            }
+            return BadRequest(result.Errors.Select(e => e.Description));
+        }
+        catch (UserNotFoundException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Identity;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Models;
 
@@ -99,5 +100,15 @@ public interface IUserService
     /// Unsets 'Like' mark at user
     /// </summary>
     Task UnsetLikeAsync(Guid userId, Guid authUserId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Change username, username must be unique
+    /// </summary>
+    Task<IdentityResult> ChangeUsername(Guid userId, UsernameChangeRequest request, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Change password
+    /// </summary>
+    Task<IdentityResult> ChangePassword(Guid userId, UserPasswordChangeRequest request, CancellationToken cancellationToken);
 }
 

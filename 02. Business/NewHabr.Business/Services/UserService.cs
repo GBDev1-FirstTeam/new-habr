@@ -182,6 +182,26 @@ public class UserService : IUserService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
+    public async Task<IdentityResult> ChangeUsername(Guid userId, UsernameChangeRequest request, CancellationToken cancellationToken)
+    { // при смене юзернейма, claim username в токене останется прежним
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user is null)
+            throw new UserNotFoundException();
+
+        var result = await _userManager.SetUserNameAsync(user, request.Username);
+        return result;
+    }
+
+    public async Task<IdentityResult> ChangePassword(Guid userId, UserPasswordChangeRequest request, CancellationToken cancellationToken)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user is null)
+            throw new UserNotFoundException();
+
+        var result = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+        return result;
+    }
+
 
 
     private async Task<User> GetUserAndCheckIfItExistsAsync(Guid id, bool trackChanges, CancellationToken cancellationToken)
