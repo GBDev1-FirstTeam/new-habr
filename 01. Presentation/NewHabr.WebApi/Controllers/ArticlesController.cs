@@ -96,6 +96,20 @@ public class ArticlesController : ControllerBase
         }
     }
 
+    [HttpGet("published/{count}")]
+    public async Task<ActionResult<IEnumerable<ArticleDto>>> GetPublished(int count, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return Ok(await _articleService.GetPublishedAsync(count, cancellationToken));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
     [HttpGet("deleted")]
     public async Task<ActionResult<ArticlesGetResponse>> GetDeleted(
         [FromQuery] ArticleQueryParameters queryParams,

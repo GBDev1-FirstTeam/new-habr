@@ -8,6 +8,10 @@ public class UserArticle
 
     public string Title { get; set; }
 
+    public string Content { get; set; }
+
+    public string ImgURL { get; set; }
+
     public ICollection<Category> Categories { get; set; }
 
     public ICollection<Tag> Tags { get; set; }

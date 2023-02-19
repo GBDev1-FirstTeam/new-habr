@@ -1,15 +1,18 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Backend } from '../models/Configuration';
-import { Publication } from '../models/Publication';
+import { Publication, PublicationRequest } from '../models/Publication';
 import { Commentary } from '../models/Commentary';
-import { User } from '../models/User';
+import { PutUserInfo, User, UserInfo } from '../models/User';
 import { ConfigurationService } from './ConfigurationService';
-import { AuthorizationRequest, Authorization } from '../models/Authorization';
 import { LikeRequest } from '../models/Like';
 import { Registration, RegistrationRequest } from '../models/Registration';
 import { Recovery, RecoveryChangePassword, RecoveryQuestion, RecoveryRequestAnswer, RecoveryRequestLogin } from '../models/Recovery';
+import { Authorization, LoginRequest, RegisterRequest } from '../models/Authorization';
+import { SecureQuestion } from '../models/SecureQuestion';
+import { AppStoreProvider } from '../store/store';
+import { Category } from '../models/Category';
 
 @Injectable({
   providedIn: 'root',
@@ -17,33 +20,61 @@ import { Recovery, RecoveryChangePassword, RecoveryQuestion, RecoveryRequestAnsw
 export class HttpRequestService {
 
   backend: Backend;
+  auth: Authorization;
 
-  constructor(private http: HttpClient, private configService: ConfigurationService) {
+  constructor(
+    private http: HttpClient,
+    private configService: ConfigurationService,
+    private injector: Injector) {
     this.backend = this.configService.configuration.backend;
+    
+    setTimeout(() => {
+      const store = this.injector.get(AppStoreProvider);
+      store.getAuth().subscribe(auth => {
+        if (auth) {
+          this.auth = auth;
+        }
+      })
+    });
   }
 
   private get<Type>(url: string): Observable<Type> {
-    return this.http.get<Type>(url);
+    return this.http.get<Type>(url, {
+      headers: {
+        "Authorization": `Bearer ${this.auth?.Token}`
+      }
+    });
   }
   
   private post<InType, OutType>(url: string, body: InType): Observable<OutType> {
-    return this.http.post<OutType>(url, body);
+    return this.http.post<OutType>(url, body, {
+      headers: {
+        "Authorization": `Bearer ${this.auth?.Token}`
+      }
+    });
+  }
+  
+  private put<InType, OutType>(url: string, body: InType): Observable<OutType> {
+    return this.http.put<OutType>(url, body, {
+      headers: {
+        "Authorization": `Bearer ${this.auth?.Token}`
+      }
+    });
   }
 
-
   getPublications(): Observable<Publication[]> {
-    const url = this.backend.baseURL + `/publications`;
+    const url = this.backend.baseURL + `/articles/published/10`; //ToDo продумать, откуда брать количество
     return this.get<Array<Publication>>(url);
+  }
+
+  publishArticle(id: string) {
+    const url = this.backend.baseURL + `/articles/${id}/publish`;
+    return this.put<any, any>(url, undefined);
   }
   
   getAccountPublications(id: string): Observable<Publication[]> {
-    const url = this.backend.baseURL + `/users/${id}/publications`;
+    const url = this.backend.baseURL + `/users/${id}/articles`;
     return this.get<Array<Publication>>(url);
-  }
-  
-  getPostById(id: string): Observable<Publication> {
-    const url = this.backend.baseURL + `/publications/${id}`;
-    return this.get<Publication>(url);
   }
   
   getUserById(id: string): Observable<User> {
@@ -54,11 +85,6 @@ export class HttpRequestService {
   getCommentsByPostId(id: string): Observable<Array<Commentary>> {
     const url = this.backend.baseURL + `/comments/${id}`;
     return this.get<Array<Commentary>>(url);
-  }
-
-  postAuthentication(body: AuthorizationRequest) {
-    const url = this.backend.baseURL + `/login`;
-    return this.post<AuthorizationRequest, Authorization>(url, body);
   }
 
   postRegistration(body: RegistrationRequest) {
@@ -85,14 +111,62 @@ export class HttpRequestService {
     const url = this.backend.baseURL + `/comments/add`;
     return this.post<Commentary, any>(url, body);
   }
-  
-  postPublication(body: Publication) {
-    const url = this.backend.baseURL + `/publications/add`;
-    return this.post<Publication, any>(url, body);
+   
+  postUpdatePublication(id: string, body: Publication) {
+    const url = this.backend.baseURL + `/articles/${id}`;
+    return this.put<Publication, any>(url, body);
   }
   
   postLike(body: LikeRequest, path: string) {
     let url = this.backend.baseURL + `/${path}/like`;
     return this.post<LikeRequest, any>(url, body);
   }
+
+  // #region /auth
+  register(body: RegisterRequest) {
+    const url = this.backend.baseURL + `/auth`;
+    return this.post<RegisterRequest, Authorization>(url, body);
+  }
+  login(body: LoginRequest) {
+    const url = this.backend.baseURL + `/auth/login`;
+    return this.post<LoginRequest, Authorization>(url, body);
+  }
+  // #endregion
+
+  // #region /SecureQuestions
+  getAllQuestions() {
+    const url = this.backend.baseURL + `/SecureQuestions`;
+    return this.get<Array<SecureQuestion>>(url);
+  }
+  // #endregion
+
+  // #region /Users
+  putUserInfo(id: string, body: PutUserInfo) {
+    const url = this.backend.baseURL + `/Users/${id}`;
+    return this.put<PutUserInfo, any>(url, body);
+  }
+  getUserInfo(id: string) {
+    const url = this.backend.baseURL + `/Users/${id}`;
+    return this.get<UserInfo>(url);
+  }
+  // #endregion
+
+  // #region /Articles
+  createPublication(body: PublicationRequest) {
+    const url = this.backend.baseURL + `/Articles`;
+    return this.post<PublicationRequest, any>(url, body);
+  }
+
+  getPublicationById(id: string): Observable<Publication> {
+    const url = this.backend.baseURL + `/Articles/${id}`;
+    return this.get<Publication>(url);
+  }
+  // #endregion
+
+  // #region /Categories
+  getCategories() {
+    const url = this.backend.baseURL + `/Categories`;
+    return this.get<Array<Category>>(url);
+  }
+  // #endregion
 }

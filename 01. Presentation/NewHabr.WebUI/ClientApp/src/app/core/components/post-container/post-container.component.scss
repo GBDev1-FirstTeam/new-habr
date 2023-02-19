@@ -1,21 +1,45 @@
 @import '/src/assets/scss/mixins.scss';
 
+// @import url('../../../../../node_modules/quill/dist/quill.snow.css');
+// @import url('../../../../../node_modules/quill/dist/quill.core.css');
+
+// @import url("~quill/dist/quill.core.css");
+// @import url("~quill/dist/quill.snow.css");
+
 .post-container {
-    @include card-container;
+  @include card-container;
 
-    .author {
-        span:first-child {
-            font-weight: bold;
-            cursor: pointer;
-        }
+  .author {
+    span:first-child {
+      font-weight: bold;
+      cursor: pointer;
     }
+  }
 
-    .image {
-        height: 50vh;
-        overflow: hidden;
+  .image {
+    height: 50vh;
+    overflow: hidden;
 
-        img {
-            width: 100%;
-        }
+    img {
+      width: 100%;
     }
+  }
+
+  .ql-syntax {
+    background-color: #23241f;
+    color: #f8f8f2;
+    overflow: auto;
+  }
+
+  .ql-align-center {
+    text-align: center;
+  }
+
+  .ql-align-justify {
+    text-align: justify;
+  }
+
+  .ql-align-right {
+    text-align: right;
+  }
 }

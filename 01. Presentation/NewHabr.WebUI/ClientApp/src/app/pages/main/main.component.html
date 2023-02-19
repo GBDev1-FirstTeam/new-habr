@@ -18,17 +18,14 @@
                     <i class="bi bi-person-check"></i>
                 </div>
                 <div class="login">
-                    <span>Привет, {{ auth?.User?.Login }}!</span>
+                    <span>Привет, {{ auth?.User?.UserName }}!</span>
                 </div>
                 <hr>
                 <div class="info">
-                    Вы авторизованы как:
-                    <div>{{ auth?.User?.LastName }} {{ auth?.User?.FirstName }} {{ auth?.User?.Patronymic }}</div>
-                    <div>Возраст: {{ auth?.User?.Age }} лет</div>
-                    <div>Роль: {{ auth?.User?.Role }}</div>
+                    Ваша роль - <strong>{{ auth?.User!.Roles[0] }}</strong>
                 </div>
                 <div class="nav">
-                    <button type="button" class="btn btn-light" (click)="navigate(['accounts', auth?.User?.Id])">Мой профиль</button>
+                    <button type="button" class="btn btn-light" (click)="navigate(['accounts', auth?.User?.Id, 'profile'])">Мой профиль</button>
                     <button type="button" class="btn btn-light" (click)="navigate(['accounts', auth?.User?.Id, 'articles'])">Мои статьи</button>
                     <button type="button" class="btn btn-light" (click)="logout()">Выйти</button>
                 </div>

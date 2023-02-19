@@ -1,13 +1,34 @@
 <div class="post-container">
+    <label>Наименование</label>
     <div class="form-floating form-floating-title">
-        <textarea class="form-control" placeholder="Leave a comment here" id="title" [(ngModel)]="post.Title">{{ post.Title }}</textarea>
+        <textarea class="form-control" placeholder="Заголовок" id="title" [(ngModel)]="post.Title"></textarea>
     </div>
-    <div class="form-floating form-floating-img">
-        <textarea class="form-control" placeholder="Leave a comment here" id="img" [(ngModel)]="post.ImgURL">{{ post.ImgURL }}</textarea>
-        <img [attr.src]="post.ImgURL">
+    <label>Главное изображение</label>
+    <div class="form-floating form-floating-img mb-2">
+        <textarea class="form-control" placeholder="Ссылка на изображение" id="img" [(ngModel)]="post.ImgURL"></textarea>
+        <img *ngIf="post?.ImgURL != undefined && post.ImgURL.length > 0" [attr.src]="post.ImgURL">
     </div>
+    <label>Тело статьи</label>
     <div class="form-floating form-floating-content">
-        <textarea class="form-control" placeholder="Leave a comment here" id="content" [(ngModel)]="post.Content">{{ post.Content }}</textarea>
+        <div id="editor-container" class="mb-2"></div>
+    </div>
+    <label>Теги</label>
+    <div class="form-floating form-floating-content">
+        <span class="badge bg-secondary" *ngFor="let tag of tags">{{tag}} <span class="del" (click)="deleteElement(tag, tags)">[x]</span></span>
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Введите имя тэга" #newtag>
+            <button class="btn btn-outline-secondary form-control tag-btn" type="button" (click)="addElement(newtag.value, tags, newtag)">Добавить</button>
+        </div>
+    </div>
+    <label>Категории</label>
+    <div class="form-floating form-floating-content">
+        <span class="badge bg-secondary" *ngFor="let cat of cats">{{cat}} <span class="del" (click)="deleteElement(cat, cats)">[x]</span></span>
+        <div class="input-group mb-3">
+            <select class="form-select" #newcat>
+                <option *ngFor="let category of categories">{{ category.Name }}</option>
+            </select>
+            <button class="btn btn-outline-secondary form-control cat-btn" type="button" (click)="addElement(newcat.value, cats, newcat)">Добавить</button>
+        </div>
     </div>
     <button type="button" class="btn btn-outline-dark" (click)="save()">Сохранить</button>
 </div>

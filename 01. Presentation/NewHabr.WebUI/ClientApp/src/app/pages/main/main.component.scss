@@ -21,6 +21,11 @@
 
             .user-container {
                 padding: 10px;
+
+                .info {
+                    text-align: center;
+                    margin-bottom: 10px;
+                }
             }
 
             .login {
@@ -33,6 +38,7 @@
 
         .content-area {
             min-height: calc(100vh - 116px);
+            overflow: hidden;
         }
     }
 }

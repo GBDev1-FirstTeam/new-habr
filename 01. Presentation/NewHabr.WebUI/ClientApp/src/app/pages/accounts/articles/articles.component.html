@@ -1,4 +1,3 @@
-
 <div class="create-container">
     <button type="button" class="btn btn-outline-dark" (click)="create()">Создать хабр</button>
 </div>
@@ -8,8 +7,8 @@
     [post]="post"
     >
     <div class="buttons-container">
-        <button type="button" class="btn btn-outline-dark" (click)="read(post?.Id)" *ngIf="post?.IsPublished">Читать далее</button>
+        <button type="button" class="btn btn-outline-dark" (click)="read(post?.Id)" *ngIf="'post?.IsPublished'">Читать далее</button>
         <button type="button" class="btn btn-outline-dark" (click)="edit(post?.Id)">Редактировать</button>
-        <button type="button" class="btn btn-outline-dark" (click)="publish(post)" *ngIf="!post?.IsPublished">Опубликовать</button>
+        <button type="button" class="btn btn-outline-dark" (click)="publish(post)" *ngIf="'!post?.IsPublished'">Опубликовать</button>
     </div>
 </app-post-container>

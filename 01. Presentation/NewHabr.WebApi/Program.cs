@@ -79,6 +79,10 @@ public class Program
             app.UseSwaggerUI();
         }
 
+        app.UseCors(
+               options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowAnyHeader().AllowCredentials()
+           );
+
         app.UseAuthentication();
         app.UseAuthorization();
 

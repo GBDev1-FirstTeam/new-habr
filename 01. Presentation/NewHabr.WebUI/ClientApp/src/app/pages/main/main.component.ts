@@ -26,10 +26,6 @@ export class MainComponent {
       url: 'accounts/login'
     },
     {
-      name: 'Администрирование',
-      url: 'admin'
-    },
-    {
       name: 'Помощь',
       url: 'help'
     },
