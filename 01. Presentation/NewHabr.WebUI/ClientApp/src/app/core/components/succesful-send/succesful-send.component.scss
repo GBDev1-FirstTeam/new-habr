@@ -1,0 +1,27 @@
+@import '/src/assets/scss/colors.scss';
+@import '/src/assets/scss/mixins.scss';
+
+.content-container {
+    background-color: white;
+    border: 1px solid gray;
+    border-radius: 3px;
+    position: fixed;
+    width: 500px;
+    height: 100px;
+    top: 50%;
+    left: 50%;
+    margin-top: -50px;
+    margin-left: -250px;
+    color: green;
+    z-index: 10;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 1.25em;
+
+    span {
+        margin: 10px;
+    }
+}

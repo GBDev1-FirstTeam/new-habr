@@ -15,6 +15,9 @@ export class ProfileComponent implements OnInit {
   user: UserInfo;
   userId: string;
   plug: any;
+  birthday: string;
+
+  succesfulSend: boolean = false;
 
   constructor(
     private http: HttpRequestService,
@@ -30,20 +33,30 @@ export class ProfileComponent implements OnInit {
     const userSubscribtion = this.store.getUserInfo().subscribe(user => {
       if (user) {
         this.user = user;
+        this.birthday = (new Date(this.user.BirthDay)).toLocaleString('fr-CA', {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit"
+        } as Intl.DateTimeFormatOptions);
+
         userSubscribtion?.unsubscribe();
-        paramsSubscribtion?.unsubscribe();
       }
     })
   }
 
   save() {
-    console.log(this.user)
     lastValueFrom(this.http.putUserInfo(this.userId, {
       FirstName: this.user.FirstName,
       LastName: this.user.LastName,
       Patronymic: this.user.Patronymic,
       BirthDay: this.user.BirthDay,
       Description: this.user.Description
-    }))
+    })).then(x => {
+      this.succesfulSend = true;
+    })
+  }
+
+  changeBirthday($event: any) {
+    this.user.BirthDay = $event.target.valueAsNumber;
   }
 }

@@ -44,6 +44,11 @@ const routes: Routes = [
     component: AccountsComponent,
     children: [
       {
+        path:'',
+        redirectTo: 'profile',
+        pathMatch: 'full' 
+      },
+      {
         path: 'articles',
         component: ArticlesComponent
       },

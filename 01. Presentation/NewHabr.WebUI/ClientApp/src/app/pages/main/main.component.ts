@@ -15,23 +15,28 @@ export class MainComponent {
   
   auth: Authorization | null;
   isAuth: boolean;
+  isModerator: boolean;
 
   menu = [
     {
       name: 'Главная страница',
-      url: 'publications'
+      url: 'publications',
+      iClass: 'bi bi-columns'
     },
     {
       name: 'Личный кабинет',
-      url: 'accounts/login'
+      url: 'accounts/login',
+      iClass: 'bi bi-person'
     },
     {
       name: 'Помощь',
-      url: 'help'
+      url: 'help',
+      iClass: 'bi bi-question-circle'
     },
     {
       name: 'Поиск',
-      url: 'find'
+      url: 'find',
+      iClass: 'bi bi-search'
     }
   ]
 
@@ -40,9 +45,11 @@ export class MainComponent {
   ngOnInit(): void {
     const authSubscribtion = this.store.getAuth().subscribe(auth => this.auth = auth);
     const isAuthSubscribtion = this.store.getIsAuth().subscribe(isAuth => this.isAuth = isAuth);
+    const isModeratorSubscribtion = this.store.getIsModerator().subscribe(isModerator => this.isModerator = isModerator);
 
     this.subscribtions.push(authSubscribtion);
     this.subscribtions.push(isAuthSubscribtion);
+    this.subscribtions.push(isModeratorSubscribtion);
   }
 
   ngOnDestroy(): void {
