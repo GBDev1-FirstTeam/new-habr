@@ -72,11 +72,6 @@ export class HttpRequestService {
     return this.put<any, any>(url, undefined);
   }
   
-  getAccountPublications(id: string): Observable<Publication[]> {
-    const url = this.backend.baseURL + `/users/${id}/articles`;
-    return this.get<Array<Publication>>(url);
-  }
-  
   getUserById(id: string): Observable<User> {
     const url = this.backend.baseURL + `/users/${id}`;
     return this.get<User>(url);
@@ -148,6 +143,10 @@ export class HttpRequestService {
   getUserInfo(id: string) {
     const url = this.backend.baseURL + `/Users/${id}`;
     return this.get<UserInfo>(url);
+  }
+  getUserPublications(id: string): Observable<Publication[]> {
+    const url = this.backend.baseURL + `/Users/${id}/articles`;
+    return this.get<Array<Publication>>(url);
   }
   // #endregion
 

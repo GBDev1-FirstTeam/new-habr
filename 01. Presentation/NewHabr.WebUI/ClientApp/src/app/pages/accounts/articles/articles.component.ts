@@ -23,7 +23,7 @@ export class ArticlesComponent implements OnInit {
   ngOnInit(): void {
     this.activeRoute.parent?.params.subscribe(params => {
       this.accountId = params.id;
-      this.publications$ = this.http.getAccountPublications(this.accountId);
+      this.publications$ = this.http.getUserPublications(this.accountId);
     })
   }
 
