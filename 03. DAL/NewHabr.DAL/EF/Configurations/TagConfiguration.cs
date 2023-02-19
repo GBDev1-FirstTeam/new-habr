@@ -10,5 +10,7 @@ public class TagConfiguration : IEntityTypeConfiguration<Tag>
     {
         builder
             .HasIndex(e => e.Name);
+
+        builder.HasQueryFilter(a => !a.Deleted);
     }
 }

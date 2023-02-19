@@ -19,7 +19,7 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
         bool trackChanges,
         CancellationToken cancellationToken)
     {
-        return await FindByCondition(a => a.Published && !a.Deleted, trackChanges)
+        return await FindByCondition(a => a.Published, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .Include(a => a.Comments
@@ -34,7 +34,7 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
         bool trackChanges,
         CancellationToken cancellationToken)
     {
-        return await FindByCondition(a => a.Title.ToLower() == title.ToLower() && !a.Deleted, trackChanges)
+        return await FindByCondition(a => a.Title.ToLower() == title.ToLower(), trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .Include(a => a.Comments
@@ -49,7 +49,7 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
         bool trackChanges,
         CancellationToken cancellationToken)
     {
-        return await FindByCondition(a => a.UserId == userId && !a.Deleted, trackChanges)
+        return await FindByCondition(a => a.UserId == userId, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .Include(a => a.Comments
@@ -63,7 +63,7 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
         bool trackChanges,
         CancellationToken cancellationToken)
     {
-        return await FindByCondition(a => !a.Published && !a.Deleted, trackChanges)
+        return await FindByCondition(a => !a.Published, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .Include(a => a.Comments
@@ -78,6 +78,7 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
         CancellationToken cancellationToken)
     {
         return await GetDeleted(trackChanges)
+            .IgnoreQueryFilters()
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .Include(a => a.Comments
@@ -99,7 +100,7 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
         bool trackChanges,
         CancellationToken cancellationToken)
     {
-        return await FindByCondition(a => a.Id == id && !a.Deleted, trackChanges)
+        return await FindByCondition(a => a.Id == id, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .Include(a => a.Comments)
@@ -111,7 +112,7 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
         bool trackChanges,
         CancellationToken cancellationToken)
     {
-        return await FindByCondition(a => a.Id == id && !a.Deleted, trackChanges)
+        return await FindByCondition(a => a.Id == id, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .Include(a => a.Comments
@@ -122,7 +123,7 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
 
     public async Task<ICollection<UserArticle>> GetUserArticlesAsync(Guid userId, bool trackChanges, CancellationToken cancellationToken)
     {
-        return await FindByCondition(article => article.UserId == userId && article.Published && !article.Deleted)
+        return await FindByCondition(article => article.UserId == userId && article.Published, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .Select(row => new UserArticle
@@ -140,9 +141,9 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<ICollection<UserLikedArticle>> GetUserLikedArticlesAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task<ICollection<UserLikedArticle>> GetUserLikedArticlesAsync(Guid userId, bool trackChanges, CancellationToken cancellationToken)
     {
-        return await FindByCondition(article => !article.Deleted && article.Published)
+        return await FindByCondition(article => article.Published, trackChanges)
             .Include(article => article.Tags)
             .Include(article => article.Categories)
             .Include(article => article.Likes)

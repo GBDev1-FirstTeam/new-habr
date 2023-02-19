@@ -10,7 +10,7 @@ public interface ICommentService
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>    
-    Task CreateAsync(Guid creatorId, CommentCreateRequest data, CancellationToken cancellationToken = default);
+    Task CreateAsync(Guid creatorId, CommentCreateRequest data, CancellationToken cancellationToken);
 
     /// <summary>
     /// Updates an existing in database Comment class
@@ -21,7 +21,7 @@ public interface ICommentService
     Task UpdateAsync(Guid commentId,
         Guid modifierId,
         CommentUpdateRequest updatedComment,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken);
 
     /// <summary>
     /// Deletes an existing in database Comment class 
@@ -29,14 +29,14 @@ public interface ICommentService
     /// <param name="data"></param>
     /// <returns></returns>
     /// <exception cref="CommentNotFoundException"></exception>
-    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    Task DeleteAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     /// Returns a list of all existing in database Comments classes 
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IReadOnlyCollection<CommentDto>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<IReadOnlyCollection<CommentDto>> GetAllAsync(CancellationToken cancellationToken);
 
     ///// <summary>
     ///// Returns a list of existing in database Comments classes matched to User.Id
@@ -44,7 +44,7 @@ public interface ICommentService
     ///// <param name="userId"></param>
     ///// <param name="cancellationToken"></param>
     ///// <returns></returns>
-    //Task<IReadOnlyCollection<CommentDto>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
+    //Task<IReadOnlyCollection<CommentDto>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken);
 
     ///// <summary>
     ///// Returns a list of existing in database Comments classes matched to Article.Id
@@ -52,7 +52,7 @@ public interface ICommentService
     ///// <param name="articleId"></param>
     ///// <param name="cancellationToken"></param>
     ///// <returns></returns>
-    //Task<IReadOnlyCollection<CommentDto>> GetByArticleIdAsync(Guid articleId, CancellationToken cancellationToken = default);
+    //Task<IReadOnlyCollection<CommentDto>> GetByArticleIdAsync(Guid articleId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Sets 'Like' mark at comment

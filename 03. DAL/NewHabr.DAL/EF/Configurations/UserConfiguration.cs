@@ -18,6 +18,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMany<User>(u => u.LikedUsers)
             .WithMany(author => author.ReceivedLikes)
             .UsingEntity(join => join.ToTable("UserLikesAuthor"));
+
+        builder.HasQueryFilter(a => !a.Deleted);
     }
 }
 

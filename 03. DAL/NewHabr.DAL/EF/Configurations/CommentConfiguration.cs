@@ -20,5 +20,7 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
             .HasOne(lu => lu.Article)
             .WithMany(article => article.Comments)
             .HasForeignKey(k => k.ArticleId);
+
+        builder.HasQueryFilter(a => !a.Deleted);
     }
 }

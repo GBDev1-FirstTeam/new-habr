@@ -23,5 +23,7 @@ public class ArticleConfiguration : IEntityTypeConfiguration<Article>
             .HasMany<User>(a => a.Likes)
             .WithMany(u => u.LikedArticles)
             .UsingEntity(join => join.ToTable("UserLikesArticle"));
+
+        builder.HasQueryFilter(a => !a.Deleted);
     }
 }

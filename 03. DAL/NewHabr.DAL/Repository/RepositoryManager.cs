@@ -27,7 +27,7 @@ public class RepositoryManager : IRepositoryManager
         NotificationRepository = new NotificationRepository(_context);
     }
 
-    public async Task SaveAsync(CancellationToken cancellationToken = default)
+    public async Task SaveAsync(CancellationToken cancellationToken)
     {
         await _context.SaveChangesAsync(cancellationToken);
     }

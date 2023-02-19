@@ -11,24 +11,24 @@ public class CategoryRepository : RepositoryBase<Category, int>, ICategoryReposi
     {
     }
 
-    public async Task<Category?> GetByIdAsync(int id, bool trackChanges = false, CancellationToken cancellationToken = default)
+    public async Task<Category?> GetByIdAsync(int id, bool trackChanges, CancellationToken cancellationToken)
     {
         return await GetById(id, trackChanges).FirstOrDefaultAsync(cancellationToken);
     }
-    public async Task<Category?> GetByIdIncludeAsync(int id, bool trackChanges = false, CancellationToken cancellationToken = default)
+    public async Task<Category?> GetByIdIncludeAsync(int id, bool trackChanges, CancellationToken cancellationToken)
     {
         return await GetById(id, trackChanges)
             .Include(c => c.Articles)
             .FirstOrDefaultAsync(cancellationToken);
     }
-    public async Task<IReadOnlyCollection<Category>> GetAvaliableAsync(bool trackChanges = false, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<Category>> GetAvaliableAsync(bool trackChanges, CancellationToken cancellationToken)
     {
         return await GetAvailable(trackChanges).ToListAsync(cancellationToken);
     }
 
     public async Task<Category?> GetByNameAsync(string name, bool trackChanges, CancellationToken cancellationToken)
     {
-        return await FindByCondition(q => !q.Deleted && q.Name == name, trackChanges)
+        return await FindByCondition(q => q.Name == name, trackChanges)
             .FirstOrDefaultAsync(cancellationToken);
     }
 }

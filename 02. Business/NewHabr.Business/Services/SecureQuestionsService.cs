@@ -36,7 +36,7 @@ public class SecureQuestionsService : ISecureQuestionsService
     {
         var questions = await _repositoryManager
             .SecureQuestionsRepository
-            .GetAllAsync(cancellationToken);
+            .GetAllAsync(false, cancellationToken);
         var questionsDto = _mapper.Map<List<SecureQuestionDto>>(questions);
         return questionsDto;
     }
@@ -78,7 +78,7 @@ public class SecureQuestionsService : ISecureQuestionsService
         // users count using secure question with id
         var usersCount = await _repositoryManager
             .UserRepository
-            .GetUsersCountWithSecureQuestionIdAsync(id, cancellationToken);
+            .GetUsersCountWithSecureQuestionIdAsync(id, false, cancellationToken);
 
         if (usersCount > 0)
             throw new InvalidOperationException($"SecureQuestion({id}) is in use.");

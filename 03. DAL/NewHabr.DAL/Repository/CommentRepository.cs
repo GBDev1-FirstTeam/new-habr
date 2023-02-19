@@ -12,29 +12,29 @@ public class CommentRepository : RepositoryBase<Comment, Guid>, ICommentReposito
     }
 
     public async Task<IReadOnlyCollection<Comment>> GetAllAsync(
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default)
+        bool trackChanges,
+        CancellationToken cancellationToken)
     {
         return await GetAll(trackChanges).ToListAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyCollection<Comment>> GetByArticleIdAsync(
         Guid articleId,
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default)
+        bool trackChanges,
+        CancellationToken cancellationToken)
     {
         return await FindByCondition(comment => comment.ArticleId == articleId, trackChanges).ToListAsync(cancellationToken);
     }
 
     public async Task<Comment?> GetByIdAsync(
         Guid id,
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default)
+        bool trackChanges,
+        CancellationToken cancellationToken)
     {
         return await GetById(id, trackChanges).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<Comment?> GetByIdWithLikesAsync(Guid id, bool trackChanges, CancellationToken cancellationToken = default)
+    public async Task<Comment?> GetByIdWithLikesAsync(Guid id, bool trackChanges, CancellationToken cancellationToken)
     {
         return await GetById(id, trackChanges)
             .Include(c => c.Likes)
@@ -43,15 +43,15 @@ public class CommentRepository : RepositoryBase<Comment, Guid>, ICommentReposito
 
     public async Task<IReadOnlyCollection<Comment>> GetByUserIdAsync(
         Guid userId,
-        bool trackChanges = false,
-        CancellationToken cancellationToken = default)
+        bool trackChanges,
+        CancellationToken cancellationToken)
     {
         return await FindByCondition(comment => comment.UserId == userId, trackChanges).ToListAsync(cancellationToken);
     }
 
-    public async Task<ICollection<UserComment>> GetUserCommentAsync(Guid userId, CancellationToken cancellationToken = default)
+    public async Task<ICollection<UserComment>> GetUserCommentAsync(Guid userId, bool trackChanges, CancellationToken cancellationToken)
     {
-        var response = await FindByCondition(comment => comment.UserId == userId && !comment.Deleted)
+        var response = await FindByCondition(comment => comment.UserId == userId, trackChanges)
             .Select(row => new UserComment
             {
                 Id = row.Id,
@@ -65,12 +65,12 @@ public class CommentRepository : RepositoryBase<Comment, Guid>, ICommentReposito
         return response;
     }
 
-    public async Task<ICollection<UserLikedComment>> GetUserLikedCommentsAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task<ICollection<UserLikedComment>> GetUserLikedCommentsAsync(Guid userId, bool trackChanges, CancellationToken cancellationToken)
     {
-        return await FindByCondition(comment => !comment.Deleted)
+        return await GetAll(trackChanges)
             .Include(comment => comment.Article)
             .Include(comment => comment.Likes)
-            .Where(comment => comment.Article.Published && !comment.Article.Deleted && comment.Likes.Any(u => u.Id == userId))
+            .Where(comment => comment.Article.Published && comment.Likes.Any(u => u.Id == userId))
             .Select(row => new UserLikedComment
             {
                 Id = row.Id,

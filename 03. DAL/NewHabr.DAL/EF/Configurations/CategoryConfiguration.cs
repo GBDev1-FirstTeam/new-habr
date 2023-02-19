@@ -10,5 +10,7 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
     {
         builder
             .HasIndex(e => e.Name);
+
+        builder.HasQueryFilter(a => !a.Deleted);
     }
 }
