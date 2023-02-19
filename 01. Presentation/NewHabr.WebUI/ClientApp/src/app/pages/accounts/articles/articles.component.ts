@@ -15,6 +15,8 @@ export class ArticlesComponent implements OnInit {
   accountId: string;
   publications$: Observable<Array<Publication> | null>;
 
+  succesfulModerate: boolean = false;
+
   constructor(
     private http: HttpRequestService,
     private router: Router,
@@ -27,12 +29,11 @@ export class ArticlesComponent implements OnInit {
     })
   }
 
-  read = (postId: string | undefined) => this.router.navigate(['publications', postId]);
   edit = (postId: string | undefined) => this.router.navigate(['accounts', this.accountId, 'articles', 'edit', postId]);
   create = () => this.router.navigate(['accounts', this.accountId, 'articles', 'create']);
-  publish = (post: Publication) => {
-    post.PublishedAt = +Date.now();
-    // post.IsPublished = true;
-    lastValueFrom(this.http.publishArticle(post.Id!));
+  moderate = (post: Publication) => {
+    lastValueFrom(this.http.publishArticle(post.Id!)).then(() => {
+      this.succesfulModerate = true;
+    });
   };
 }

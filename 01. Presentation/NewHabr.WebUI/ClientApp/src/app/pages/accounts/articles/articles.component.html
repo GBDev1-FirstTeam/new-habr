@@ -7,8 +7,9 @@
     [post]="post"
     >
     <div class="buttons-container">
-        <button type="button" class="btn btn-outline-dark" (click)="read(post?.Id)" *ngIf="'post?.IsPublished'">Читать далее</button>
         <button type="button" class="btn btn-outline-dark" (click)="edit(post?.Id)">Редактировать</button>
-        <button type="button" class="btn btn-outline-dark" (click)="publish(post)" *ngIf="'!post?.IsPublished'">Опубликовать</button>
+        <button type="button" class="btn btn-outline-dark" (click)="moderate(post)">Модерация</button>
     </div>
 </app-post-container>
+
+<app-succesful-send [(visible)]="succesfulModerate" [text]="'Статья отправлена на модерацию'"></app-succesful-send>

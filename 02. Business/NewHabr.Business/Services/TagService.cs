@@ -24,7 +24,7 @@ public class TagService : ITagService
     }
     public async Task CreateAsync(TagCreateRequest request, CancellationToken cancellationToken = default)
     {
-        var tag = _repositoryManager
+        var tag = await _repositoryManager
             .TagRepository
             .GetByNameAsync(request.Name, false, cancellationToken);
 

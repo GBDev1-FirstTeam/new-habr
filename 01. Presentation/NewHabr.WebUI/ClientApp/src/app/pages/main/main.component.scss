@@ -87,6 +87,10 @@
         a {
             color: white;
         }
+
+        ul {
+            padding: 5px;
+        }
     }
 }
 
@@ -99,5 +103,18 @@ footer {
 
     div {
         text-align: center;
+    }
+}
+
+.nav-item {
+    i {
+        display: inline;
+        padding: unset;
+        color: white;
+    }
+
+    a {
+        display: inline;
+        padding-left: 5px;
     }
 }

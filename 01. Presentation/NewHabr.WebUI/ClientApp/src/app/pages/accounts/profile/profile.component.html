@@ -20,7 +20,7 @@
         </div>
         <div class="form-group">
             <label for="birthDay">День рождения</label>
-            <input type="text" class="form-control" id="birthDay" [(ngModel)]="user && user.BirthDay" [value]="user?.BirthDay" name="birthDay">
+            <input type="date" class="form-control" id="birthDay" [(ngModel)]="birthday" [value]="birthday" name="birthDay" (change)="changeBirthday($event)">
         </div>
         <div class="form-group">
             <label for="description">Описание</label>
@@ -31,3 +31,4 @@
     </form>
 </div>
 
+<app-succesful-send [(visible)]="succesfulSend" [text]="'Данные успешно отправлены на сервер'"></app-succesful-send>

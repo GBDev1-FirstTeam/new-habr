@@ -8,10 +8,14 @@ import { Authorization, LoginRequest, RegisterRequest } from "../models/Authoriz
 
 export interface AppStore {
     publications: Array<Publication> | null,
-    post: Publication | null,
+    
+    userInfo: UserInfo | null,
+    
     auth: Authorization | null,
     isAuth: boolean,
-    userInfo: UserInfo | null
+    isUser: boolean,
+    isAdmin: boolean,
+    isModerator: boolean,
 }
 
 @Injectable({
@@ -31,14 +35,19 @@ export class AppStoreProvider {
 
             withProps<AppStore>({
                 publications: null,
-                post: null,
+                
+                userInfo: null,
+                
                 auth: auth,
-                isAuth: !!auth?.User && !!auth?.Token,
-                userInfo: null
+                isAuth: this.isAuth(auth),
+                isUser: this.isUser(auth),
+                isAdmin: this.isAdmin(auth),
+                isModerator: this.isModerator(auth),
             })
         );
     }
 
+    /*
     loadPublications() {
         if (this.store.getValue().publications == null) {
             const publicationsSubscribtion = this.http.getPublications().subscribe(publications => {
@@ -49,21 +58,8 @@ export class AppStoreProvider {
             });
         }
     }
-    
-    loadPublicationById(id: string) {
-        const post = this.store.getValue().post;
-        if (post == null || post.Id !== id) {
-            const postSubscribtion = this.http.getPublicationById(id).subscribe(post => {
-                if (post) {
-                    this.updatePost(post);
-                    postSubscribtion.unsubscribe();
-                }
-            });
-        }
-    }
 
     getPublicationsFromStore = () => this.store.pipe(select((state => state.publications)));
-    getPostFromStore = () => this.store.pipe(select((state => state.post)));
     
     private updatePublications(publications: Array<Publication>) {
         this.store.update(st => ({
@@ -71,27 +67,26 @@ export class AppStoreProvider {
             publications: publications
         }))
     }
-    
-    private updatePost(post: Publication) {
-        this.store.update(st => ({
-            ...st,
-            post: post
-        }))
-    }
+    */
 
     private authSubscribtion = (auth: Authorization) => {
-        const isAuth = !!auth?.User && !!auth?.Token;
-        if (isAuth) {
+        if (this.isAuth(auth)) {
             this.store.update(st => ({
                 ...st,
                 auth: auth,
-                isAuth: isAuth
+                isAuth: this.isAuth(auth),
+                isUser: this.isUser(auth),
+                isAdmmin: this.isAdmin(auth),
+                isModerator: this.isModerator(auth),
             }))
         } else {
             this.store.update(st => ({
                 ...st,
                 auth: null,
-                isAuth: false
+                isAuth: false,
+                isUser: false,
+                isAdmmin: false,
+                isModerator: false,
             }))
         }
         this.saveToLocalStorage(auth);
@@ -123,14 +118,21 @@ export class AppStoreProvider {
     logout() {
         this.store.update(st => ({
             ...st,
+            userInfo: null,
             auth: null,
-            isAuth: false
+            isAuth: false,
+            isUser: false,
+            isAdmmin: false,
+            isModerator: false,
         }))
         localStorage.removeItem(this.authObjectName)
     }
 
     getAuth = () => this.store.pipe(select((state => state.auth)));
     getIsAuth = () => this.store.pipe(select((state => state.isAuth)));
+    getIsUser = () => this.store.pipe(select((state => state.isUser)));
+    getIsAdmin = () => this.store.pipe(select((state => state.isAdmin)));
+    getIsModerator = () => this.store.pipe(select((state => state.isModerator)));
 
     private saveToLocalStorage(auth: Authorization) {
         localStorage.setItem(this.authObjectName, JSON.stringify(auth))
@@ -163,4 +165,9 @@ export class AppStoreProvider {
             userInfo: null
         }))
     }
+
+    private isAuth = (auth: Authorization | null) : boolean => !!auth?.User && !!auth?.Token;
+    private isUser = (auth: Authorization | null) : boolean => auth?.User?.Roles.includes('User') || false;
+    private isAdmin = (auth: Authorization | null) : boolean => auth?.User?.Roles.includes('Administrator') || false;
+    private isModerator = (auth: Authorization | null) : boolean => auth?.User?.Roles.includes('Moderator') || false;
 }

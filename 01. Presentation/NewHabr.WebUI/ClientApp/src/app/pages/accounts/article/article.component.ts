@@ -33,6 +33,8 @@ export class ArticleComponent implements OnInit, OnDestroy, AfterViewInit {
   tags: string[] = [];
   cats: string[] = [];
 
+  succesfulSend: boolean = false;
+
   categories: Array<Category>;
   
   constructor(
@@ -80,7 +82,9 @@ export class ArticleComponent implements OnInit, OnDestroy, AfterViewInit {
     switch (this.mode) {
       case Mode.Edit:
         this.post.Content = this.quill.root.innerHTML;
-        lastValueFrom(this.http.postUpdatePublication(this.post.Id!, this.post));
+        lastValueFrom(this.http.updatePublication(this.post.Id!, this.post)).then(() => {
+          this.succesfulSend = true;
+        });
         break;
       case Mode.Create:
         const post = {
@@ -98,7 +102,9 @@ export class ArticleComponent implements OnInit, OnDestroy, AfterViewInit {
             }
           }),
         } as PublicationRequest;
-        lastValueFrom(this.http.createPublication(post));
+        lastValueFrom(this.http.createPublication(post)).then(() => {
+          this.succesfulSend = true;
+        });
         break;
     }
   }

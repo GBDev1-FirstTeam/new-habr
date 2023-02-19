@@ -31,4 +31,7 @@
         </div>
     </div>
     <button type="button" class="btn btn-outline-dark" (click)="save()">Сохранить</button>
+    <div *ngIf="succesfulSend"></div>
 </div>
+
+<app-succesful-send [(visible)]="succesfulSend" [text]="'Данные успешно отправлены на сервер'"></app-succesful-send>

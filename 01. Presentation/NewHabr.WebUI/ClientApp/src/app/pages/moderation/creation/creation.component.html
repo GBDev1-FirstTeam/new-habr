@@ -1,0 +1,21 @@
+<label>Добавьте новый тег</label>
+<div class="form-floating form-floating-content">
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Введите имя тэга" #tag>
+        <button class="btn btn-outline-secondary form-control" type="button" (click)="addTag(tag.value)">Добавить</button>
+    </div>
+</div>
+<label>Добавьте новую категорию</label>
+<div class="form-floating form-floating-content">
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Введите имя категории" #cat>
+        <button class="btn btn-outline-secondary form-control" type="button" (click)="addCategory(cat.value)">Добавить</button>
+    </div>
+</div>
+<label>Добавьте контрольный вопрос</label>
+<div class="form-floating form-floating-content">
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Введите контрольный вопрос" #question>
+        <button class="btn btn-outline-secondary form-control" type="button" (click)="addQuestion(question.value)">Добавить</button>
+    </div>
+</div>

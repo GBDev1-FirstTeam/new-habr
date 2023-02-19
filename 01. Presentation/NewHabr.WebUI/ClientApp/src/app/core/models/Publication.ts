@@ -1,4 +1,5 @@
 import { Category } from "./Category";
+import { Metadata, NameStruct } from "./Structures";
 import { Like } from "./Like";
 import { Tag } from "./Tag";
 
@@ -11,7 +12,7 @@ export interface Publication extends Like {
     Comments?: Array<Comment>;
     Content: string;
     CreatedAt?: number;
-    ModifyAt?: number;
+    ModifiedAt?: number;
     PublishedAt?: number;
     ApproveState?: number;
     ImgURL: string;
@@ -21,10 +22,11 @@ export interface PublicationRequest {
     Title: string;
     Content: string;
     ImgURL: string;
-    Categories: CT[];
-    Tags: CT[];
+    Categories: NameStruct[];
+    Tags: NameStruct[];
 }
 
-export interface CT {
-    Name: string;
+export interface PublicationsResponse {
+    Articles: Array<Publication>;
+    Metadata: Metadata;
 }

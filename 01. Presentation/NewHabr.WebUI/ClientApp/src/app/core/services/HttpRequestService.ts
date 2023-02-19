@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, Injector } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Backend } from '../models/Configuration';
-import { Publication, PublicationRequest } from '../models/Publication';
+import { Publication, PublicationRequest, PublicationsResponse } from '../models/Publication';
 import { Commentary } from '../models/Commentary';
 import { PutUserInfo, User, UserInfo } from '../models/User';
 import { ConfigurationService } from './ConfigurationService';
@@ -13,6 +13,8 @@ import { Authorization, LoginRequest, RegisterRequest } from '../models/Authoriz
 import { SecureQuestion } from '../models/SecureQuestion';
 import { AppStoreProvider } from '../store/store';
 import { Category } from '../models/Category';
+import { Tag } from '../models/Tag';
+import { NameStruct, QuestionStruct } from '../models/Structures';
 
 @Injectable({
   providedIn: 'root',
@@ -62,11 +64,6 @@ export class HttpRequestService {
     });
   }
 
-  getPublications(): Observable<Publication[]> {
-    const url = this.backend.baseURL + `/articles/published/10`; //ToDo продумать, откуда брать количество
-    return this.get<Array<Publication>>(url);
-  }
-
   publishArticle(id: string) {
     const url = this.backend.baseURL + `/articles/${id}/publish`;
     return this.put<any, any>(url, undefined);
@@ -107,10 +104,7 @@ export class HttpRequestService {
     return this.post<Commentary, any>(url, body);
   }
    
-  postUpdatePublication(id: string, body: Publication) {
-    const url = this.backend.baseURL + `/articles/${id}`;
-    return this.put<Publication, any>(url, body);
-  }
+  
   
   postLike(body: LikeRequest, path: string) {
     let url = this.backend.baseURL + `/${path}/like`;
@@ -132,6 +126,10 @@ export class HttpRequestService {
   getAllQuestions() {
     const url = this.backend.baseURL + `/SecureQuestions`;
     return this.get<Array<SecureQuestion>>(url);
+  }
+  addQuestion(body: QuestionStruct) {
+    const url = this.backend.baseURL + `/SecureQuestions`;
+    return this.post<QuestionStruct, any>(url, body);
   }
   // #endregion
 
@@ -155,10 +153,25 @@ export class HttpRequestService {
     const url = this.backend.baseURL + `/Articles`;
     return this.post<PublicationRequest, any>(url, body);
   }
-
+  updatePublication(id: string, body: Publication) {
+    const url = this.backend.baseURL + `/articles/${id}`;
+    return this.put<Publication, any>(url, body);
+  }
+  getPublications(step: number, count: number): Observable<PublicationsResponse> {
+    const url = this.backend.baseURL + `/Articles?PageNumber=${step}&PageSize=${count}`;
+    return this.get<PublicationsResponse>(url);
+  }
   getPublicationById(id: string): Observable<Publication> {
     const url = this.backend.baseURL + `/Articles/${id}`;
     return this.get<Publication>(url);
+  }
+  getUnpublishedPublications(step: number, count: number): Observable<PublicationsResponse> {
+    const url = this.backend.baseURL + `/Articles/unpublished?PageNumber=${step}&PageSize=${count}`;
+    return this.get<PublicationsResponse>(url);
+  }
+  approvePublication(id: string, approveState: number): Observable<any> {
+    const url = this.backend.baseURL + `/Articles/${id}/approve?approveState=${approveState}`;
+    return this.put<any, any>(url, null);
   }
   // #endregion
 
@@ -166,6 +179,21 @@ export class HttpRequestService {
   getCategories() {
     const url = this.backend.baseURL + `/Categories`;
     return this.get<Array<Category>>(url);
+  }
+  addCategory(body: NameStruct) {
+    const url = this.backend.baseURL + `/Categories`;
+    return this.post<NameStruct, any>(url, body);
+  }
+  // #endregion
+
+  // #region /Tags
+  getTags() {
+    const url = this.backend.baseURL + `/Tags`;
+    return this.get<Array<Tag>>(url);
+  }
+  addTag(body: NameStruct) {
+    const url = this.backend.baseURL + `/Tags`;
+    return this.post<NameStruct, any>(url, body);
   }
   // #endregion
 }

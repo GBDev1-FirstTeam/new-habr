@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
 import { Publication } from 'src/app/core/models/Publication';
-import { AppStoreProvider } from 'src/app/core/store/store';
+import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
 
 @Component({
   selector: 'app-publications',
@@ -11,16 +10,18 @@ import { AppStoreProvider } from 'src/app/core/store/store';
 })
 export class PublicationsComponent implements OnInit {
 
-  publications$: Observable<Array<Publication> | null>;
+  publications: Array<Publication>;
 
-  constructor(private store: AppStoreProvider, private router: Router) { }
+  constructor(private http: HttpRequestService, private router: Router) { }
 
   ngOnInit(): void {
-    this.store.loadPublications();
-    this.publications$ = this.store.getPublicationsFromStore();
+    const publicationsSubscribtion = this.http.getPublications(1, 10).subscribe(p => {
+      if (p) {
+        this.publications = p.Articles;
+        publicationsSubscribtion.unsubscribe();
+      }
+    })
   }
-
-  getTime = (utc: number): string => new Date(utc).toLocaleString();
 
   navigate = (id: string | undefined) => this.router.navigate(['publications', id]);
 }
