@@ -18,5 +18,7 @@ public class CommentProfile : Profile
 
         CreateMap<CommentCreateRequest, Comment>();
         CreateMap<CommentUpdateRequest, Comment>();
+
+        CreateMap<CommentExt, CommentDto>();
     }
 }

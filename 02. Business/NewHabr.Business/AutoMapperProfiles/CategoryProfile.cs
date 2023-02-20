@@ -11,7 +11,5 @@ public class CategoryProfile : Profile
         CreateMap<Category, CategoryDto>().ReverseMap();
         CreateMap<CategoryCreateRequest, Category>();
         CreateMap<CategoryUpdateRequest, Category>();
-
-        CreateMap<CommentExt, CommentDto>();
     }
 }
