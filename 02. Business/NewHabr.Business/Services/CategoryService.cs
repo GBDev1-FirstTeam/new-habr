@@ -39,7 +39,7 @@ public class CategoryService : ICategoryService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task UpdateAsync(int id, CategoryUpdateRequest categoryToUpdate, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(int id, CategoryUpdateRequest categoryToUpdate, CancellationToken cancellationToken)
     {
         var targetCategory = await _repositoryManager.CategoryRepository.GetByIdAsync(id, true, cancellationToken);
 
