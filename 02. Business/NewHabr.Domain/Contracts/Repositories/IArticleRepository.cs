@@ -36,6 +36,8 @@ public interface IArticleRepository : IRepository<Article, Guid>
 
     Task<Article?> GetByIdAsync(Guid id, bool trackChanges, CancellationToken cancellationToken);
 
+    Task<Article?> GetByIdWithTagsWithCategoriesAsync(Guid articleId, bool trackChanges, CancellationToken cancellationToken);
+
     Task<ArticleExt?> GetByIdIncludeCommentLikesAsync(Guid id, bool trackChanges, CancellationToken cancellationToken);
 
     Task<ICollection<UserArticle>> GetUserArticlesAsync(Guid userId, bool trackChanges, CancellationToken cancellationToken);

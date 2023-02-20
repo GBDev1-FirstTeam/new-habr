@@ -115,6 +115,17 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             .FirstOrDefaultAsync(cancellationToken);
     }
 
+    public async Task<Article?> GetByIdWithTagsWithCategoriesAsync(
+        Guid articleId,
+        bool trackChanges,
+        CancellationToken cancellationToken)
+    {
+        return await FindByCondition(a => a.Id == articleId, trackChanges)
+            .Include(a => a.Categories)
+            .Include(a => a.Tags)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
     public async Task<ArticleExt?> GetByIdIncludeCommentLikesAsync(
         Guid id,
         bool trackChanges,
