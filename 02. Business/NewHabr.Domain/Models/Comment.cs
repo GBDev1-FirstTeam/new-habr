@@ -25,3 +25,8 @@ public class Comment : BaseEntity<Guid>
 
     public ICollection<User> Likes { get; set; }
 }
+
+public class CommentExt : Comment
+{
+    public string UserName { get; set; }
+}

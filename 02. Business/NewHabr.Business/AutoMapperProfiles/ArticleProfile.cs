@@ -25,5 +25,7 @@ public class ArticleProfile : Profile
         CreateMap<ArticleUpdateRequest, Article>()
             .ForMember(dest => dest.Categories, options => options.Ignore())
             .ForMember(dest => dest.Tags, options => options.Ignore());
+
+        CreateMap<ArticleExt, ArticleDto>();
     }
 }
