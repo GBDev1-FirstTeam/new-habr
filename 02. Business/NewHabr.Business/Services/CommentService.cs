@@ -25,7 +25,7 @@ public class CommentService : ICommentService
         _userManager = userManager;
     }
 
-    public async Task CreateAsync(Guid CreatorId, CommentCreateRequest data, CancellationToken cancellationToken = default)
+    public async Task CreateAsync(Guid CreatorId, CommentCreateRequest data, CancellationToken cancellationToken)
     {
         await CheckIfUserNotBannedOrThrow(CreatorId, cancellationToken);
 
@@ -49,7 +49,7 @@ public class CommentService : ICommentService
         await CreateNotificationIfMentionSomeoneAsync(article, newComment, cancellationToken);
     }
 
-    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
         var deleteComment = await _repositoryManager.CommentRepository.GetByIdAsync(id, true, cancellationToken);
         if (deleteComment is null)
@@ -61,10 +61,10 @@ public class CommentService : ICommentService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<CommentDto>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<CommentDto>> GetAllAsync(CancellationToken cancellationToken)
     {
 
-        var comments = await _repositoryManager.CommentRepository.GetAllAsync(cancellationToken: cancellationToken);
+        var comments = await _repositoryManager.CommentRepository.GetAllAsync(false, cancellationToken);
         return _mapper.Map<List<CommentDto>>(comments);
     }
 
@@ -106,7 +106,7 @@ public class CommentService : ICommentService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task UpdateAsync(Guid commentId, Guid modifierId, CommentUpdateRequest updatedComment, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(Guid commentId, Guid modifierId, CommentUpdateRequest updatedComment, CancellationToken cancellationToken)
     {
         await CheckIfUserNotBannedOrThrow(modifierId, cancellationToken);
 

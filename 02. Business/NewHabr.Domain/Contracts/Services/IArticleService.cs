@@ -28,7 +28,7 @@ public interface IArticleService
     Task SetPublicationStatusAsync(Guid id, bool publicationStatus, CancellationToken cancellationToken);
 
     /// <exception cref="ArticleNotFoundException"></exception>
-    Task SetApproveStateAsync(Guid id, ApproveState state, CancellationToken cancellationToken = default);
+    Task SetApproveStateAsync(Guid id, ApproveState state, CancellationToken cancellationToken);
 
     /// <summary>
     /// Sets 'Like' mark at article

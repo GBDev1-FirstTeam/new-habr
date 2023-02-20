@@ -72,7 +72,7 @@ public class UserService : IUserService
 
         var user = await GetUserAndCheckIfItExistsAsync(id, true, cancellationToken);
         _mapper.Map(userDataDto, user);
-        await _repositoryManager.SaveAsync();
+        await _repositoryManager.SaveAsync(cancellationToken);
     }
 
     public async Task<ICollection<UserArticleDto>> GetUserArticlesAsync(Guid id, CancellationToken cancellationToken)
@@ -96,7 +96,7 @@ public class UserService : IUserService
     {
         var user = await GetUserAndCheckIfItExistsAsync(id, false, cancellationToken);
 
-        var comments = await _repositoryManager.CommentRepository.GetUserCommentAsync(id, cancellationToken);
+        var comments = await _repositoryManager.CommentRepository.GetUserCommentAsync(id, false, cancellationToken);
 
         var commentsDto = _mapper.Map<List<UserCommentDto>>(comments);
         return commentsDto;
@@ -105,7 +105,7 @@ public class UserService : IUserService
     public async Task<ICollection<LikedArticleDto>> GetUserLikedArticlesAsync(Guid userId, CancellationToken cancellationToken)
     {
         var user = await GetUserAndCheckIfItExistsAsync(userId, false, cancellationToken);
-        var articles = await _repositoryManager.ArticleRepository.GetUserLikedArticlesAsync(userId, cancellationToken);
+        var articles = await _repositoryManager.ArticleRepository.GetUserLikedArticlesAsync(userId, false, cancellationToken);
 
         var articlesDto = _mapper.Map<ICollection<LikedArticleDto>>(articles);
         return articlesDto;
@@ -114,7 +114,7 @@ public class UserService : IUserService
     public async Task<ICollection<LikedCommentDto>> GetUserLikedCommentsAsync(Guid userId, CancellationToken cancellationToken)
     {
         var user = await GetUserAndCheckIfItExistsAsync(userId, false, cancellationToken);
-        var comments = await _repositoryManager.CommentRepository.GetUserLikedCommentsAsync(userId, cancellationToken);
+        var comments = await _repositoryManager.CommentRepository.GetUserLikedCommentsAsync(userId, false, cancellationToken);
 
         var commentsDto = _mapper.Map<ICollection<LikedCommentDto>>(comments);
         return commentsDto;
@@ -123,7 +123,7 @@ public class UserService : IUserService
     public async Task<ICollection<LikedUserDto>> GetUserLikedUsersAsync(Guid userId, CancellationToken cancellationToken)
     {
         var user = await GetUserAndCheckIfItExistsAsync(userId, false, cancellationToken);
-        var users = await _repositoryManager.UserRepository.GetUserLikedUsersAsync(userId, cancellationToken);
+        var users = await _repositoryManager.UserRepository.GetUserLikedUsersAsync(userId, false, cancellationToken);
 
         var usersDto = _mapper.Map<ICollection<LikedUserDto>>(users);
         return usersDto;
@@ -135,7 +135,7 @@ public class UserService : IUserService
         var userDto = _mapper.Map<UserProfileDto>(user);
         userDto.ReceivedLikes = await _repositoryManager
             .UserRepository
-            .GetReceivedLikesCountAsync(userId, cancellationToken);
+            .GetReceivedLikesCountAsync(userId, false, cancellationToken);
 
         return userDto;
     }

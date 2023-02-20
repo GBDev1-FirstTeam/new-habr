@@ -13,9 +13,9 @@ public class SecureQuestionsRepository : RepositoryBase<SecureQuestion, int>, IS
     {
     }
 
-    public async Task<ICollection<SecureQuestion>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<ICollection<SecureQuestion>> GetAllAsync(bool trackChanges, CancellationToken cancellationToken)
     {
-        return await FindByCondition(q => !q.Deleted)
+        return await GetAll(trackChanges)
             .ToListAsync(cancellationToken);
     }
 

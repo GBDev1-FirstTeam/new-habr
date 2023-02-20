@@ -40,7 +40,7 @@ public interface IArticleRepository : IRepository<Article, Guid>
 
     Task<ICollection<UserArticle>> GetUserArticlesAsync(Guid userId, bool trackChanges, CancellationToken cancellationToken);
 
-    Task<ICollection<UserLikedArticle>> GetUserLikedArticlesAsync(Guid userId, CancellationToken cancellationToken);
+    Task<ICollection<UserLikedArticle>> GetUserLikedArticlesAsync(Guid userId, bool trackChanges, CancellationToken cancellationToken);
 
     Task<Article?> GetArticleWithLikesAsync(Guid articleId, bool trackChanges, CancellationToken cancellationToken);
 }
