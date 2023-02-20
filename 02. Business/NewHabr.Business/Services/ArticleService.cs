@@ -118,7 +118,7 @@ public class ArticleService : IArticleService
     {
         await CheckIfUserNotBannedOrThrow(modifierId, cancellationToken);
 
-        var article = await _repositoryManager.ArticleRepository.GetByIdIncludeAsync(articleId, trackChanges: true, cancellationToken);
+        var article = await _repositoryManager.ArticleRepository.GetByIdAsync(articleId, trackChanges: true, cancellationToken);
 
         if (article is null)
         {
@@ -140,7 +140,7 @@ public class ArticleService : IArticleService
 
     public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var article = await _repositoryManager.ArticleRepository.GetByIdIncludeAsync(id, true, cancellationToken);
+        var article = await _repositoryManager.ArticleRepository.GetByIdAsync(id, true, cancellationToken);
 
         if (article is null)
         {
