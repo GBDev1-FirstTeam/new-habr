@@ -171,11 +171,10 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<ArticleExt?> GetArticleWithLikesAsync(Guid articleId, bool trackChanges, CancellationToken cancellationToken)
+    public async Task<Article?> GetArticleWithLikesAsync(Guid articleId, bool trackChanges, CancellationToken cancellationToken)
     {
         return await GetById(articleId, trackChanges)
             .Include(a => a.Likes)
-            .Select(ArticleToArticleExt())
             .FirstOrDefaultAsync(cancellationToken);
     }
 
