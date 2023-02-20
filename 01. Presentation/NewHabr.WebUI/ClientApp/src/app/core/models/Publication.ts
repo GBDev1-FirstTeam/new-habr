@@ -14,8 +14,26 @@ export interface Publication extends Like {
     CreatedAt?: number;
     ModifiedAt?: number;
     PublishedAt?: number;
+    Published?: boolean;
     ApproveState?: number;
     ImgURL: string;
+    Username?: string;
+}
+
+export interface PublicationUser extends Like {
+    Id?: string;
+    Title: string;
+    Categories: Array<Category>;
+    Tags: Array<Tag>;
+    ApproveState?: string;
+    CommentsCount: number;
+    Content: string;
+    CreatedAt?: number;
+    ModifiedAt?: number;
+    PublishedAt?: number;
+    Published?: boolean;
+    ImgURL: string;
+    LikesCount: number;
 }
 
 export interface PublicationRequest {

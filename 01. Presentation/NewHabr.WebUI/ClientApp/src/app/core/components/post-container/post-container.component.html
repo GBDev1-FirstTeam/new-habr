@@ -1,8 +1,6 @@
 <div class="post-container">
-    <div class="author">
-        <span (click)="navigate(post?.UserId)">{{ 'post?.UserLogin' }}&nbsp;</span>
-        <span *ngIf="post?.PublishedAt">опубликовано {{ (post?.PublishedAt || 0).toTime() }}</span>
-        <span style="color: red" *ngIf="!post?.PublishedAt">не опубликовано</span>
+    <div class="author" *ngIf="userId && userName">
+        <span (click)="navigate(userId)">{{ userName }}</span> опубликовал <span>{{ post!.PublishedAt | convertDate }}</span>
     </div>
     <div class="title">
         <h3>{{ post?.Title }}</h3>

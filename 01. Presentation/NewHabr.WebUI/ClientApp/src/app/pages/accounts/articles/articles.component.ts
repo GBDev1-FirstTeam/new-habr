@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { lastValueFrom, Observable } from 'rxjs';
-import { Publication } from 'src/app/core/models/Publication';
+import { PublicationUser } from 'src/app/core/models/Publication';
 import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
 
 @Component({
@@ -13,9 +13,10 @@ import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
 export class ArticlesComponent implements OnInit {
 
   accountId: string;
-  publications$: Observable<Array<Publication> | null>;
+  publications$: Observable<Array<PublicationUser> | null>;
 
   succesfulModerate: boolean = false;
+  succesfulPublicate: boolean = false;
 
   constructor(
     private http: HttpRequestService,
@@ -31,9 +32,17 @@ export class ArticlesComponent implements OnInit {
 
   edit = (postId: string | undefined) => this.router.navigate(['accounts', this.accountId, 'articles', 'edit', postId]);
   create = () => this.router.navigate(['accounts', this.accountId, 'articles', 'create']);
-  moderate = (post: Publication) => {
+  publicate = (post: PublicationUser) => {
     lastValueFrom(this.http.publishArticle(post.Id!)).then(() => {
-      this.succesfulModerate = true;
+      this.succesfulPublicate = true;
     });
   };
+  moderate = (post: PublicationUser) => {
+    lastValueFrom(this.http.publishArticle(post.Id!)).then(() => {
+      this.succesfulPublicate = true;
+    });
+  };
+  
+  mayBePublish = (post: PublicationUser) => (!post.Published && post.ApproveState === 'Approved');
+  mayBeModerate = (post: PublicationUser) => (!post.Published && post.ApproveState !== 'Approved');
 }
