@@ -76,4 +76,10 @@ public class UserRepository : RepositoryBase<User, Guid>, IUserRepository
         return await FindByCondition(u => u.SecureQuestionId == id, trackChanges)
             .CountAsync(cancellationToken);
     }
+
+    public async Task<ICollection<User>> GetAllAsync(bool trackChanges, CancellationToken cancellationToken)
+    {
+        return await GetAll(trackChanges)
+            .ToListAsync(cancellationToken);
+    }
 }

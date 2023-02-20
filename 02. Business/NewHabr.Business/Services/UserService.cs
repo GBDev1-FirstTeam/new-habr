@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Xml.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
@@ -240,5 +241,12 @@ public class UserService : IUserService
 
         if (user!.Banned)
             throw new UserBannedException(user.BannedAt!.Value);
+    }
+
+    public async Task<ICollection<UserProfileDto>> GetUsers(CancellationToken cancellationToken)
+    {
+        var users = await _repositoryManager.UserRepository.GetAllAsync(false, cancellationToken);
+        var usersDto = _mapper.Map<ICollection<UserProfileDto>>(users);
+        return usersDto;
     }
 }

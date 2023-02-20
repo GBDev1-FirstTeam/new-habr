@@ -8,6 +8,10 @@ namespace NewHabr.Domain.Contracts.Services;
 public interface IUserService
 {
     /// <summary>
+    /// Get All Users
+    /// </summary>
+    Task<ICollection<UserProfileDto>> GetUsers(CancellationToken cancellationToken);
+    /// <summary>
     /// Get list of authored articles
     /// </summary>
     /// <param name="id">user id</param>

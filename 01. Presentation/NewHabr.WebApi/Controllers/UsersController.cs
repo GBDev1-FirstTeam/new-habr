@@ -25,9 +25,16 @@ public class UsersController : ControllerBase
 
     [HttpGet]
     [Authorize(Roles = "Moderator,Administrator")]
-    public Task<IActionResult> GetUsers(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUsers(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return Ok(await _userService.GetUsers(cancellationToken));
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
     }
 
     [HttpGet("{id}")]
