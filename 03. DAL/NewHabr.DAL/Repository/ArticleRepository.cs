@@ -138,7 +138,9 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
                 LikesCount = row.Likes.Count,
                 CreatedAt = row.CreatedAt,
                 ModifiedAt = row.ModifiedAt,
-                PublishedAt = row.PublishedAt.HasValue ? row.PublishedAt.Value : default(DateTimeOffset)
+                Published = row.Published,
+                PublishedAt = row.PublishedAt.HasValue ? row.PublishedAt.Value : default(DateTimeOffset),
+                ApproveState = row.ApproveState
             })
             .ToListAsync(cancellationToken);
     }
