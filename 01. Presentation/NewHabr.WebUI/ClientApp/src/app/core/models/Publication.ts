@@ -15,7 +15,7 @@ export interface Publication extends Like {
     ModifiedAt?: number;
     PublishedAt?: number;
     Published?: boolean;
-    ApproveState?: number;
+    ApproveState?: string;
     ImgURL: string;
     Username?: string;
 }

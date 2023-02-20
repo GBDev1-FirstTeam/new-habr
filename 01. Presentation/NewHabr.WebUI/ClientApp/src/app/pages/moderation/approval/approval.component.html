@@ -1,9 +1,16 @@
-<h5>Список статей к модерации</h5>
+<select class="form-select" (change)="changeSelection($event)">
+    <option value="1" selected>Все неопубликованные статьи</option>
+    <option value="2">Отправленные на модерацию</option>
+    <option value="3">Отклонённые статьи и черновики</option>
+    <option value="4">Готовые неопубликованные статьи</option>
+</select>
+
 <div class="cards-container">
-    <div class="card" style="width: 18rem;" *ngFor="let post of publications" [routerLink]="[post.Id]">
+    <div class="card" style="width: 18rem;" *ngFor="let post of showPublications" [routerLink]="[post.Id]">
         <div class="card-body">
             <h5 class="card-title">{{post?.Title}}</h5>
             <h6 class="card-subtitle mb-2 text-muted">{{post?.ModifiedAt | convertDate}}</h6>
+            <img [attr.src]="post?.ImgURL">
         </div>
     </div>
 </div>

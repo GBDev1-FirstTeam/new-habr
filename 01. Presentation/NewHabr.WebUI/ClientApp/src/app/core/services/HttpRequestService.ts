@@ -63,11 +63,6 @@ export class HttpRequestService {
       }
     });
   }
-
-  publishArticle(id: string) {
-    const url = this.backend.baseURL + `/articles/${id}/publish`;
-    return this.put<any, any>(url, undefined);
-  }
   
   getUserById(id: string): Observable<User> {
     const url = this.backend.baseURL + `/users/${id}`;
@@ -153,9 +148,17 @@ export class HttpRequestService {
     const url = this.backend.baseURL + `/Articles`;
     return this.post<PublicationRequest, any>(url, body);
   }
-  updatePublication(id: string, body: Publication) {
+  updatePublication(id: string, body: PublicationRequest) {
     const url = this.backend.baseURL + `/articles/${id}`;
-    return this.put<Publication, any>(url, body);
+    return this.put<PublicationRequest, any>(url, body);
+  }
+  publishArticle(id: string) {
+    const url = this.backend.baseURL + `/Articles/${id}/publish`;
+    return this.put<any, any>(url, undefined);
+  }
+  setPublicationState(id: string, approveState: number): Observable<any> {
+    const url = this.backend.baseURL + `/Articles/${id}/approve?approveState=${approveState}`;
+    return this.put<any, any>(url, null);
   }
   getPublications(step: number, count: number): Observable<PublicationsResponse> {
     const url = this.backend.baseURL + `/Articles?PageNumber=${step}&PageSize=${count}`;
@@ -168,10 +171,6 @@ export class HttpRequestService {
   getUnpublishedPublications(step: number, count: number): Observable<PublicationsResponse> {
     const url = this.backend.baseURL + `/Articles/unpublished?PageNumber=${step}&PageSize=${count}`;
     return this.get<PublicationsResponse>(url);
-  }
-  approvePublication(id: string, approveState: number): Observable<any> {
-    const url = this.backend.baseURL + `/Articles/${id}/approve?approveState=${approveState}`;
-    return this.put<any, any>(url, null);
   }
   // #endregion
 

@@ -3,13 +3,15 @@
 </div>
 
 <app-post-container
-    *ngFor="let post of (publications$ | async)"
+    *ngFor="let post of publications"
     [post]="post"
     >
     <div class="status-container">
-        <span></span>
-        <span></span>
-        <span></span>
+        <p>Статус статьи:</p>
+        <span [class.a-status-1]="post.ApproveState === 'NotApproved'"><i class="bi bi-x-circle-fill"></i> Не одобрено</span>
+        <span [class.a-status-2]="post.ApproveState === 'WaitApproval'"><i class="bi bi-hourglass-split"></i> Ожидает модерации</span>
+        <span [class.a-status-3]="post.ApproveState === 'Approved' && !post.Published"><i class="bi bi-patch-check"></i> Доступно к публикации</span>
+        <span [class.a-status-4]="post.ApproveState === 'Approved' && post.Published"><i class="bi bi-patch-check-fill"></i> Опубликовано</span>
     </div>
     <div class="buttons-container">
         <button type="button" class="btn btn-outline-dark" (click)="edit(post?.Id)">Редактировать</button>

@@ -11,3 +11,31 @@
         margin-left: 10px;
     }
 }
+
+.status-container {
+    margin: 15px 15px 15px 0px;
+
+    span {
+        margin-right: 15px;
+        opacity: .3;
+    }
+}
+
+@mixin a-status($color) {
+    opacity: unset !important;
+    color: $color;
+    font-weight: bold;
+}
+
+.a-status-1 {
+    @include a-status(red);
+}
+.a-status-2 {
+    @include a-status(darkslategrey);
+}
+.a-status-3 {
+    @include a-status(green);
+}
+.a-status-4 {
+    @include a-status(darkgreen);
+}

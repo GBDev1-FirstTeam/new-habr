@@ -1,13 +1,8 @@
 @import '/src/assets/scss/mixins.scss';
 
-// @import url('../../../../../node_modules/quill/dist/quill.snow.css');
-// @import url('../../../../../node_modules/quill/dist/quill.core.css');
-
-// @import url("~quill/dist/quill.core.css");
-// @import url("~quill/dist/quill.snow.css");
-
 .post-container {
   @include card-container;
+  @include opacity-animation;
 
   .author {
     span:first-child {
@@ -16,8 +11,25 @@
     }
   }
 
-  .bg-light {
-    color: darkslategrey;
+  .cats {
+    span {
+      margin-right: 10px;
+      border-bottom: 2px dotted darkslategrey;
+    }
+
+    margin-bottom: 10px;
+  }
+
+  .tags {
+    span {
+      margin-right: 10px;
+    }
+
+    .bg-light {
+      color: darkslategrey;
+    }
+
+    margin-bottom: 5px;
   }
 
   .image {
