@@ -118,7 +118,9 @@ public class ArticleService : IArticleService
     {
         await CheckIfUserNotBannedOrThrow(modifierId, cancellationToken);
 
-        var article = await _repositoryManager.ArticleRepository.GetByIdAsync(articleId, trackChanges: true, cancellationToken);
+        var article = await _repositoryManager
+            .ArticleRepository
+            .GetByIdWithTagsWithCategoriesAsync(articleId, trackChanges: true, cancellationToken);
 
         if (article is null)
         {
