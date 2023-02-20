@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using NewHabr.DAL.EF;
 using NewHabr.DAL.Extensions;
 using NewHabr.Domain;
@@ -14,21 +15,22 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
     {
     }
 
-    public async Task<PagedList<Article>> GetPublishedIncludeAsync(
+    public async Task<PagedList<ArticleExt>> GetPublishedIncludeAsync(
         ArticleQueryParameters queryParams,
         bool trackChanges,
         CancellationToken cancellationToken)
     {
-        return await FindByCondition(a => a.Published, trackChanges)
+        return await FindByCondition(article => article.Published, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .Include(a => a.Comments
                 .OrderBy(c => c.CreatedAt))
             .OrderByDescending(a => a.CreatedAt)
+            .Select(ArticleToArticleExt())
             .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }
 
-    public async Task<PagedList<Article>> GetByTitleIncludeAsync(
+    public async Task<PagedList<ArticleExt>> GetByTitleIncludeAsync(
         string title,
         ArticleQueryParameters queryParams,
         bool trackChanges,
@@ -40,10 +42,11 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             .Include(a => a.Comments
                 .OrderBy(c => c.CreatedAt))
             .OrderByDescending(a => a.CreatedAt)
+            .Select(ArticleToArticleExt())
             .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }
 
-    public async Task<PagedList<Article>> GetByUserIdIncludeAsync(
+    public async Task<PagedList<ArticleExt>> GetByUserIdIncludeAsync(
         Guid userId,
         ArticleQueryParameters queryParams,
         bool trackChanges,
@@ -55,10 +58,11 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             .Include(a => a.Comments
                 .OrderBy(c => c.CreatedAt))
             .OrderByDescending(a => a.CreatedAt)
+            .Select(ArticleToArticleExt())
             .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }
 
-    public async Task<PagedList<Article>> GetUnpublishedIncludeAsync(
+    public async Task<PagedList<ArticleExt>> GetUnpublishedIncludeAsync(
         ArticleQueryParameters queryParams,
         bool trackChanges,
         CancellationToken cancellationToken)
@@ -69,10 +73,11 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             .Include(a => a.Comments
                 .OrderBy(c => c.CreatedAt))
             .OrderByDescending(a => a.CreatedAt)
+            .Select(ArticleToArticleExt())
             .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }
 
-    public async Task<PagedList<Article>> GetDeletedIncludeAsync(
+    public async Task<PagedList<ArticleExt>> GetDeletedIncludeAsync(
         ArticleQueryParameters queryParams,
         bool trackChanges,
         CancellationToken cancellationToken)
@@ -84,6 +89,7 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             .Include(a => a.Comments
                 .OrderBy(c => c.CreatedAt))
             .OrderBy(a => a.DeletedAt)
+            .Select(ArticleToArticleExt())
             .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }
 
@@ -92,10 +98,11 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
         bool trackChanges,
         CancellationToken cancellationToken)
     {
-        return await GetById(id, trackChanges).FirstOrDefaultAsync(cancellationToken);
+        return await GetById(id, trackChanges)
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<Article?> GetByIdIncludeAsync(
+    public async Task<ArticleExt?> GetByIdIncludeAsync(
         Guid id,
         bool trackChanges,
         CancellationToken cancellationToken)
@@ -104,10 +111,11 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .Include(a => a.Comments)
+            .Select(ArticleToArticleExt())
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<Article?> GetByIdIncludeCommentLikesAsync(
+    public async Task<ArticleExt?> GetByIdIncludeCommentLikesAsync(
         Guid id,
         bool trackChanges,
         CancellationToken cancellationToken)
@@ -118,6 +126,7 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             .Include(a => a.Comments
                 .OrderBy(c => c.CreatedAt))
                 .ThenInclude(c => c.Likes)
+            .Select(ArticleToArticleExt())
             .FirstOrDefaultAsync(cancellationToken);
     }
 
@@ -162,10 +171,47 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<Article?> GetArticleWithLikesAsync(Guid articleId, bool trackChanges, CancellationToken cancellationToken)
+    public async Task<ArticleExt?> GetArticleWithLikesAsync(Guid articleId, bool trackChanges, CancellationToken cancellationToken)
     {
         return await GetById(articleId, trackChanges)
             .Include(a => a.Likes)
+            .Select(ArticleToArticleExt())
             .FirstOrDefaultAsync(cancellationToken);
+    }
+
+
+
+    private static Expression<Func<Article, ArticleExt>> ArticleToArticleExt()
+    {
+        return article => new ArticleExt
+        {
+            Id = article.Id,
+            Title = article.Title,
+            Content = article.Content,
+            Categories = article.Categories,
+            Tags = article.Tags,
+            Comments = article.Comments.Select(comment => new CommentExt
+            {
+                ArticleId = comment.ArticleId,
+                CreatedAt = comment.CreatedAt,
+                Id = comment.Id,
+                ModifiedAt = comment.ModifiedAt,
+                Text = comment.Text,
+                UserId = comment.UserId,
+                UserName = comment.User.UserName,
+                Likes = comment.Likes
+            }).ToArray(),
+            ApproveState = article.ApproveState,
+            CreatedAt = article.CreatedAt,
+            ImgURL = article.ImgURL,
+            ModifiedAt = article.ModifiedAt,
+            Published = article.Published,
+            PublishedAt = article.PublishedAt,
+            UserName = article.User.UserName,
+            UserId = article.UserId,
+            Deleted = article.Deleted,
+            DeletedAt = article.DeletedAt,
+            Likes = article.Likes
+        };
     }
 }

@@ -6,22 +6,20 @@ namespace NewHabr.Domain.Dto;
 
 public class ArticleDto
 {
-    [Required]
     public Guid Id { get; set; }
 
-    [Required]
     public Guid UserId { get; set; }
 
-    [Required, MinLength(3), MaxLength(500)]
+    public string Username { get; set; }
+
     public string Title { get; set; }
 
-    public CategoryDto[] Categories { get; set; } = Array.Empty<CategoryDto>();
+    public ICollection<CategoryDto> Categories { get; set; }
 
-    public TagDto[] Tags { get; set; } = Array.Empty<TagDto>();
+    public ICollection<TagDto> Tags { get; set; }
 
-    public CommentDto[] Comments { get; set; } = Array.Empty<CommentDto>();
+    public ICollection<CommentDto> Comments { get; set; }
 
-    [Required]
     public string Content { get; set; }
 
     public long CreatedAt { get; set; }
