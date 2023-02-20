@@ -1,6 +1,8 @@
 ﻿#nullable disable
 
 
+using NewHabr.Domain.Models;
+
 namespace NewHabr.Domain.Dto;
 
 public class UserArticleDto
@@ -25,7 +27,10 @@ public class UserArticleDto
 
     public long ModifiedAt { get; set; }
 
-    public long PublishedAt { get; set; }
+    public ApproveState ApproveState { get; set; }
 
+    public bool Published { get; set; }
+
+    public long PublishedAt { get; set; }
 }
 

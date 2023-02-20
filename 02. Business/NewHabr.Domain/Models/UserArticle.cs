@@ -24,5 +24,9 @@ public class UserArticle
 
     public DateTimeOffset ModifiedAt { get; set; }
 
+    public ApproveState ApproveState { get; set; }
+
+    public bool Published { get; set; }
+
     public DateTimeOffset PublishedAt { get; set; }
 }
