@@ -12,8 +12,8 @@ using NewHabr.DAL.EF;
 namespace NewHabr.MSSQL.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20230209154524_AddIdentity")]
-    partial class AddIdentity
+    [Migration("20230220130458_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -52,6 +52,36 @@ namespace NewHabr.MSSQL.Migrations
                     b.HasIndex("TagsId");
 
                     b.ToTable("ArticleTag");
+                });
+
+            modelBuilder.Entity("ArticleUser", b =>
+                {
+                    b.Property<Guid>("LikedArticlesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("LikesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("LikedArticlesId", "LikesId");
+
+                    b.HasIndex("LikesId");
+
+                    b.ToTable("UserLikesArticle", (string)null);
+                });
+
+            modelBuilder.Entity("CommentUser", b =>
+                {
+                    b.Property<Guid>("LikedCommentsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("LikesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("LikedCommentsId", "LikesId");
+
+                    b.HasIndex("LikesId");
+
+                    b.ToTable("UserLikesComment", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -180,6 +210,9 @@ namespace NewHabr.MSSQL.Migrations
                     b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("ImgURL")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTimeOffset>("ModifiedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -260,49 +293,28 @@ namespace NewHabr.MSSQL.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("NewHabr.Domain.Models.LikedArticle", b =>
+            modelBuilder.Entity("NewHabr.Domain.Models.Notification", b =>
                 {
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ArticleId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
 
-                    b.HasKey("UserId", "ArticleId");
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
 
-                    b.HasIndex("ArticleId");
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
 
-                    b.ToTable("LikedArticles");
-                });
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-            modelBuilder.Entity("NewHabr.Domain.Models.LikedComment", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.HasKey("Id");
 
-                    b.Property<Guid>("CommentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("UserId", "CommentId");
-
-                    b.HasIndex("CommentId");
-
-                    b.ToTable("LikedComments");
-                });
-
-            modelBuilder.Entity("NewHabr.Domain.Models.LikedUser", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("AuthorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("UserId", "AuthorId");
-
-                    b.HasIndex("AuthorId");
-
-                    b.ToTable("LikedUsers");
+                    b.ToTable("UserNotifications");
                 });
 
             modelBuilder.Entity("NewHabr.Domain.Models.SecureQuestion", b =>
@@ -458,35 +470,6 @@ namespace NewHabr.MSSQL.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("NewHabr.Domain.Models.UserNotification", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserNotifications");
-                });
-
             modelBuilder.Entity("NewHabr.Domain.Models.UserRole", b =>
                 {
                     b.Property<Guid>("Id")
@@ -518,24 +501,54 @@ namespace NewHabr.MSSQL.Migrations
                         new
                         {
                             Id = new Guid("00a98c8e-6a15-4447-9343-063f4f1efefc"),
-                            ConcurrencyStamp = "8d4d3605-9c0a-4e64-aa64-facb0e79174b",
+                            ConcurrencyStamp = "bd9ea5f3-2f67-4ebc-a8f3-49e6144fa04b",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = new Guid("1bfc496b-ebd2-4c5a-b3e8-4b2c1e334391"),
-                            ConcurrencyStamp = "6986b2ea-7722-418a-9eee-a5df79fd5f2c",
+                            ConcurrencyStamp = "077d9d59-8582-4e63-9ef7-df57d251e412",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         },
                         new
                         {
                             Id = new Guid("aec1eede-5f3f-43ba-9ec3-454a3002c013"),
-                            ConcurrencyStamp = "a12e5c20-6352-41f0-b17e-fd29d833b410",
+                            ConcurrencyStamp = "297a09dc-598f-4315-a6f8-505d9558f04b",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
+                });
+
+            modelBuilder.Entity("NotificationUser", b =>
+                {
+                    b.Property<Guid>("NotificationsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UsersId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("NotificationsId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("NotificationUser");
+                });
+
+            modelBuilder.Entity("UserUser", b =>
+                {
+                    b.Property<Guid>("LikedUsersId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ReceivedLikesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("LikedUsersId", "ReceivedLikesId");
+
+                    b.HasIndex("ReceivedLikesId");
+
+                    b.ToTable("UserLikesAuthor", (string)null);
                 });
 
             modelBuilder.Entity("ArticleCategory", b =>
@@ -564,6 +577,36 @@ namespace NewHabr.MSSQL.Migrations
                     b.HasOne("NewHabr.Domain.Models.Tag", null)
                         .WithMany()
                         .HasForeignKey("TagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ArticleUser", b =>
+                {
+                    b.HasOne("NewHabr.Domain.Models.Article", null)
+                        .WithMany()
+                        .HasForeignKey("LikedArticlesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NewHabr.Domain.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("LikesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CommentUser", b =>
+                {
+                    b.HasOne("NewHabr.Domain.Models.Comment", null)
+                        .WithMany()
+                        .HasForeignKey("LikedCommentsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NewHabr.Domain.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("LikesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -622,9 +665,9 @@ namespace NewHabr.MSSQL.Migrations
             modelBuilder.Entity("NewHabr.Domain.Models.Article", b =>
                 {
                     b.HasOne("NewHabr.Domain.Models.User", "User")
-                        .WithMany()
+                        .WithMany("AuthoredArticles")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -645,63 +688,6 @@ namespace NewHabr.MSSQL.Migrations
                         .IsRequired();
 
                     b.Navigation("Article");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("NewHabr.Domain.Models.LikedArticle", b =>
-                {
-                    b.HasOne("NewHabr.Domain.Models.Article", "Article")
-                        .WithMany("Likes")
-                        .HasForeignKey("ArticleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NewHabr.Domain.Models.User", "User")
-                        .WithMany("LikedArticles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Article");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("NewHabr.Domain.Models.LikedComment", b =>
-                {
-                    b.HasOne("NewHabr.Domain.Models.Comment", "Comment")
-                        .WithMany("Likes")
-                        .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NewHabr.Domain.Models.User", "User")
-                        .WithMany("LikedComments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Comment");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("NewHabr.Domain.Models.LikedUser", b =>
-                {
-                    b.HasOne("NewHabr.Domain.Models.User", "Author")
-                        .WithMany("ReceivedLikes")
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NewHabr.Domain.Models.User", "User")
-                        .WithMany("LikedUsers")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Author");
 
                     b.Navigation("User");
                 });
@@ -717,42 +703,46 @@ namespace NewHabr.MSSQL.Migrations
                     b.Navigation("SecureQuestion");
                 });
 
-            modelBuilder.Entity("NewHabr.Domain.Models.UserNotification", b =>
+            modelBuilder.Entity("NotificationUser", b =>
                 {
-                    b.HasOne("NewHabr.Domain.Models.User", "User")
-                        .WithMany("Notifications")
-                        .HasForeignKey("UserId")
+                    b.HasOne("NewHabr.Domain.Models.Notification", null)
+                        .WithMany()
+                        .HasForeignKey("NotificationsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.HasOne("NewHabr.Domain.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("UserUser", b =>
+                {
+                    b.HasOne("NewHabr.Domain.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("LikedUsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NewHabr.Domain.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("ReceivedLikesId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("NewHabr.Domain.Models.Article", b =>
                 {
                     b.Navigation("Comments");
-
-                    b.Navigation("Likes");
-                });
-
-            modelBuilder.Entity("NewHabr.Domain.Models.Comment", b =>
-                {
-                    b.Navigation("Likes");
                 });
 
             modelBuilder.Entity("NewHabr.Domain.Models.User", b =>
                 {
+                    b.Navigation("AuthoredArticles");
+
                     b.Navigation("Comments");
-
-                    b.Navigation("LikedArticles");
-
-                    b.Navigation("LikedComments");
-
-                    b.Navigation("LikedUsers");
-
-                    b.Navigation("Notifications");
-
-                    b.Navigation("ReceivedLikes");
                 });
 #pragma warning restore 612, 618
         }
