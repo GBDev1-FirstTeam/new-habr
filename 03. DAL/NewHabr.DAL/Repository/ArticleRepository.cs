@@ -26,7 +26,7 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             .Include(a => a.Tags)
             .Include(a => a.Comments
                 .OrderBy(c => c.CreatedAt))
-            .OrderByType(a => a.CreatedAt, queryParams.OrderBy)
+            .OrderByType(a => a.PublishedAt, queryParams.OrderBy)
             .Select(ArticleToArticleExt())
             .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }
