@@ -10,7 +10,7 @@ using NewHabr.Domain.Contracts.Services;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Models;
 
-namespace UnitTests;
+namespace UnitTests.Services;
 
 public class CommentServiceTests
 {

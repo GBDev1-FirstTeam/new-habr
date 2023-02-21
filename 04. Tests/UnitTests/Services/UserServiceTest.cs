@@ -13,7 +13,7 @@ using NewHabr.Domain.Dto;
 using NewHabr.Domain.Exceptions;
 using NewHabr.Domain.Models;
 
-namespace UnitTests;
+namespace UnitTests.Services;
 
 public class UserServiceTest
 {
