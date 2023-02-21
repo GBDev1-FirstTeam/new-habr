@@ -28,7 +28,7 @@ public class UserInfo
 
     public int ReceivedLikes { get; set; }
 
-    public bool ILiked { get; set; }
+    public bool IsLiked { get; set; }
 
     public int? Age
     {

@@ -100,7 +100,7 @@ public class UserRepository : RepositoryBase<User, Guid>, IUserRepository
                 BanReason = user.BanReason,
                 BanExpiratonDate = user.BanExpiratonDate,
                 ReceivedLikes = user.ReceivedLikes.Count(),
-                ILiked = Guid.Empty.Equals(whoAskingId) ? false : user.ReceivedLikes.Any(sender => sender.Id == whoAskingId)
+                IsLiked = Guid.Empty.Equals(whoAskingId) ? false : user.ReceivedLikes.Any(sender => sender.Id == whoAskingId)
             })
             .FirstOrDefaultAsync(cancellationToken);
     }
