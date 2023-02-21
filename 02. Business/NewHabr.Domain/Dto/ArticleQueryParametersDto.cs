@@ -6,11 +6,11 @@ namespace NewHabr.Domain.Dto;
 public class ArticleQueryParametersDto : QueryParameters
 {
     [FromQuery(Name = QueryParametersDefinitions.FromDateTime)]
-    [Range(0, long.MaxValue)]
+    [Range(-62135596800000, 253402300799999)]
     public long From { get; set; }
 
     [FromQuery(Name = QueryParametersDefinitions.ToDateTime)]
-    [Range(0, long.MaxValue)]
+    [Range(-62135596800000, 253402300799999)]
     public long To { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
     [FromQuery(Name = QueryParametersDefinitions.OrderBy)]
