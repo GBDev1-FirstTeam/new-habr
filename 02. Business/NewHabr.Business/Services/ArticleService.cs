@@ -61,9 +61,10 @@ public class ArticleService : IArticleService
     }
 
     public async Task<ArticlesGetResponse> GetPublishedAsync(
-        ArticleQueryParameters queryParams,
+        ArticleQueryParametersDto queryParamsDto,
         CancellationToken cancellationToken)
     {
+        var queryParams = _mapper.Map<ArticleQueryParameters>(queryParamsDto);
         var articles = await _repositoryManager.ArticleRepository.GetPublishedIncludeAsync(queryParams, false, cancellationToken);
         return new ArticlesGetResponse
         {
@@ -73,9 +74,10 @@ public class ArticleService : IArticleService
     }
 
     public async Task<ArticlesGetResponse> GetUnpublishedAsync(
-        ArticleQueryParameters queryParams,
+        ArticleQueryParametersDto queryParamsDto,
         CancellationToken cancellationToken)
     {
+        var queryParams = _mapper.Map<ArticleQueryParameters>(queryParamsDto);
         var articles = await _repositoryManager.ArticleRepository.GetUnpublishedIncludeAsync(queryParams, false, cancellationToken);
         return new ArticlesGetResponse
         {
@@ -85,9 +87,10 @@ public class ArticleService : IArticleService
     }
 
     public async Task<ArticlesGetResponse> GetDeletedAsync(
-        ArticleQueryParameters queryParams,
+        ArticleQueryParametersDto queryParamsDto,
         CancellationToken cancellationToken)
     {
+        var queryParams = _mapper.Map<ArticleQueryParameters>(queryParamsDto);
         var articles = await _repositoryManager.ArticleRepository.GetDeletedIncludeAsync(queryParams, false, cancellationToken);
         return new ArticlesGetResponse
         {

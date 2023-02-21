@@ -21,11 +21,12 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
         CancellationToken cancellationToken)
     {
         return await FindByCondition(article => article.Published, trackChanges)
+            .Where(a => a.CreatedAt >= queryParams.From && a.CreatedAt <= queryParams.To)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .Include(a => a.Comments
                 .OrderBy(c => c.CreatedAt))
-            .OrderByDescending(a => a.CreatedAt)
+            .OrderByType(a => a.CreatedAt, queryParams.OrderBy)
             .Select(ArticleToArticleExt())
             .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }
@@ -37,11 +38,12 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
         CancellationToken cancellationToken)
     {
         return await FindByCondition(a => a.Title.ToLower() == title.ToLower(), trackChanges)
+            .Where(a => a.CreatedAt >= queryParams.From && a.CreatedAt <= queryParams.To)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .Include(a => a.Comments
                 .OrderBy(c => c.CreatedAt))
-            .OrderByDescending(a => a.CreatedAt)
+            .OrderByType(a => a.CreatedAt, queryParams.OrderBy)
             .Select(ArticleToArticleExt())
             .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }
@@ -53,11 +55,12 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
         CancellationToken cancellationToken)
     {
         return await FindByCondition(a => a.UserId == userId, trackChanges)
+            .Where(a => a.CreatedAt >= queryParams.From && a.CreatedAt <= queryParams.To)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .Include(a => a.Comments
                 .OrderBy(c => c.CreatedAt))
-            .OrderByDescending(a => a.CreatedAt)
+            .OrderByType(a => a.CreatedAt, queryParams.OrderBy)
             .Select(ArticleToArticleExt())
             .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }
@@ -68,11 +71,12 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
         CancellationToken cancellationToken)
     {
         return await FindByCondition(a => !a.Published, trackChanges)
+            .Where(a => a.CreatedAt >= queryParams.From && a.CreatedAt <= queryParams.To)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .Include(a => a.Comments
                 .OrderBy(c => c.CreatedAt))
-            .OrderByDescending(a => a.CreatedAt)
+            .OrderByType(a => a.CreatedAt, queryParams.OrderBy)
             .Select(ArticleToArticleExt())
             .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }
@@ -83,12 +87,13 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
         CancellationToken cancellationToken)
     {
         return await GetDeleted(trackChanges)
+            .Where(a => a.CreatedAt >= queryParams.From && a.CreatedAt <= queryParams.To)
             .IgnoreQueryFilters()
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .Include(a => a.Comments
                 .OrderBy(c => c.CreatedAt))
-            .OrderBy(a => a.DeletedAt)
+            .OrderByType(a => a.DeletedAt, queryParams.OrderBy)
             .Select(ArticleToArticleExt())
             .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }

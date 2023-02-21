@@ -13,11 +13,11 @@ public interface IArticleService
 
     Task<ArticleDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
-    Task<ArticlesGetResponse> GetPublishedAsync(ArticleQueryParameters queryParams, CancellationToken cancellationToken);
+    Task<ArticlesGetResponse> GetPublishedAsync(ArticleQueryParametersDto queryParams, CancellationToken cancellationToken);
 
-    Task<ArticlesGetResponse> GetUnpublishedAsync(ArticleQueryParameters queryParams, CancellationToken cancellationToken);
+    Task<ArticlesGetResponse> GetUnpublishedAsync(ArticleQueryParametersDto queryParams, CancellationToken cancellationToken);
 
-    Task<ArticlesGetResponse> GetDeletedAsync(ArticleQueryParameters queryParams, CancellationToken cancellationToken);
+    Task<ArticlesGetResponse> GetDeletedAsync(ArticleQueryParametersDto queryParams, CancellationToken cancellationToken);
 
     Task CreateAsync(ArticleCreateRequest request, Guid creatorId, CancellationToken cancellationToken);
 
