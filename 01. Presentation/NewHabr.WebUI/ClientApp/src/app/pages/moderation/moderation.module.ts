@@ -8,6 +8,7 @@ import { RegulationComponent } from './regulation/regulation.component';
 import { ComponentsLibraryModule } from 'src/app/core/components/components-library.module';
 import { PipesModule } from 'src/app/core/pipes/pipes.module';
 import { ApprovalPostComponent } from './approval/approval-post/approval-post.component';
+import { FormsModule } from '@angular/forms';
 
 const routes: Routes = [
   {
@@ -50,6 +51,7 @@ const routes: Routes = [
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
+    FormsModule,
     ComponentsLibraryModule,
     PipesModule
   ]

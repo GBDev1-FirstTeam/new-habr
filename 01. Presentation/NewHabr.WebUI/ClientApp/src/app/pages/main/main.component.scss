@@ -33,6 +33,12 @@
                 text-align: center;
             }
 
+            .ban {
+                text-align: center;
+                color: red;
+                font-weight: bold;
+            }
+
             height: min-content;
         }
 
@@ -45,8 +51,17 @@
 
 .emoji {
     font-size: 4em;
-    color: gray;
     text-align: center;
+
+    .bi-person-lines-fill {
+        color: gray;
+    }
+    .bi-person-check {
+        color: green;
+    }
+    .bi-emoji-dizzy-fill {
+        color: red;
+    }
 }
 
 .nav {

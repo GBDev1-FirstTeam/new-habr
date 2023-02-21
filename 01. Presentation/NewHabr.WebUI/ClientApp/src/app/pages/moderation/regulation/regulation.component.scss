@@ -1,0 +1,48 @@
+@import './../moderation.component.scss';
+
+.card-body {
+    i {
+        font-size: 1.5em;
+    }
+}
+
+p {
+    margin: 5px 5px 10px 15px;
+}
+
+h5 {
+    margin: unset;
+}
+
+.form-control {
+    margin: 10px;
+    width: unset;
+}
+
+.card-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 10px;
+
+    button {
+        width: 120px;
+    }
+
+    .no-active {
+        color: grey;
+        border-color: grey;
+        opacity: .25;
+    }
+}
+
+.disable {
+    display: none;
+}
+
+.bi-person-check-fill {
+    color: green;
+}
+.bi-person-fill-dash {
+    color: red;
+}

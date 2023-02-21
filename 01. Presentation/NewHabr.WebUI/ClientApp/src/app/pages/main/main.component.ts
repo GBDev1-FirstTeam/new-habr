@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Authorization } from 'src/app/core/models/Authorization';
+import { UserInfo } from 'src/app/core/models/User';
 import { AppStoreProvider } from 'src/app/core/store/store';
 
 @Component({
@@ -16,7 +17,9 @@ export class MainComponent {
   auth: Authorization | null;
   isAuth: boolean;
   isModerator: boolean;
-
+  
+  userInfo: UserInfo | null;
+  
   menu = [
     {
       name: 'Главная страница',
@@ -46,10 +49,12 @@ export class MainComponent {
     const authSubscribtion = this.store.getAuth().subscribe(auth => this.auth = auth);
     const isAuthSubscribtion = this.store.getIsAuth().subscribe(isAuth => this.isAuth = isAuth);
     const isModeratorSubscribtion = this.store.getIsModerator().subscribe(isModerator => this.isModerator = isModerator);
+    const userInfoSubscribtion = this.store.getUserInfo().subscribe(userInfo => this.userInfo = userInfo);
 
     this.subscribtions.push(authSubscribtion);
     this.subscribtions.push(isAuthSubscribtion);
     this.subscribtions.push(isModeratorSubscribtion);
+    this.subscribtions.push(userInfoSubscribtion);
   }
 
   ngOnDestroy(): void {
