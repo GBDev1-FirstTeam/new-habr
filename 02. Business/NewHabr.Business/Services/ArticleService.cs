@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Identity;
 using NewHabr.Business.Extensions;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Contracts.Services;
