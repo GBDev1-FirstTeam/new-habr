@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Xml.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -10,6 +8,7 @@ using NewHabr.Domain.Contracts.Services;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Exceptions;
 using NewHabr.Domain.Models;
+using NewHabr.Domain.ServiceModels;
 
 namespace NewHabr.Business.Services;
 
@@ -76,12 +75,14 @@ public class UserService : IUserService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task<ICollection<UserArticleDto>> GetUserArticlesAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<ArticlesGetResponse> GetUserArticlesAsync(Guid id, Guid whoAskingId, ArticleQueryParameters queryParameters, CancellationToken cancellationToken)
     {
         var user = await GetUserAndCheckIfItExistsAsync(id, false, cancellationToken);
-        var articles = await _repositoryManager.ArticleRepository.GetUserArticlesAsync(id, false, cancellationToken);
+        var articles = await _repositoryManager
+            .ArticleRepository
+            .GetByAuthorIdAsync(id, whoAskingId, false, queryParameters, cancellationToken);
 
-        return _mapper.Map<List<UserArticleDto>>(articles);
+        return new ArticlesGetResponse { Articles = _mapper.Map<ICollection<ArticleDto>>(articles), Metadata = articles.Metadata };
     }
 
     public async Task<ICollection<NotificationDto>> GetUserNotificationsAsync(Guid id, bool unreadOnly, CancellationToken cancellationToken)
@@ -103,13 +104,14 @@ public class UserService : IUserService
         return commentsDto;
     }
 
-    public async Task<ICollection<LikedArticleDto>> GetUserLikedArticlesAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task<ArticlesGetResponse> GetUserLikedArticlesAsync(Guid userId, ArticleQueryParameters queryParameters, CancellationToken cancellationToken)
     {
         var user = await GetUserAndCheckIfItExistsAsync(userId, false, cancellationToken);
-        var articles = await _repositoryManager.ArticleRepository.GetUserLikedArticlesAsync(userId, false, cancellationToken);
+        var articles = await _repositoryManager
+            .ArticleRepository
+            .GetUserLikedArticlesAsync(userId, Guid.Empty, false, queryParameters, cancellationToken);
 
-        var articlesDto = _mapper.Map<ICollection<LikedArticleDto>>(articles);
-        return articlesDto;
+        return new ArticlesGetResponse { Articles = _mapper.Map<ICollection<ArticleDto>>(articles), Metadata = articles.Metadata };
     }
 
     public async Task<ICollection<LikedCommentDto>> GetUserLikedCommentsAsync(Guid userId, CancellationToken cancellationToken)

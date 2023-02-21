@@ -1,27 +1,28 @@
 ﻿#nullable disable
+
 using System.ComponentModel.DataAnnotations;
 
 namespace NewHabr.Domain.Models;
 
-public class Comment : BaseEntity<Guid>
+public class CommentModel
 {
-    [Required]
+    public Guid Id { get; set; }
+
     public Guid UserId { get; set; }
 
-    public User User { get; set; }
+    public string UserName { get; set; }
 
-    [Required]
     public Guid ArticleId { get; set; }
 
-    public Article Article { get; set; }
-
-    [Required]
     public string Text { get; set; }
 
-    [Required]
     public DateTimeOffset CreatedAt { get; set; }
 
     public DateTimeOffset ModifiedAt { get; set; }
 
-    public ICollection<User> Likes { get; set; }
+    public int LikesCount { get; set; }
+
+    public bool IsLiked { get; set; }
+
+    public bool Deleted { get; set; }
 }

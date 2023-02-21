@@ -6,11 +6,9 @@ namespace NewHabr.Domain.Contracts;
 
 public interface IArticleService
 {
-    Task<IReadOnlyCollection<CommentWithLikedMark>> GetCommentsWithLikedMarkAsync(Guid id, Guid userId, CancellationToken cancellationToken);
+    Task<ArticleDto> GetByIdAsync(Guid articleId, Guid whoAskingId, CancellationToken cancellationToken);
 
-    Task<ArticleDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
-
-    Task<ArticlesGetResponse> GetPublishedAsync(ArticleQueryParameters queryParams, CancellationToken cancellationToken);
+    Task<ArticlesGetResponse> GetPublishedAsync(Guid whoAskingId, ArticleQueryParameters queryParams, CancellationToken cancellationToken);
 
     Task<ArticlesGetResponse> GetUnpublishedAsync(ArticleQueryParameters queryParams, CancellationToken cancellationToken);
 

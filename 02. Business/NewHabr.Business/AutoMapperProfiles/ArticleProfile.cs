@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Models;
+using NewHabr.Domain.ServiceModels;
 
 namespace NewHabr.Business.AutoMapperProfiles;
 
@@ -26,6 +27,6 @@ public class ArticleProfile : Profile
             .ForMember(dest => dest.Categories, options => options.Ignore())
             .ForMember(dest => dest.Tags, options => options.Ignore());
 
-        CreateMap<ArticleExt, ArticleDto>();
+        CreateMap<ArticleModel, ArticleDto>();
     }
 }
