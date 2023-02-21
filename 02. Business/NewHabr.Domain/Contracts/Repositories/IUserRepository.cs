@@ -13,6 +13,7 @@ public interface IUserRepository : IRepository<User, Guid>
     Task<IReadOnlyCollection<User>> GetBannedUsersAsync(bool trackChanges, CancellationToken cancellationToken);
     Task<int> GetUsersCountWithSecureQuestionIdAsync(int id, bool trackChanges, CancellationToken cancellationToken);
     Task<User?> GetByIdAsync(Guid id, bool trackChanges, CancellationToken cancellationToken);
+    Task<UserInfo?> GetUserInfoAsync(Guid userId, Guid whoAskingId, CancellationToken cancellationToken);
     Task<ICollection<UserLikedUser>> GetUserLikedUsersAsync(Guid userId, bool trackChanges, CancellationToken cancellationToken);
     Task<int> GetReceivedLikesCountAsync(Guid userId, bool trackChanges, CancellationToken cancellationToken);
     Task<User?> GetByIdWithLikesAsync(Guid id, bool trackChanges, CancellationToken cancellationToken);

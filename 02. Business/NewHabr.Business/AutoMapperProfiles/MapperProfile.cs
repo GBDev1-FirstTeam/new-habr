@@ -33,6 +33,7 @@ public class MapperProfile : Profile
         CreateMap<UserArticle, UserArticleDto>();
 
         CreateMap<User, UserProfileDto>();
+        CreateMap<UserInfo, UserProfileDto>();
 
         CreateMap<RegistrationRequest, AuthorizationRequest>();
 

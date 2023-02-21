@@ -82,4 +82,26 @@ public class UserRepository : RepositoryBase<User, Guid>, IUserRepository
         return await GetAll(trackChanges)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<UserInfo?> GetUserInfoAsync(Guid userId, Guid whoAskingId, CancellationToken cancellationToken)
+    {
+        return await FindByCondition(user => user.Id == userId, false)
+            .Select(user => new UserInfo
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                FirstName = user.FirstName,
+                Patronymic = user.Patronymic,
+                LastName = user.LastName,
+                Description = user.Description,
+                BirthDay = user.BirthDay,
+                Banned = user.Banned,
+                BannedAt = user.BannedAt,
+                BanReason = user.BanReason,
+                BanExpiratonDate = user.BanExpiratonDate,
+                ReceivedLikes = user.ReceivedLikes.Count(),
+                ILiked = Guid.Empty.Equals(whoAskingId) ? false : user.ReceivedLikes.Any(sender => sender.Id == whoAskingId)
+            })
+            .FirstOrDefaultAsync(cancellationToken);
+    }
 }
