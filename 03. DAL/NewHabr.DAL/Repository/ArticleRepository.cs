@@ -21,7 +21,7 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
         CancellationToken cancellationToken)
     {
         return await FindByCondition(article => article.Published, trackChanges)
-            .Where(a => a.CreatedAt >= queryParams.From && a.CreatedAt <= queryParams.To)
+            .Where(a => a.PublishedAt >= queryParams.From && a.PublishedAt <= queryParams.To)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .Include(a => a.Comments
