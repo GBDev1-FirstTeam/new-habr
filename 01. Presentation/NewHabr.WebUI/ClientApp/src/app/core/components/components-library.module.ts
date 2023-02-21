@@ -4,6 +4,7 @@ import { PostContainerComponent } from './post-container/post-container.componen
 import { CommentComponent } from './comment/comment.component';
 import { LikeComponent } from './like/like.component';
 import { SuccesfulSendComponent } from './succesful-send/succesful-send.component';
+import { PipesModule } from '../pipes/pipes.module';
 
 
 
@@ -15,7 +16,8 @@ import { SuccesfulSendComponent } from './succesful-send/succesful-send.componen
     SuccesfulSendComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    PipesModule
   ],
   exports: [
     PostContainerComponent,

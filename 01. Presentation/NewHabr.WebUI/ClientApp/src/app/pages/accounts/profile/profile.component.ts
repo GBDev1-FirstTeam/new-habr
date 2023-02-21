@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, Subscription } from 'rxjs';
 import { UserInfo } from 'src/app/core/models/User';
 import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
 import { AppStoreProvider } from 'src/app/core/store/store';
@@ -11,6 +11,8 @@ import { AppStoreProvider } from 'src/app/core/store/store';
   styleUrls: ['./profile.component.scss']
 })
 export class ProfileComponent implements OnInit {
+
+  subscribtions: Subscription[] = [];
 
   user: UserInfo;
   userId: string;
@@ -33,15 +35,20 @@ export class ProfileComponent implements OnInit {
     const userSubscribtion = this.store.getUserInfo().subscribe(user => {
       if (user) {
         this.user = user;
-        this.birthday = (new Date(this.user.BirthDay)).toLocaleString('fr-CA', {
+        this.birthday = isNaN(this.user.BirthDay) ? '1999-01-01' : (new Date(this.user.BirthDay)).toLocaleString('fr-CA', {
           year: "numeric",
           month: "2-digit",
           day: "2-digit"
         } as Intl.DateTimeFormatOptions);
-
-        userSubscribtion?.unsubscribe();
       }
     })
+
+    this.subscribtions.push(paramsSubscribtion);
+    this.subscribtions.push(userSubscribtion);
+  }
+
+  ngOnDestroy(): void {
+    this.subscribtions.forEach(element => element.unsubscribe());
   }
 
   save() {
