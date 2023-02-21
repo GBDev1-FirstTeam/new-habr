@@ -137,6 +137,9 @@ public class ArticleService : IArticleService
 
         _mapper.Map(articleToUpdate, article);
         article.ModifiedAt = DateTimeOffset.UtcNow;
+        article.ApproveState = ApproveState.NotApproved;
+        article.Published = false;
+        article.PublishedAt = null;
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
@@ -156,7 +159,7 @@ public class ArticleService : IArticleService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task SetPublicationStatusAsync(Guid id, bool publicationStatus, CancellationToken cancellationToken)
+    public async Task PublishAsync(Guid id, bool publicationStatus, CancellationToken cancellationToken)
     {
         var article = await _repositoryManager.ArticleRepository.GetByIdAsync(id, trackChanges: true, cancellationToken);
 
@@ -169,15 +172,17 @@ public class ArticleService : IArticleService
             return;
         }
 
-        if (article.ApproveState != ApproveState.Approved && !article.Published)
-        {
-            throw new ArticleIsNotApproveException();
-        }
-
         if (!article.Published)
         {
-            article.Published = true;
-            article.PublishedAt = DateTimeOffset.UtcNow;
+            if (article.ApproveState != ApproveState.Approved)
+            {
+                article.ApproveState = ApproveState.WaitApproval;
+            }
+            else if (article.ApproveState == ApproveState.Approved)
+            {
+                article.Published = true;
+                article.PublishedAt = DateTimeOffset.UtcNow;
+            }
         }
         else
         {
@@ -188,18 +193,34 @@ public class ArticleService : IArticleService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task SetApproveStateAsync(Guid id, ApproveState state, CancellationToken cancellationToken)
+    public async Task SetApproveStateAsync(Guid id, CancellationToken cancellationToken)
     {
-        var article = await _repositoryManager.ArticleRepository.GetByIdAsync(id, trackChanges: true, cancellationToken);
+        var article = await GetArticleAndCheckIfItExistsAsync(id, true, cancellationToken);
 
-        if (article is null)
+        if (article.ApproveState != ApproveState.WaitApproval)
         {
-            throw new ArticleNotFoundException();
+            return;
         }
 
-        article.ApproveState = state; //TODO Это не работает
+        article.ApproveState = ApproveState.Approved;
+        article.Published = true;
+        article.PublishedAt = DateTimeOffset.UtcNow;
         await _repositoryManager.SaveAsync(cancellationToken);
+
         await CreateNotificationOnApprove(article, cancellationToken);
+    }
+
+    public async Task SetDisapproveStateAsync(Guid articleId, CancellationToken cancellationToken)
+    {
+        var article = await GetArticleAndCheckIfItExistsAsync(articleId, true, cancellationToken);
+
+        if (article.ApproveState != ApproveState.WaitApproval)
+        {
+            return;
+        }
+
+        article.ApproveState = ApproveState.NotApproved;
+        await _repositoryManager.SaveAsync(cancellationToken);
     }
 
     public async Task SetLikeAsync(Guid articleId, Guid userId, CancellationToken cancellationToken)
@@ -244,7 +265,6 @@ public class ArticleService : IArticleService
             await _repositoryManager.SaveAsync(cancellationToken);
         }
     }
-
 
 
 
@@ -366,4 +386,5 @@ public class ArticleService : IArticleService
         await _notificationService
             .CreateAsync(notification, user, cancellationToken);
     }
+
 }

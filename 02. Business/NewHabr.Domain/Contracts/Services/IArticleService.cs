@@ -6,10 +6,7 @@ namespace NewHabr.Domain.Contracts;
 
 public interface IArticleService
 {
-    Task<IReadOnlyCollection<CommentWithLikedMark>> GetCommentsWithLikedMarkAsync(
-        Guid id,
-        Guid userId,
-        CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<CommentWithLikedMark>> GetCommentsWithLikedMarkAsync(Guid id, Guid userId, CancellationToken cancellationToken);
 
     Task<ArticleDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
@@ -25,10 +22,20 @@ public interface IArticleService
 
     Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
 
-    Task SetPublicationStatusAsync(Guid id, bool publicationStatus, CancellationToken cancellationToken);
+    /// <summary>
+    /// Switch Published state(published or unpublished). If Artice is not approved, approval process starts
+    /// </summary>
+    Task PublishAsync(Guid id, bool publicationStatus, CancellationToken cancellationToken);
 
-    /// <exception cref="ArticleNotFoundException"></exception>
-    Task SetApproveStateAsync(Guid id, ApproveState state, CancellationToken cancellationToken);
+    /// <summary>
+    /// Approve article if in WaitApproval state, after approval, article turns published
+    /// </summary>
+    Task SetApproveStateAsync(Guid id, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Disapprove article if in WaitApproval state
+    /// </summary>
+    Task SetDisapproveStateAsync(Guid articleId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Sets 'Like' mark at article
