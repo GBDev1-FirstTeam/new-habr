@@ -235,6 +235,27 @@ public class ArticlesController : ControllerBase
         }
     }
 
+    [HttpPut("{id}/disapprove")]
+    [Authorize(Roles = "Moderator,Administrator")]
+    public async Task<ActionResult> SetDisapproveState([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _articleService.SetDisapproveStateAsync(id, cancellationToken);
+            return NoContent();
+        }
+        catch (EntityNotFoundException ex)
+        {
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"));
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}"));
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
     [Authorize]
     [HttpPut("{articleId}/like")]
     public async Task<IActionResult> SetLike([FromRoute] Guid articleId, CancellationToken cancellationToken)

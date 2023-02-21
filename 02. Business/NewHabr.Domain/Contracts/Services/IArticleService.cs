@@ -33,6 +33,11 @@ public interface IArticleService
     Task SetApproveStateAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
+    /// Disapprove article if in WaitApproval state
+    /// </summary>
+    Task SetDisapproveStateAsync(Guid articleId, CancellationToken cancellationToken);
+
+    /// <summary>
     /// Sets 'Like' mark at article
     /// </summary>
     Task SetLikeAsync(Guid articleId, Guid userId, CancellationToken cancellationToken);

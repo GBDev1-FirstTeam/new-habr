@@ -195,12 +195,7 @@ public class ArticleService : IArticleService
 
     public async Task SetApproveStateAsync(Guid id, CancellationToken cancellationToken)
     {
-        var article = await _repositoryManager.ArticleRepository.GetByIdAsync(id, trackChanges: true, cancellationToken);
-
-        if (article is null)
-        {
-            throw new ArticleNotFoundException();
-        }
+        var article = await GetArticleAndCheckIfItExistsAsync(id, true, cancellationToken);
 
         if (article.ApproveState != ApproveState.WaitApproval)
         {
@@ -213,6 +208,19 @@ public class ArticleService : IArticleService
         await _repositoryManager.SaveAsync(cancellationToken);
 
         await CreateNotificationOnApprove(article, cancellationToken);
+    }
+
+    public async Task SetDisapproveStateAsync(Guid articleId, CancellationToken cancellationToken)
+    {
+        var article = await GetArticleAndCheckIfItExistsAsync(articleId, true, cancellationToken);
+
+        if (article.ApproveState != ApproveState.WaitApproval)
+        {
+            return;
+        }
+
+        article.ApproveState = ApproveState.NotApproved;
+        await _repositoryManager.SaveAsync(cancellationToken);
     }
 
     public async Task SetLikeAsync(Guid articleId, Guid userId, CancellationToken cancellationToken)
@@ -257,7 +265,6 @@ public class ArticleService : IArticleService
             await _repositoryManager.SaveAsync(cancellationToken);
         }
     }
-
 
 
 
@@ -379,4 +386,5 @@ public class ArticleService : IArticleService
         await _notificationService
             .CreateAsync(notification, user, cancellationToken);
     }
+
 }
