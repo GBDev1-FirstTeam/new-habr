@@ -225,12 +225,12 @@ public class ArticlesController : ControllerBase
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"));
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"), id);
             return NotFound(ex.Message);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}"));
+            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}"), id);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
@@ -246,12 +246,12 @@ public class ArticlesController : ControllerBase
         }
         catch (EntityNotFoundException ex)
         {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"));
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"), id);
             return NotFound(ex.Message);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}"));
+            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}"), id);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
