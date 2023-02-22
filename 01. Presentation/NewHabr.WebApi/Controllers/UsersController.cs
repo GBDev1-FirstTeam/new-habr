@@ -54,7 +54,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{id}/articles")]
-    public async Task<IActionResult> GetUserArticles([FromRoute] Guid id, [FromRoute] ArticleQueryParametersDto queryParametersDto, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUserArticles([FromRoute] Guid id, [FromQuery] ArticleQueryParametersDto queryParametersDto, CancellationToken cancellationToken)
     {
         var authUserId = User.GetUserIdOrDefault();
         try
