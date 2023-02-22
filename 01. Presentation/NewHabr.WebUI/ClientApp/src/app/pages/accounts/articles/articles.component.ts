@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { PublicationUser } from 'src/app/core/models/Publication';
 import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
+import { ArticleState } from 'src/app/core/static/ArticleState';
 import * as _ from 'lodash';
 
 @Component({
@@ -50,9 +51,9 @@ export class ArticlesComponent implements OnInit {
 
   publish = (post: PublicationUser) => {
     lastValueFrom(this.http.publishPost(post.Id!)).then(() => {
-      if (post.ApproveState === 'NotApproved') {
+      if (post.ApproveState === ArticleState.NotApproved) {
         this.succesfulModerate = true;
-        post.ApproveState = 'WaitApproval';
+        post.ApproveState = ArticleState.WaitApproval;
       } else {
         this.succesfulPublicate = true;
         post.Published = true;
@@ -67,6 +68,6 @@ export class ArticlesComponent implements OnInit {
     });
   };
 
-  mayBePublish = (post: PublicationUser) => !post.Published && post.ApproveState !== 'WaitApproval';
+  mayBePublish = (post: PublicationUser) => !post.Published && post.ApproveState !== ArticleState.WaitApproval;
   mayBeUnPublish = (post: PublicationUser) => post.Published;
 }
