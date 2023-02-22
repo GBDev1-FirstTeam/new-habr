@@ -30,7 +30,7 @@ public class UserServiceTest
     public UserServiceTest()
     {
         _user = new User { Id = Guid.NewGuid() };
-        _mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile(typeof(MapperProfile))));
+        _mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddMaps(typeof(MapperProfile))));
         _userRepositoryMock = new Mock<IUserRepository>();
         _userRepositoryMock
             .Setup(ur => ur.GetByIdAsync(_user.Id, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
@@ -173,14 +173,15 @@ public class UserServiceTest
                     PublishedAt = dto
                 }
             }, 10, 1, 100));
-
+        var queryParams = new ArticleQueryParametersDto();
         // act
-        var articles = await _userService.GetUserArticlesAsync(_user.Id, Guid.Empty, null, CancellationToken.None);
+        var articles = await _userService.GetUserArticlesAsync(_user.Id, Guid.Empty, queryParams, CancellationToken.None);
 
         // assert
         Assert.NotNull(articles);
         Assert.NotEmpty(articles.Articles);
-        Assert.IsAssignableFrom<ICollection<ArticleDto>>(articles);
+        Assert.IsAssignableFrom<ArticlesGetResponse>(articles);
+        Assert.IsAssignableFrom<ICollection<ArticleDto>>(articles.Articles);
         Assert.All(articles.Articles, item =>
         {
             Assert.Equal(item.ModifiedAt, dto.ToUnixTimeMilliseconds());
