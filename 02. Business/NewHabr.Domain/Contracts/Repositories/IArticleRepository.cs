@@ -1,48 +1,28 @@
 ﻿using NewHabr.Domain.Dto;
 using NewHabr.Domain.Models;
+using NewHabr.Domain.ServiceModels;
 
 namespace NewHabr.Domain.Contracts;
 
 public interface IArticleRepository : IRepository<Article, Guid>
 {
-    Task<PagedList<ArticleExt>> GetPublishedIncludeAsync(
-        ArticleQueryParameters queryParams,
-        bool trackChanges,
-        CancellationToken cancellationToken);
-
-    Task<PagedList<ArticleExt>> GetByTitleIncludeAsync(
-        string title,
-        ArticleQueryParameters queryParams,
-        bool trackChanges,
-        CancellationToken cancellationToken);
-
-    Task<PagedList<ArticleExt>> GetByUserIdIncludeAsync(
-        Guid userId,
-        ArticleQueryParameters queryParams,
-        bool trackChanges,
-        CancellationToken cancellationToken);
-
-    Task<PagedList<ArticleExt>> GetUnpublishedIncludeAsync(
-        ArticleQueryParameters queryParams,
-        bool trackChanges,
-        CancellationToken cancellationToken);
-
-    Task<PagedList<ArticleExt>> GetDeletedIncludeAsync(
-        ArticleQueryParameters queryParams,
-        bool trackChanges,
-        CancellationToken cancellationToken);
-
-    Task<ArticleExt?> GetByIdIncludeAsync(Guid id, bool trackChanges, CancellationToken cancellationToken);
-
-    Task<Article?> GetByIdAsync(Guid id, bool trackChanges, CancellationToken cancellationToken);
+    Task<Article?> GetByIdAsync(Guid articleId, bool trackChanges, CancellationToken cancellationToken);
 
     Task<Article?> GetByIdWithTagsWithCategoriesAsync(Guid articleId, bool trackChanges, CancellationToken cancellationToken);
 
-    Task<ArticleExt?> GetByIdIncludeCommentLikesAsync(Guid id, bool trackChanges, CancellationToken cancellationToken);
-
-    Task<ICollection<UserArticle>> GetUserArticlesAsync(Guid userId, bool trackChanges, CancellationToken cancellationToken);
-
-    Task<ICollection<UserLikedArticle>> GetUserLikedArticlesAsync(Guid userId, bool trackChanges, CancellationToken cancellationToken);
-
     Task<Article?> GetArticleWithLikesAsync(Guid articleId, bool trackChanges, CancellationToken cancellationToken);
+
+    Task<ArticleModel?> GetByIdAsync(Guid articleId, Guid whoAskingId, bool withComments, CancellationToken cancellationToken);
+
+    Task<PagedList<ArticleModel>> GetPublishedAsync(Guid whoAskingId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken);
+
+    Task<PagedList<ArticleModel>> GetByTitleAsync(string title, Guid whoAskingId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken);
+
+    Task<PagedList<ArticleModel>> GetUnpublishedAsync(ArticleQueryParameters queryParams, CancellationToken cancellationToken);
+
+    Task<PagedList<ArticleModel>> GetDeletedAsync(ArticleQueryParameters queryParams, CancellationToken cancellationToken);
+
+    Task<PagedList<ArticleModel>> GetByAuthorIdAsync(Guid authorId, Guid whoAskingId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken);
+
+    Task<PagedList<ArticleModel>> GetUserLikedArticlesAsync(Guid userId, Guid whoAskingId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken);
 }

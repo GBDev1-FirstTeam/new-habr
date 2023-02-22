@@ -19,3 +19,7 @@
         <button class="btn btn-outline-secondary form-control" type="button" (click)="addQuestion(question.value)">Добавить</button>
     </div>
 </div>
+
+<app-succesful-send [(visible)]="succesfulTag" [text]="'Новый тег успешно создан'"></app-succesful-send>
+<app-succesful-send [(visible)]="succesfulCat" [text]="'Новая категория успешно создана'"></app-succesful-send>
+<app-succesful-send [(visible)]="succesfulQue" [text]="'Новый вопрос успешно создан'"></app-succesful-send>

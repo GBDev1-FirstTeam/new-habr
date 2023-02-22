@@ -79,29 +79,29 @@ export class ArticleComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   save() {
+    const post = {
+      Title: this.post.Title,
+      Content: this.quill.root.innerHTML,
+      ImgURL: this.post.ImgURL,
+      Categories: this.cats.map(c => {
+        return {
+          Name: c
+        }
+      }),
+      Tags: this.tags.map(c => {
+        return {
+          Name: c
+        }
+      }),
+    } as PublicationRequest;
+
     switch (this.mode) {
       case Mode.Edit:
-        this.post.Content = this.quill.root.innerHTML;
-        lastValueFrom(this.http.updatePublication(this.post.Id!, this.post)).then(() => {
+        lastValueFrom(this.http.updatePublication(this.post.Id!, post)).then(() => {
           this.succesfulSend = true;
         });
         break;
       case Mode.Create:
-        const post = {
-          Title: this.post.Title,
-          Content: this.quill.root.innerHTML,
-          ImgURL: this.post.ImgURL,
-          Categories: this.cats.map(c => {
-            return {
-              Name: c
-            }
-          }),
-          Tags: this.tags.map(c => {
-            return {
-              Name: c
-            }
-          }),
-        } as PublicationRequest;
         lastValueFrom(this.http.createPublication(post)).then(() => {
           this.succesfulSend = true;
         });

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Identity;
 using NewHabr.Business.Extensions;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Contracts.Services;
@@ -22,35 +21,12 @@ public class ArticleService : IArticleService
         _notificationService = notificationService;
     }
 
-    public async Task<IReadOnlyCollection<CommentWithLikedMark>> GetCommentsWithLikedMarkAsync(
-        Guid id,
-        Guid userId,
-        CancellationToken cancellationToken)
+
+    public async Task<ArticleDto> GetByIdAsync(Guid articleId, Guid whoAskingId, CancellationToken cancellationToken)
     {
-        var article = await _repositoryManager.ArticleRepository.GetByIdIncludeCommentLikesAsync(id, false, cancellationToken);
-
-        if (article is null)
-        {
-            throw new ArticleNotFoundException();
-        }
-
-        var comments = new List<CommentWithLikedMark>(article.Comments.Count);
-        foreach (var comment in article.Comments)
-        {
-            comments.Add(new CommentWithLikedMark
-            {
-                UserId = userId,
-                Comment = _mapper.Map<CommentDto>(comment),
-                IsLiked = comment.Likes.Any(u => u.Id == userId),
-            });
-        }
-
-        return comments;
-    }
-
-    public async Task<ArticleDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
-    {
-        var article = await _repositoryManager.ArticleRepository.GetByIdIncludeAsync(id, false, cancellationToken);
+        var article = await _repositoryManager
+            .ArticleRepository
+            .GetByIdAsync(articleId, whoAskingId, true, cancellationToken);
 
         if (article is null)
         {
@@ -60,11 +36,13 @@ public class ArticleService : IArticleService
         return _mapper.Map<ArticleDto>(article);
     }
 
-    public async Task<ArticlesGetResponse> GetPublishedAsync(
-        ArticleQueryParameters queryParams,
-        CancellationToken cancellationToken)
+    public async Task<ArticlesGetResponse> GetPublishedAsync(Guid whoAskingId, ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken)
     {
-        var articles = await _repositoryManager.ArticleRepository.GetPublishedIncludeAsync(queryParams, false, cancellationToken);
+        var queryParams = _mapper.Map<ArticleQueryParameters>(queryParamsDto);
+        var articles = await _repositoryManager
+            .ArticleRepository
+            .GetPublishedAsync(whoAskingId, true, queryParams, cancellationToken);
+
         return new ArticlesGetResponse
         {
             Metadata = articles.Metadata,
@@ -72,11 +50,13 @@ public class ArticleService : IArticleService
         };
     }
 
-    public async Task<ArticlesGetResponse> GetUnpublishedAsync(
-        ArticleQueryParameters queryParams,
-        CancellationToken cancellationToken)
+    public async Task<ArticlesGetResponse> GetUnpublishedAsync(ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken)
     {
-        var articles = await _repositoryManager.ArticleRepository.GetUnpublishedIncludeAsync(queryParams, false, cancellationToken);
+        var queryParams = _mapper.Map<ArticleQueryParameters>(queryParamsDto);
+        var articles = await _repositoryManager
+            .ArticleRepository
+            .GetUnpublishedAsync(queryParams, cancellationToken);
+
         return new ArticlesGetResponse
         {
             Metadata = articles.Metadata,
@@ -84,11 +64,13 @@ public class ArticleService : IArticleService
         };
     }
 
-    public async Task<ArticlesGetResponse> GetDeletedAsync(
-        ArticleQueryParameters queryParams,
-        CancellationToken cancellationToken)
+    public async Task<ArticlesGetResponse> GetDeletedAsync(ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken)
     {
-        var articles = await _repositoryManager.ArticleRepository.GetDeletedIncludeAsync(queryParams, false, cancellationToken);
+        var queryParams = _mapper.Map<ArticleQueryParameters>(queryParamsDto);
+        var articles = await _repositoryManager
+            .ArticleRepository
+            .GetDeletedAsync(queryParams, cancellationToken);
+
         return new ArticlesGetResponse
         {
             Metadata = articles.Metadata,
@@ -137,12 +119,17 @@ public class ArticleService : IArticleService
 
         _mapper.Map(articleToUpdate, article);
         article.ModifiedAt = DateTimeOffset.UtcNow;
+        article.ApproveState = ApproveState.NotApproved;
+        article.Published = false;
+        article.PublishedAt = null;
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
     public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var article = await _repositoryManager.ArticleRepository.GetByIdAsync(id, true, cancellationToken);
+        var article = await _repositoryManager
+            .ArticleRepository
+            .GetByIdAsync(id, true, cancellationToken);
 
         if (article is null)
         {
@@ -156,9 +143,11 @@ public class ArticleService : IArticleService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task SetPublicationStatusAsync(Guid id, bool publicationStatus, CancellationToken cancellationToken)
+    public async Task PublishAsync(Guid articleId, bool publicationStatus, CancellationToken cancellationToken)
     {
-        var article = await _repositoryManager.ArticleRepository.GetByIdAsync(id, trackChanges: true, cancellationToken);
+        var article = await _repositoryManager
+            .ArticleRepository
+            .GetByIdAsync(articleId, true, cancellationToken);
 
         if (article is null)
         {
@@ -169,15 +158,17 @@ public class ArticleService : IArticleService
             return;
         }
 
-        if (article.ApproveState != ApproveState.Approved && !article.Published)
-        {
-            throw new ArticleIsNotApproveException();
-        }
-
         if (!article.Published)
         {
-            article.Published = true;
-            article.PublishedAt = DateTimeOffset.UtcNow;
+            if (article.ApproveState != ApproveState.Approved)
+            {
+                article.ApproveState = ApproveState.WaitApproval;
+            }
+            else if (article.ApproveState == ApproveState.Approved)
+            {
+                article.Published = true;
+                article.PublishedAt = DateTimeOffset.UtcNow;
+            }
         }
         else
         {
@@ -188,18 +179,34 @@ public class ArticleService : IArticleService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task SetApproveStateAsync(Guid id, ApproveState state, CancellationToken cancellationToken)
+    public async Task SetApproveStateAsync(Guid id, CancellationToken cancellationToken)
     {
-        var article = await _repositoryManager.ArticleRepository.GetByIdAsync(id, trackChanges: true, cancellationToken);
+        var article = await GetArticleAndCheckIfItExistsAsync(id, true, cancellationToken);
 
-        if (article is null)
+        if (article.ApproveState != ApproveState.WaitApproval)
         {
-            throw new ArticleNotFoundException();
+            return;
         }
 
-        article.ApproveState = state; //TODO Это не работает
+        article.ApproveState = ApproveState.Approved;
+        article.Published = true;
+        article.PublishedAt = DateTimeOffset.UtcNow;
         await _repositoryManager.SaveAsync(cancellationToken);
+
         await CreateNotificationOnApprove(article, cancellationToken);
+    }
+
+    public async Task SetDisapproveStateAsync(Guid articleId, CancellationToken cancellationToken)
+    {
+        var article = await GetArticleAndCheckIfItExistsAsync(articleId, true, cancellationToken);
+
+        if (article.ApproveState != ApproveState.WaitApproval)
+        {
+            return;
+        }
+
+        article.ApproveState = ApproveState.NotApproved;
+        await _repositoryManager.SaveAsync(cancellationToken);
     }
 
     public async Task SetLikeAsync(Guid articleId, Guid userId, CancellationToken cancellationToken)
@@ -216,7 +223,9 @@ public class ArticleService : IArticleService
 
         await CheckIfUserNotBannedOrThrow(userId, cancellationToken);
 
-        var user = await _repositoryManager.UserRepository.GetByIdAsync(userId, true, cancellationToken);
+        var user = await _repositoryManager
+            .UserRepository
+            .GetByIdAsync(userId, true, cancellationToken);
 
         if (!article.Likes.Any(u => u.Id == user!.Id))
         {
@@ -237,7 +246,9 @@ public class ArticleService : IArticleService
         if (article.UserId == userId)
             return;
 
-        var user = await _repositoryManager.UserRepository.GetByIdAsync(userId, true, cancellationToken);
+        var user = await _repositoryManager
+            .UserRepository
+            .GetByIdAsync(userId, true, cancellationToken);
 
         if (article.Likes.Remove(article.Likes.SingleOrDefault(u => u.Id == user!.Id)))
         {
@@ -247,10 +258,11 @@ public class ArticleService : IArticleService
 
 
 
-
     private async Task CheckIfUserNotBannedOrThrow(Guid userId, CancellationToken cancellationToken)
     {
-        var user = await _repositoryManager.UserRepository.GetByIdAsync(userId, true, cancellationToken);
+        var user = await _repositoryManager
+            .UserRepository
+            .GetByIdAsync(userId, true, cancellationToken);
 
         if (user!.Banned)
             throw new UserBannedException(user.BannedAt!.Value);
@@ -285,11 +297,14 @@ public class ArticleService : IArticleService
             article.Categories.Clear();
         }
 
-        var existsCategories = await _repositoryManager.CategoryRepository.GetAvaliableAsync(trackChanges: true, cancellationToken);
+        var existsCategories = await _repositoryManager
+            .CategoryRepository
+            .GetAvaliableAsync(trackChanges: true, cancellationToken);
 
         foreach (var categoryDto in categoresDto)
         {
-            var category = existsCategories.FirstOrDefault(c => c.Name == categoryDto.Name);
+            var category = existsCategories
+                .FirstOrDefault(c => c.Name == categoryDto.Name);
 
             if (category is null)
             {
@@ -314,8 +329,13 @@ public class ArticleService : IArticleService
             article.Tags.Clear();
         }
 
-        tagsDto = tagsDto.DistinctBy(t => t.Name).ToArray();
-        var existsTags = await _repositoryManager.TagRepository.GetAvaliableAsync(trackChanges: true, cancellationToken);
+        tagsDto = tagsDto
+            .DistinctBy(t => t.Name)
+            .ToArray();
+
+        var existsTags = await _repositoryManager
+            .TagRepository
+            .GetAvaliableAsync(trackChanges: true, cancellationToken);
 
         foreach (var tagDto in tagsDto)
         {

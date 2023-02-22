@@ -44,13 +44,13 @@ export class ApprovalPostComponent implements OnInit, OnDestroy {
   }
 
   approve = (post: Publication) => {
-    lastValueFrom(this.http.approvePublication(this.postId, ApproveState.Approved)).then(() => {
+    lastValueFrom(this.http.setPublicationState(this.postId, ApproveState.Approved)).then(() => {
       this.succesfulApprove = true;
     })
   }
 
   refuse = (post: Publication) => {
-    lastValueFrom(this.http.approvePublication(this.postId, ApproveState.NotApproved)).then(() => {
+    lastValueFrom(this.http.setPublicationState(this.postId, ApproveState.NotApproved)).then(() => {
       this.succesfulRefuse = true;
     })
   }

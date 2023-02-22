@@ -7,3 +7,7 @@ label {
 .btn {
     max-width: 150px;
 }
+
+.form-floating{
+    @include opacity-animation;
+}

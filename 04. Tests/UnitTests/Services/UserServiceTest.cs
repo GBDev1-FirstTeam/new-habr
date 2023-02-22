@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using NewHabr.Business.AutoMapperProfiles;
 using NewHabr.Business.Services;
+using NewHabr.Domain;
 using NewHabr.Domain.ConfigurationModels;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Contracts.Repositories;
@@ -12,6 +13,7 @@ using NewHabr.Domain.Contracts.Services;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Exceptions;
 using NewHabr.Domain.Models;
+using NewHabr.Domain.ServiceModels;
 
 namespace UnitTests.Services;
 
@@ -151,10 +153,10 @@ public class UserServiceTest
         DateTimeOffset dto = new DateTimeOffset(2018, 02, 25, 0, 0, 0, TimeSpan.Zero);
 
         _articleRepositoryMock
-            .Setup(ar => ar.GetUserArticlesAsync(_user.Id, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<UserArticle>
+            .Setup(ar => ar.GetByAuthorIdAsync(_user.Id, It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<ArticleQueryParameters>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PagedList<ArticleModel>(new List<ArticleModel>
             {
-                new UserArticle
+                new ArticleModel
                 {
                     Id = Guid.NewGuid(),
                     Title = "Title1",
@@ -162,7 +164,7 @@ public class UserServiceTest
                     ModifiedAt = dto,
                     PublishedAt = dto
                 },
-                new UserArticle
+                new ArticleModel
                 {
                     Id = Guid.NewGuid(),
                     Title = "Title2",
@@ -170,16 +172,16 @@ public class UserServiceTest
                     ModifiedAt = dto,
                     PublishedAt = dto
                 }
-            });
+            }, 10, 1, 100));
 
         // act
-        var articles = await _userService.GetUserArticlesAsync(_user.Id, CancellationToken.None);
+        var articles = await _userService.GetUserArticlesAsync(_user.Id, Guid.Empty, null, CancellationToken.None);
 
         // assert
         Assert.NotNull(articles);
-        Assert.NotEmpty(articles);
-        Assert.IsAssignableFrom<ICollection<UserArticleDto>>(articles);
-        Assert.All(articles, item =>
+        Assert.NotEmpty(articles.Articles);
+        Assert.IsAssignableFrom<ICollection<ArticleDto>>(articles);
+        Assert.All(articles.Articles, item =>
         {
             Assert.Equal(item.ModifiedAt, dto.ToUnixTimeMilliseconds());
             Assert.Equal(item.CreatedAt, dto.ToUnixTimeMilliseconds());
@@ -195,13 +197,13 @@ public class UserServiceTest
         _userRepositoryMock.Reset();
 
         // act
-        async Task Act() => await _userService.GetUserArticlesAsync(_user.Id, CancellationToken.None);
+        async Task Act() => await _userService.GetUserArticlesAsync(_user.Id, Guid.Empty, null, CancellationToken.None);
 
         // assert
         await Assert.ThrowsAsync<UserNotFoundException>(Act);
 
         _articleRepositoryMock.Verify(
-            ar => ar.GetUserArticlesAsync(_user.Id, It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Never);
+            ar => ar.GetByAuthorIdAsync(_user.Id, It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<ArticleQueryParameters>(), It.IsAny<CancellationToken>()), Times.Never);
 
         _repositoryManagerMock.Verify(
             rm => rm.SaveAsync(It.IsAny<CancellationToken>()), Times.Never);

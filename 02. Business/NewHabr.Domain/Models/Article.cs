@@ -38,9 +38,3 @@ public class Article : BaseEntity<Guid>
 
     public ApproveState ApproveState { get; set; }
 }
-
-public class ArticleExt : Article
-{
-    public string UserName { get; set; }
-    public new ICollection<CommentExt> Comments { get; set; }
-}

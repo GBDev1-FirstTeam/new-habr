@@ -2,4 +2,9 @@
 
 public class ArticleQueryParameters : QueryParameters
 {
+    public DateTimeOffset From { get; set; }
+
+    public DateTimeOffset To { get; set; } = DateTimeOffset.UtcNow;
+
+    public string OrderBy { get; set; }
 }
