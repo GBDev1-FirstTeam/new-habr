@@ -54,12 +54,12 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{id}/articles")]
-    public async Task<IActionResult> GetUserArticles([FromRoute] Guid id, [FromRoute] ArticleQueryParameters queryParameters, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUserArticles([FromRoute] Guid id, [FromRoute] ArticleQueryParametersDto queryParametersDto, CancellationToken cancellationToken)
     {
         var authUserId = User.GetUserIdOrDefault();
         try
         {
-            var articles = await _userService.GetUserArticlesAsync(id, authUserId, queryParameters, cancellationToken);
+            var articles = await _userService.GetUserArticlesAsync(id, authUserId, queryParametersDto, cancellationToken);
             return Ok(articles);
         }
         catch (UserNotFoundException ex)
@@ -97,11 +97,11 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{id}/likedArticles")]
-    public async Task<IActionResult> GetUserLikedArticles([FromRoute] Guid id, [FromQuery] ArticleQueryParameters queryParameters, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUserLikedArticles([FromRoute] Guid id, [FromQuery] ArticleQueryParametersDto queryParametersDto, CancellationToken cancellationToken)
     {
         try
         {
-            var response = await _userService.GetUserLikedArticlesAsync(id, queryParameters, cancellationToken);
+            var response = await _userService.GetUserLikedArticlesAsync(id, queryParametersDto, cancellationToken);
             return Ok(response);
         }
         catch (UserNotFoundException ex)

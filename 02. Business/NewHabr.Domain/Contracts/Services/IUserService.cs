@@ -17,7 +17,7 @@ public interface IUserService
     /// <param name="id">user id</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ArticlesGetResponse> GetUserArticlesAsync(Guid id, Guid whoAskingId, ArticleQueryParameters queryParameters, CancellationToken cancellationToken);
+    Task<ArticlesGetResponse> GetUserArticlesAsync(Guid id, Guid whoAskingId, ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken);
 
     /// <summary>
     /// Get User profile info
@@ -79,7 +79,7 @@ public interface IUserService
     /// </summary>
     /// <param name="userId">'like' author</param>
     /// <returns></returns>
-    Task<ArticlesGetResponse> GetUserLikedArticlesAsync(Guid userId, ArticleQueryParameters queryParameters, CancellationToken cancellationToken);
+    Task<ArticlesGetResponse> GetUserLikedArticlesAsync(Guid userId, ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken);
 
     /// <summary>
     /// Get list of comments where 'like' was set

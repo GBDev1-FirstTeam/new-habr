@@ -75,12 +75,13 @@ public class UserService : IUserService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task<ArticlesGetResponse> GetUserArticlesAsync(Guid id, Guid whoAskingId, ArticleQueryParameters queryParameters, CancellationToken cancellationToken)
+    public async Task<ArticlesGetResponse> GetUserArticlesAsync(Guid id, Guid whoAskingId, ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken)
     {
         var user = await GetUserAndCheckIfItExistsAsync(id, false, cancellationToken);
+        var queryParams = _mapper.Map<ArticleQueryParameters>(queryParamsDto);
         var articles = await _repositoryManager
             .ArticleRepository
-            .GetByAuthorIdAsync(id, whoAskingId, false, queryParameters, cancellationToken);
+            .GetByAuthorIdAsync(id, whoAskingId, false, queryParams, cancellationToken);
 
         return new ArticlesGetResponse { Articles = _mapper.Map<ICollection<ArticleDto>>(articles), Metadata = articles.Metadata };
     }
@@ -104,12 +105,13 @@ public class UserService : IUserService
         return commentsDto;
     }
 
-    public async Task<ArticlesGetResponse> GetUserLikedArticlesAsync(Guid userId, ArticleQueryParameters queryParameters, CancellationToken cancellationToken)
+    public async Task<ArticlesGetResponse> GetUserLikedArticlesAsync(Guid userId, ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken)
     {
         var user = await GetUserAndCheckIfItExistsAsync(userId, false, cancellationToken);
+        var queryParams = _mapper.Map<ArticleQueryParameters>(queryParamsDto);
         var articles = await _repositoryManager
             .ArticleRepository
-            .GetUserLikedArticlesAsync(userId, Guid.Empty, false, queryParameters, cancellationToken);
+            .GetUserLikedArticlesAsync(userId, Guid.Empty, false, queryParams, cancellationToken);
 
         return new ArticlesGetResponse { Articles = _mapper.Map<ICollection<ArticleDto>>(articles), Metadata = articles.Metadata };
     }

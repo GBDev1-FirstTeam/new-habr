@@ -28,5 +28,9 @@ public class ArticleProfile : Profile
             .ForMember(dest => dest.Tags, options => options.Ignore());
 
         CreateMap<ArticleModel, ArticleDto>();
+
+        CreateMap<ArticleQueryParametersDto, ArticleQueryParameters>()
+            .ForMember(dest => dest.From, e => e.MapFrom(src => DateTimeOffset.FromUnixTimeMilliseconds(src.From)))
+            .ForMember(dest => dest.To, e => e.MapFrom(src => DateTimeOffset.FromUnixTimeMilliseconds(src.To)));
     }
 }

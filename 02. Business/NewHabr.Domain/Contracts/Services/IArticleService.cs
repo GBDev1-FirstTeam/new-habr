@@ -8,11 +8,11 @@ public interface IArticleService
 {
     Task<ArticleDto> GetByIdAsync(Guid articleId, Guid whoAskingId, CancellationToken cancellationToken);
 
-    Task<ArticlesGetResponse> GetPublishedAsync(Guid whoAskingId, ArticleQueryParameters queryParams, CancellationToken cancellationToken);
+    Task<ArticlesGetResponse> GetPublishedAsync(Guid whoAskingId, ArticleQueryParametersDto queryParams, CancellationToken cancellationToken);
 
-    Task<ArticlesGetResponse> GetUnpublishedAsync(ArticleQueryParameters queryParams, CancellationToken cancellationToken);
+    Task<ArticlesGetResponse> GetUnpublishedAsync(ArticleQueryParametersDto queryParams, CancellationToken cancellationToken);
 
-    Task<ArticlesGetResponse> GetDeletedAsync(ArticleQueryParameters queryParams, CancellationToken cancellationToken);
+    Task<ArticlesGetResponse> GetDeletedAsync(ArticleQueryParametersDto queryParams, CancellationToken cancellationToken);
 
     Task CreateAsync(ArticleCreateRequest request, Guid creatorId, CancellationToken cancellationToken);
 

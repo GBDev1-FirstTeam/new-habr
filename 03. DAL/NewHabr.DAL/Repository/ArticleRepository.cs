@@ -46,37 +46,49 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
 
     public async Task<PagedList<ArticleModel>> GetPublishedAsync(Guid whoAskingId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken)
     {
-        var query = FindByCondition(article => article.Published, false);
+        var query = FindByCondition(article => article.Published, false)
+            .Where(article => article.PublishedAt >= queryParams.From && article.PublishedAt <= queryParams.To)
+            .OrderByType(article => article.PublishedAt, queryParams.OrderBy);
         return await GetManyAsync(query, whoAskingId, withComments, queryParams, cancellationToken);
     }
 
     public async Task<PagedList<ArticleModel>> GetByTitleAsync(string title, Guid whoAskingId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken)
     {
-        var query = FindByCondition(a => a.Title.ToLower() == title.ToLower(), false);
+        var query = FindByCondition(article => article.Title.ToLower() == title.ToLower() && article.Published, false)
+            .Where(article => article.PublishedAt >= queryParams.From && article.PublishedAt <= queryParams.To)
+            .OrderByType(article => article.PublishedAt, queryParams.OrderBy);
         return await GetManyAsync(query, whoAskingId, withComments, queryParams, cancellationToken);
     }
 
     public async Task<PagedList<ArticleModel>> GetUnpublishedAsync(ArticleQueryParameters queryParams, CancellationToken cancellationToken)
     {
-        var query = FindByCondition(a => !a.Published, false);
+        var query = FindByCondition(a => !a.Published, false)
+            .Where(article => article.CreatedAt >= queryParams.From && article.CreatedAt <= queryParams.To)
+            .OrderByType(article => article.CreatedAt, queryParams.OrderBy);
         return await GetManyAsync(query, Guid.Empty, false, queryParams, cancellationToken);
     }
 
     public async Task<PagedList<ArticleModel>> GetDeletedAsync(ArticleQueryParameters queryParams, CancellationToken cancellationToken)
     {
-        var query = GetDeleted(false);
+        var query = GetDeleted(false)
+            .Where(article => article.CreatedAt >= queryParams.From && article.CreatedAt <= queryParams.To)
+            .OrderByType(article => article.CreatedAt, queryParams.OrderBy);
         return await GetManyAsync(query, Guid.Empty, false, queryParams, cancellationToken);
     }
 
     public async Task<PagedList<ArticleModel>> GetByAuthorIdAsync(Guid authorId, Guid whoAskingId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken)
     {
-        var query = FindByCondition(article => article.UserId == authorId, false);
+        var query = FindByCondition(article => article.UserId == authorId && article.Published, false)
+            .Where(article => article.PublishedAt >= queryParams.From && article.PublishedAt <= queryParams.To)
+            .OrderByType(article => article.PublishedAt, queryParams.OrderBy);
         return await GetManyAsync(query, whoAskingId, withComments, queryParams, cancellationToken);
     }
 
     public async Task<PagedList<ArticleModel>> GetUserLikedArticlesAsync(Guid userId, Guid whoAskingId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken)
     {
-        var query = FindByCondition(article => article.Published && article.Likes.Any(u => u.Id == userId), false);
+        var query = FindByCondition(article => article.Published && article.Likes.Any(u => u.Id == userId), false)
+            .Where(article => article.PublishedAt >= queryParams.From && article.PublishedAt <= queryParams.To)
+            .OrderByType(article => article.PublishedAt, queryParams.OrderBy);
         return await GetManyAsync(query, whoAskingId, withComments, queryParams, cancellationToken);
     }
 
@@ -92,7 +104,6 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
     private async Task<PagedList<ArticleModel>> GetManyAsync(IQueryable<Article> query, Guid whoAskingId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken)
     {
         return await query
-            .OrderByDescending(article => article.CreatedAt)
             .Select(ArticleToArticleModel(whoAskingId, withComments))
             .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }

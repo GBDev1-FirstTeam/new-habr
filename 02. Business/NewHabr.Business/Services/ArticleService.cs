@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Identity;
 using NewHabr.Business.Extensions;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Contracts.Services;
@@ -37,8 +36,9 @@ public class ArticleService : IArticleService
         return _mapper.Map<ArticleDto>(article);
     }
 
-    public async Task<ArticlesGetResponse> GetPublishedAsync(Guid whoAskingId, ArticleQueryParameters queryParams, CancellationToken cancellationToken)
+    public async Task<ArticlesGetResponse> GetPublishedAsync(Guid whoAskingId, ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken)
     {
+        var queryParams = _mapper.Map<ArticleQueryParameters>(queryParamsDto);
         var articles = await _repositoryManager
             .ArticleRepository
             .GetPublishedAsync(whoAskingId, true, queryParams, cancellationToken);
@@ -50,8 +50,9 @@ public class ArticleService : IArticleService
         };
     }
 
-    public async Task<ArticlesGetResponse> GetUnpublishedAsync(ArticleQueryParameters queryParams, CancellationToken cancellationToken)
+    public async Task<ArticlesGetResponse> GetUnpublishedAsync(ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken)
     {
+        var queryParams = _mapper.Map<ArticleQueryParameters>(queryParamsDto);
         var articles = await _repositoryManager
             .ArticleRepository
             .GetUnpublishedAsync(queryParams, cancellationToken);
@@ -63,8 +64,9 @@ public class ArticleService : IArticleService
         };
     }
 
-    public async Task<ArticlesGetResponse> GetDeletedAsync(ArticleQueryParameters queryParams, CancellationToken cancellationToken)
+    public async Task<ArticlesGetResponse> GetDeletedAsync(ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken)
     {
+        var queryParams = _mapper.Map<ArticleQueryParameters>(queryParamsDto);
         var articles = await _repositoryManager
             .ArticleRepository
             .GetDeletedAsync(queryParams, cancellationToken);

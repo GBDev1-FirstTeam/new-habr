@@ -44,12 +44,12 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<ArticlesGetResponse>> GetPublished([FromQuery] ArticleQueryParameters queryParams, CancellationToken cancellationToken)
+    public async Task<ActionResult<ArticlesGetResponse>> GetPublished([FromQuery] ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken)
     {
         var authUserId = User.GetUserIdOrDefault();
         try
         {
-            return Ok(await _articleService.GetPublishedAsync(authUserId, queryParams, cancellationToken));
+            return Ok(await _articleService.GetPublishedAsync(authUserId, queryParamsDto, cancellationToken));
         }
         catch (Exception ex)
         {
@@ -59,11 +59,11 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet("unpublished")]
-    public async Task<ActionResult<ArticlesGetResponse>> GetUnpublished([FromQuery] ArticleQueryParameters queryParams, CancellationToken cancellationToken)
+    public async Task<ActionResult<ArticlesGetResponse>> GetUnpublished([FromQuery] ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken)
     {
         try
         {
-            return Ok(await _articleService.GetUnpublishedAsync(queryParams, cancellationToken));
+            return Ok(await _articleService.GetUnpublishedAsync(queryParamsDto, cancellationToken));
         }
         catch (Exception ex)
         {
@@ -73,11 +73,11 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet("deleted")]
-    public async Task<ActionResult<ArticlesGetResponse>> GetDeleted([FromQuery] ArticleQueryParameters queryParams, CancellationToken cancellationToken)
+    public async Task<ActionResult<ArticlesGetResponse>> GetDeleted([FromQuery] ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken)
     {
         try
         {
-            return Ok(await _articleService.GetDeletedAsync(queryParams, cancellationToken));
+            return Ok(await _articleService.GetDeletedAsync(queryParamsDto, cancellationToken));
         }
         catch (Exception ex)
         {
