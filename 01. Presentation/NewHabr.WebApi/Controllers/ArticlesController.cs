@@ -66,12 +66,12 @@ public class ArticlesController : ControllerBase
 
     [HttpGet]
     public async Task<ActionResult<ArticlesGetResponse>> GetPublished(
-        [FromQuery] ArticleQueryParameters queryParams,
+        [FromQuery] ArticleQueryParametersDto queryParamsDto,
         CancellationToken cancellationToken)
     {
         try
         {
-            return Ok(await _articleService.GetPublishedAsync(queryParams, cancellationToken));
+            return Ok(await _articleService.GetPublishedAsync(queryParamsDto, cancellationToken));
         }
         catch (Exception ex)
         {
@@ -82,12 +82,12 @@ public class ArticlesController : ControllerBase
 
     [HttpGet("unpublished")]
     public async Task<ActionResult<ArticlesGetResponse>> GetUnpublished(
-        [FromQuery] ArticleQueryParameters queryParams,
+        [FromQuery] ArticleQueryParametersDto queryParamsDto,
         CancellationToken cancellationToken)
     {
         try
         {
-            return Ok(await _articleService.GetUnpublishedAsync(queryParams, cancellationToken));
+            return Ok(await _articleService.GetUnpublishedAsync(queryParamsDto, cancellationToken));
         }
         catch (Exception ex)
         {
@@ -98,12 +98,12 @@ public class ArticlesController : ControllerBase
 
     [HttpGet("deleted")]
     public async Task<ActionResult<ArticlesGetResponse>> GetDeleted(
-        [FromQuery] ArticleQueryParameters queryParams,
+        [FromQuery] ArticleQueryParametersDto queryParamsDto,
         CancellationToken cancellationToken)
     {
         try
         {
-            return Ok(await _articleService.GetDeletedAsync(queryParams, cancellationToken));
+            return Ok(await _articleService.GetDeletedAsync(queryParamsDto, cancellationToken));
         }
         catch (Exception ex)
         {
