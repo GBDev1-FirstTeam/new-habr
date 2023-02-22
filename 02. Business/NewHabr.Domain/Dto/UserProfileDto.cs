@@ -19,4 +19,6 @@ public class UserProfileDto : UserForManipulationDto
     public long? BannedAt { get; set; }
 
     public int ReceivedLikes { get; set; }
+
+    public bool IsLiked { get; set; }
 }

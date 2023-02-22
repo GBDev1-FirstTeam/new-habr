@@ -40,9 +40,11 @@ public class UsersController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetUserDetails([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        var authUserId = User.GetUserIdOrDefault();
         try
         {
-            var response = await _userService.GetUserInfoAsync(id, cancellationToken);
+            var response = await _userService
+                .GetUserInfoAsync(id, authUserId, cancellationToken);
             return Ok(response);
         }
         catch (UserNotFoundException ex)

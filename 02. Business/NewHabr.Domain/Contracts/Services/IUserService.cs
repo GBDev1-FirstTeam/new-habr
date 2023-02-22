@@ -25,7 +25,7 @@ public interface IUserService
     /// <param name="userId"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<UserProfileDto> GetUserInfoAsync(Guid userId, CancellationToken cancellationToken);
+    Task<UserProfileDto> GetUserInfoAsync(Guid userId, Guid authUserId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Update user's profile

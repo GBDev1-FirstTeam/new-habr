@@ -19,5 +19,18 @@ public static class IdentityUserExtensions
 
         return userId;
     }
+
+    public static Guid GetUserIdOrDefault(this ClaimsPrincipal user)
+    {
+        if (!user.HasClaim(claim => claim.Type == ClaimTypes.NameIdentifier))
+            return Guid.Empty;
+
+        string userIdAsString = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (!Guid.TryParse(userIdAsString, out Guid userId))
+            return Guid.Empty;
+
+        return userId;
+    }
 }
 

@@ -130,9 +130,15 @@ public class UserService : IUserService
         return usersDto;
     }
 
-    public async Task<UserProfileDto> GetUserInfoAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task<UserProfileDto> GetUserInfoAsync(Guid userId, Guid authUserId, CancellationToken cancellationToken)
     {
-        var user = await GetUserAndCheckIfItExistsAsync(userId, false, cancellationToken);
+        var user = await _repositoryManager
+            .UserRepository
+            .GetUserInfoAsync(userId, authUserId, cancellationToken);
+
+        if (user is null)
+            throw new UserNotFoundException();
+
         var userDto = _mapper.Map<UserProfileDto>(user);
         userDto.ReceivedLikes = await _repositoryManager
             .UserRepository
