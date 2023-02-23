@@ -6,6 +6,7 @@ using NewHabr.Domain;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Models;
+using NewHabr.Domain.ServiceModels;
 
 namespace NewHabr.DAL.Repository;
 
@@ -15,176 +16,19 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
     {
     }
 
-    public async Task<PagedList<ArticleExt>> GetPublishedIncludeAsync(
-        ArticleQueryParameters queryParams,
-        bool trackChanges,
-        CancellationToken cancellationToken)
-    {
-        return await FindByCondition(article => article.Published, trackChanges)
-            .Where(a => a.PublishedAt >= queryParams.From && a.PublishedAt <= queryParams.To)
-            .Include(a => a.Categories)
-            .Include(a => a.Tags)
-            .Include(a => a.Comments
-                .OrderBy(c => c.CreatedAt))
-            .OrderByType(a => a.PublishedAt, queryParams.OrderBy)
-            .Select(ArticleToArticleExt())
-            .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
-    }
 
-    public async Task<PagedList<ArticleExt>> GetByTitleIncludeAsync(
-        string title,
-        ArticleQueryParameters queryParams,
-        bool trackChanges,
-        CancellationToken cancellationToken)
+    public async Task<Article?> GetByIdAsync(Guid articleId, bool trackChanges, CancellationToken cancellationToken)
     {
-        return await FindByCondition(a => a.Title.ToLower() == title.ToLower(), trackChanges)
-            .Where(a => a.CreatedAt >= queryParams.From && a.CreatedAt <= queryParams.To)
-            .Include(a => a.Categories)
-            .Include(a => a.Tags)
-            .Include(a => a.Comments
-                .OrderBy(c => c.CreatedAt))
-            .OrderByType(a => a.CreatedAt, queryParams.OrderBy)
-            .Select(ArticleToArticleExt())
-            .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
-    }
-
-    public async Task<PagedList<ArticleExt>> GetByUserIdIncludeAsync(
-        Guid userId,
-        ArticleQueryParameters queryParams,
-        bool trackChanges,
-        CancellationToken cancellationToken)
-    {
-        return await FindByCondition(a => a.UserId == userId, trackChanges)
-            .Where(a => a.CreatedAt >= queryParams.From && a.CreatedAt <= queryParams.To)
-            .Include(a => a.Categories)
-            .Include(a => a.Tags)
-            .Include(a => a.Comments
-                .OrderBy(c => c.CreatedAt))
-            .OrderByType(a => a.CreatedAt, queryParams.OrderBy)
-            .Select(ArticleToArticleExt())
-            .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
-    }
-
-    public async Task<PagedList<ArticleExt>> GetUnpublishedIncludeAsync(
-        ArticleQueryParameters queryParams,
-        bool trackChanges,
-        CancellationToken cancellationToken)
-    {
-        return await FindByCondition(a => !a.Published, trackChanges)
-            .Where(a => a.CreatedAt >= queryParams.From && a.CreatedAt <= queryParams.To)
-            .Include(a => a.Categories)
-            .Include(a => a.Tags)
-            .Include(a => a.Comments
-                .OrderBy(c => c.CreatedAt))
-            .OrderByType(a => a.CreatedAt, queryParams.OrderBy)
-            .Select(ArticleToArticleExt())
-            .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
-    }
-
-    public async Task<PagedList<ArticleExt>> GetDeletedIncludeAsync(
-        ArticleQueryParameters queryParams,
-        bool trackChanges,
-        CancellationToken cancellationToken)
-    {
-        return await GetDeleted(trackChanges)
-            .Where(a => a.CreatedAt >= queryParams.From && a.CreatedAt <= queryParams.To)
-            .IgnoreQueryFilters()
-            .Include(a => a.Categories)
-            .Include(a => a.Tags)
-            .Include(a => a.Comments
-                .OrderBy(c => c.CreatedAt))
-            .OrderByType(a => a.DeletedAt, queryParams.OrderBy)
-            .Select(ArticleToArticleExt())
-            .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
-    }
-
-    public async Task<Article?> GetByIdAsync(
-        Guid id,
-        bool trackChanges,
-        CancellationToken cancellationToken)
-    {
-        return await GetById(id, trackChanges)
+        return await GetById(articleId, trackChanges)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<ArticleExt?> GetByIdIncludeAsync(
-        Guid id,
-        bool trackChanges,
-        CancellationToken cancellationToken)
-    {
-        return await FindByCondition(a => a.Id == id, trackChanges)
-            .Include(a => a.Categories)
-            .Include(a => a.Tags)
-            .Include(a => a.Comments)
-            .Select(ArticleToArticleExt())
-            .FirstOrDefaultAsync(cancellationToken);
-    }
-
-    public async Task<Article?> GetByIdWithTagsWithCategoriesAsync(
-        Guid articleId,
-        bool trackChanges,
-        CancellationToken cancellationToken)
+    public async Task<Article?> GetByIdWithTagsWithCategoriesAsync(Guid articleId, bool trackChanges, CancellationToken cancellationToken)
     {
         return await FindByCondition(a => a.Id == articleId, trackChanges)
             .Include(a => a.Categories)
             .Include(a => a.Tags)
             .FirstOrDefaultAsync(cancellationToken);
-    }
-
-    public async Task<ArticleExt?> GetByIdIncludeCommentLikesAsync(
-        Guid id,
-        bool trackChanges,
-        CancellationToken cancellationToken)
-    {
-        return await FindByCondition(a => a.Id == id, trackChanges)
-            .Include(a => a.Categories)
-            .Include(a => a.Tags)
-            .Include(a => a.Comments
-                .OrderBy(c => c.CreatedAt))
-                .ThenInclude(c => c.Likes)
-            .Select(ArticleToArticleExt())
-            .FirstOrDefaultAsync(cancellationToken);
-    }
-
-    public async Task<ICollection<UserArticle>> GetUserArticlesAsync(Guid userId, bool trackChanges, CancellationToken cancellationToken)
-    {
-        return await FindByCondition(article => article.UserId == userId, trackChanges)
-            .Include(a => a.Categories)
-            .Include(a => a.Tags)
-            .Select(row => new UserArticle
-            {
-                Id = row.Id,
-                Title = row.Title,
-                Content = row.Content,
-                ImgURL = row.ImgURL,
-                Categories = row.Categories,
-                Tags = row.Tags,
-                CommentsCount = row.Comments.Count,
-                LikesCount = row.Likes.Count,
-                CreatedAt = row.CreatedAt,
-                ModifiedAt = row.ModifiedAt,
-                Published = row.Published,
-                PublishedAt = row.PublishedAt.HasValue ? row.PublishedAt.Value : default(DateTimeOffset),
-                ApproveState = row.ApproveState
-            })
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task<ICollection<UserLikedArticle>> GetUserLikedArticlesAsync(Guid userId, bool trackChanges, CancellationToken cancellationToken)
-    {
-        return await FindByCondition(article => article.Published, trackChanges)
-            .Include(article => article.Tags)
-            .Include(article => article.Categories)
-            .Include(article => article.Likes)
-            .Where(a => a.Likes.Any(u => u.Id == userId))
-            .Select(row => new UserLikedArticle
-            {
-                Id = row.Id,
-                Title = row.Title,
-                Categories = row.Categories,
-                Tags = row.Tags
-            })
-            .ToListAsync(cancellationToken);
     }
 
     public async Task<Article?> GetArticleWithLikesAsync(Guid articleId, bool trackChanges, CancellationToken cancellationToken)
@@ -194,18 +38,108 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-
-
-    private static Expression<Func<Article, ArticleExt>> ArticleToArticleExt()
+    public async Task<ArticleModel?> GetByIdAsync(Guid articleId, Guid whoAskingId, bool withComments, CancellationToken cancellationToken)
     {
-        return article => new ArticleExt
+        var query = FindByCondition(article => article.Id.Equals(articleId), false);
+        return await GetOneAsync(query, whoAskingId, withComments, cancellationToken);
+    }
+
+    public async Task<PagedList<ArticleModel>> GetPublishedAsync(Guid whoAskingId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken)
+    {
+        var query = FindByCondition(article => article.Published, false)
+            .Where(article => article.PublishedAt >= queryParams.From && article.PublishedAt <= queryParams.To)
+            .OrderByType(article => article.PublishedAt, queryParams.OrderBy);
+        return await GetManyAsync(query, whoAskingId, withComments, queryParams, cancellationToken);
+    }
+
+    public async Task<PagedList<ArticleModel>> GetByTitleAsync(string title, Guid whoAskingId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken)
+    {
+        var query = FindByCondition(article => article.Title.ToLower() == title.ToLower() && article.Published, false)
+            .Where(article => article.PublishedAt >= queryParams.From && article.PublishedAt <= queryParams.To)
+            .OrderByType(article => article.PublishedAt, queryParams.OrderBy);
+        return await GetManyAsync(query, whoAskingId, withComments, queryParams, cancellationToken);
+    }
+
+    public async Task<PagedList<ArticleModel>> GetUnpublishedAsync(ArticleQueryParameters queryParams, CancellationToken cancellationToken)
+    {
+        var query = FindByCondition(a => !a.Published, false)
+            .Where(article => article.CreatedAt >= queryParams.From && article.CreatedAt <= queryParams.To)
+            .OrderByType(article => article.CreatedAt, queryParams.OrderBy);
+        return await GetManyAsync(query, Guid.Empty, false, queryParams, cancellationToken);
+    }
+
+    public async Task<PagedList<ArticleModel>> GetDeletedAsync(ArticleQueryParameters queryParams, CancellationToken cancellationToken)
+    {
+        var query = GetDeleted(false)
+            .Where(article => article.CreatedAt >= queryParams.From && article.CreatedAt <= queryParams.To)
+            .OrderByType(article => article.CreatedAt, queryParams.OrderBy);
+        return await GetManyAsync(query, Guid.Empty, false, queryParams, cancellationToken);
+    }
+
+    public async Task<PagedList<ArticleModel>> GetByAuthorIdAsync(Guid authorId, Guid whoAskingId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken)
+    {
+        var query = FindByCondition(article => article.UserId == authorId && article.Published, false)
+            .Where(article => article.PublishedAt >= queryParams.From && article.PublishedAt <= queryParams.To)
+            .OrderByType(article => article.PublishedAt, queryParams.OrderBy);
+        return await GetManyAsync(query, whoAskingId, withComments, queryParams, cancellationToken);
+    }
+
+    public async Task<PagedList<ArticleModel>> GetUserLikedArticlesAsync(Guid userId, Guid whoAskingId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken)
+    {
+        var query = FindByCondition(article => article.Published && article.Likes.Any(u => u.Id == userId), false)
+            .Where(article => article.PublishedAt >= queryParams.From && article.PublishedAt <= queryParams.To)
+            .OrderByType(article => article.PublishedAt, queryParams.OrderBy);
+        return await GetManyAsync(query, whoAskingId, withComments, queryParams, cancellationToken);
+    }
+
+
+
+    private async Task<ArticleModel?> GetOneAsync(IQueryable<Article> query, Guid whoAskingId, bool withComments, CancellationToken cancellationToken)
+    {
+        return await query
+            .Select(ArticleToArticleModel(whoAskingId, withComments))
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    private async Task<PagedList<ArticleModel>> GetManyAsync(IQueryable<Article> query, Guid whoAskingId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken)
+    {
+        return await query
+            .Select(ArticleToArticleModel(whoAskingId, withComments))
+            .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
+    }
+
+    private static Expression<Func<Article, ArticleModel>> ArticleToArticleModel(Guid whoAskingId, bool includeComments)
+    {
+        return article => new ArticleModel
         {
             Id = article.Id,
             Title = article.Title,
             Content = article.Content,
+            ImgURL = article.ImgURL,
+            UserId = article.UserId,
+            UserName = article.User.UserName,
             Categories = article.Categories,
             Tags = article.Tags,
-            Comments = article.Comments.Select(comment => new CommentExt
+            Comments = includeComments ? IncludeComments(whoAskingId, article) : Array.Empty<CommentModel>(),
+            ApproveState = article.ApproveState,
+            CreatedAt = article.CreatedAt,
+            ModifiedAt = article.ModifiedAt,
+            Published = article.Published,
+            PublishedAt = article.PublishedAt,
+            Deleted = article.Deleted,
+            DeletedAt = article.DeletedAt,
+            CommentsCount = article.Comments.Count(),
+            LikesCount = article.Likes.Count(),
+            IsLiked = Guid.Empty.Equals(whoAskingId) ? false : article.Likes.Any(sender => sender.Id.Equals(whoAskingId))
+        };
+    }
+
+    private static CommentModel[] IncludeComments(Guid whoAskingId, Article article)
+    {
+        return article
+            .Comments
+            .OrderBy(comment => comment.CreatedAt)
+            .Select(comment => new CommentModel
             {
                 ArticleId = comment.ArticleId,
                 CreatedAt = comment.CreatedAt,
@@ -214,19 +148,9 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
                 Text = comment.Text,
                 UserId = comment.UserId,
                 UserName = comment.User.UserName,
-                Likes = comment.Likes
-            }).ToArray(),
-            ApproveState = article.ApproveState,
-            CreatedAt = article.CreatedAt,
-            ImgURL = article.ImgURL,
-            ModifiedAt = article.ModifiedAt,
-            Published = article.Published,
-            PublishedAt = article.PublishedAt,
-            UserName = article.User.UserName,
-            UserId = article.UserId,
-            Deleted = article.Deleted,
-            DeletedAt = article.DeletedAt,
-            Likes = article.Likes
-        };
+                LikesCount = comment.Likes.Count(),
+                IsLiked = Guid.Empty.Equals(whoAskingId) ? false : comment.Likes.Any(sender => sender.Id.Equals(whoAskingId))
+            })
+            .ToArray();
     }
 }

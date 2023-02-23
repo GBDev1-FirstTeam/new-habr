@@ -15,42 +15,21 @@ public class ArticlesController : ControllerBase
     private readonly IArticleService _articleService;
     private readonly ILogger<ArticlesController> _logger;
 
+
     public ArticlesController(IArticleService articleService, ILogger<ArticlesController> logger)
     {
         _articleService = articleService;
         _logger = logger;
     }
 
-    [HttpGet("{id}/comments")]
-    [Authorize]
-    public async Task<ActionResult<IEnumerable<CommentWithLikedMark>>> GetCommentsWithLikedMark(
-        [FromRoute] Guid id,
-        CancellationToken cancellationToken)
-    {
-        var userId = User.GetUserId();
-
-        try
-        {
-            return Ok(await _articleService.GetCommentsWithLikedMarkAsync(id, userId, cancellationToken));
-        }
-        catch (EntityNotFoundException ex)
-        {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}\nuser id: {userId}"), id, userId);
-            return NotFound(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}\nuser id: {userId}"), id, userId);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<ArticleDto>> GetById([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        var authUserId = User.GetUserIdOrDefault();
         try
         {
-            return Ok(await _articleService.GetByIdAsync(id, cancellationToken));
+            return Ok(await _articleService.GetByIdAsync(id, authUserId, cancellationToken));
         }
         catch (EntityNotFoundException ex)
         {
@@ -65,13 +44,12 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<ArticlesGetResponse>> GetPublished(
-        [FromQuery] ArticleQueryParametersDto queryParamsDto,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<ArticlesGetResponse>> GetPublished([FromQuery] ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken)
     {
+        var authUserId = User.GetUserIdOrDefault();
         try
         {
-            return Ok(await _articleService.GetPublishedAsync(queryParamsDto, cancellationToken));
+            return Ok(await _articleService.GetPublishedAsync(authUserId, queryParamsDto, cancellationToken));
         }
         catch (Exception ex)
         {
@@ -81,9 +59,7 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet("unpublished")]
-    public async Task<ActionResult<ArticlesGetResponse>> GetUnpublished(
-        [FromQuery] ArticleQueryParametersDto queryParamsDto,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<ArticlesGetResponse>> GetUnpublished([FromQuery] ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken)
     {
         try
         {
@@ -97,9 +73,7 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet("deleted")]
-    public async Task<ActionResult<ArticlesGetResponse>> GetDeleted(
-        [FromQuery] ArticleQueryParametersDto queryParamsDto,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<ArticlesGetResponse>> GetDeleted([FromQuery] ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken)
     {
         try
         {
@@ -140,10 +114,7 @@ public class ArticlesController : ControllerBase
 
     [HttpPut("{id}")]
     [Authorize]
-    public async Task<ActionResult> Update(
-        [FromRoute] Guid id,
-        [FromBody] ArticleUpdateRequest request,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult> Update([FromRoute] Guid id, [FromBody] ArticleUpdateRequest request, CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
         try

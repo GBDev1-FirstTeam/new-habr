@@ -54,11 +54,12 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{id}/articles")]
-    public async Task<IActionResult> GetUserArticles([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUserArticles([FromRoute] Guid id, [FromQuery] ArticleQueryParametersDto queryParametersDto, CancellationToken cancellationToken)
     {
+        var authUserId = User.GetUserIdOrDefault();
         try
         {
-            var articles = await _userService.GetUserArticlesAsync(id, cancellationToken);
+            var articles = await _userService.GetUserArticlesAsync(id, authUserId, queryParametersDto, cancellationToken);
             return Ok(articles);
         }
         catch (UserNotFoundException ex)
@@ -96,11 +97,11 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{id}/likedArticles")]
-    public async Task<IActionResult> GetUserLikedArticles([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUserLikedArticles([FromRoute] Guid id, [FromQuery] ArticleQueryParametersDto queryParametersDto, CancellationToken cancellationToken)
     {
         try
         {
-            var response = await _userService.GetUserLikedArticlesAsync(id, cancellationToken);
+            var response = await _userService.GetUserLikedArticlesAsync(id, queryParametersDto, cancellationToken);
             return Ok(response);
         }
         catch (UserNotFoundException ex)
