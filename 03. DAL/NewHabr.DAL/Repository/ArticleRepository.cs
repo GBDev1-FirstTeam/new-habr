@@ -47,8 +47,14 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
     public async Task<PagedList<ArticleModel>> GetPublishedAsync(Guid whoAskingId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken)
     {
         var query = FindByCondition(article => article.Published, false)
-            .Where(article => article.PublishedAt >= queryParams.From && article.PublishedAt <= queryParams.To)
-            .OrderByType(article => article.PublishedAt, queryParams.OrderBy);
+            .Where(article => article.PublishedAt >= queryParams.From && article.PublishedAt <= queryParams.To);
+
+        if (!string.IsNullOrEmpty(queryParams.Search))
+        {
+            query = query.Where(article => article.Title.Contains(queryParams.Search));
+        }
+
+        query = query.OrderByType(article => article.PublishedAt, queryParams.OrderBy);
         return await GetManyAsync(query, whoAskingId, withComments, queryParams, cancellationToken);
     }
 
