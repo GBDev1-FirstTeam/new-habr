@@ -20,6 +20,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Moq" Version="4.18.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.14" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +31,8 @@
     <None Remove="Moq" />
     <None Remove="Services\" />
     <None Remove="Controllers\" />
+    <None Remove="Repository\" />
+    <None Remove="Mocks\" />
   </ItemGroup>
   <ItemGroup>
     <None Update="xunit.runner.json">
@@ -39,5 +42,7 @@
   <ItemGroup>
     <Folder Include="Services\" />
     <Folder Include="Controllers\" />
+    <Folder Include="Repository\" />
+    <Folder Include="Mocks\" />
   </ItemGroup>
 </Project>
