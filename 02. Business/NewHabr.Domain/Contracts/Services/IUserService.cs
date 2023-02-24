@@ -61,6 +61,11 @@ public interface IUserService
     Task SetBanOnUserAsync(Guid id, UserBanDto userBanDto, CancellationToken cancellationToken);
 
     /// <summary>
+    /// Reset ban flag
+    /// </summary>
+    Task UnBanUserAsync(Guid userId, CancellationToken cancellationToken);
+
+    /// <summary>
     /// Get list of user's comments 
     /// </summary>
     /// <param name="userId">user id who is comment author</param>

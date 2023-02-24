@@ -213,6 +213,20 @@ public class UserService : IUserService
         return result;
     }
 
+    public async Task UnBanUserAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var user = await GetUserAndCheckIfItExistsAsync(userId, true, cancellationToken);
+
+        if (!user.Banned)
+            return;
+
+        user.Banned = false;
+        user.BannedAt = null;
+        user.BanReason = null;
+        user.BanExpiratonDate = null;
+        await _repositoryManager.SaveAsync(cancellationToken);
+    }
+
 
 
     private async Task<User> GetUserAndCheckIfItExistsAsync(Guid id, bool trackChanges, CancellationToken cancellationToken)
