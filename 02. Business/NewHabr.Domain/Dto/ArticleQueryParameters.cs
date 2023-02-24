@@ -1,4 +1,6 @@
-﻿namespace NewHabr.Domain.Dto;
+﻿#nullable disable
+
+namespace NewHabr.Domain.Dto;
 
 public class ArticleQueryParameters : QueryParameters
 {
@@ -7,4 +9,6 @@ public class ArticleQueryParameters : QueryParameters
     public DateTimeOffset To { get; set; } = DateTimeOffset.UtcNow;
 
     public string OrderBy { get; set; }
+
+    public string ByRating { get; set; }
 }

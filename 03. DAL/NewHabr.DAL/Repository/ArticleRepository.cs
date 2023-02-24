@@ -103,8 +103,21 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
 
     private async Task<PagedList<ArticleModel>> GetManyAsync(IQueryable<Article> query, Guid whoAskingId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken)
     {
-        return await query
-            .Select(ArticleToArticleModel(whoAskingId, withComments))
+        var articleModels = query
+            .Select(ArticleToArticleModel(whoAskingId, withComments));
+
+        if (queryParams.ByRating is not null && queryParams.ByRating.Equals(QueryParametersDefinitions.OrderingRatingTypes.Descending, StringComparison.OrdinalIgnoreCase))
+        {
+            articleModels = articleModels
+                .OrderByDescending(article => article.LikesCount);
+        }
+        else if (queryParams.ByRating is not null && queryParams.ByRating.Equals(QueryParametersDefinitions.OrderingRatingTypes.Ascending, StringComparison.OrdinalIgnoreCase))
+        {
+            articleModels = articleModels
+                .OrderBy(article => article.LikesCount);
+        }
+
+        return await articleModels
             .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }
 

@@ -8,6 +8,13 @@ public struct QueryParametersDefinitions
         public const string Descending = "descending";
     }
 
+    public struct OrderingRatingTypes
+    {
+        public const string None = "";
+        public const string Ascending = "asc";
+        public const string Descending = "desc";
+    }
+
     public const string PageNumber = "pageNumber";
     public const string PageSize = "pageSize";
     public const string OrderBy = "orderBy";
