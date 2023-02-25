@@ -66,6 +66,11 @@ public interface IUserService
     Task UnBanUserAsync(Guid userId, CancellationToken cancellationToken);
 
     /// <summary>
+    /// Finds users banned where ban expiration time reached and unban them
+    /// </summary>
+    Task AutomaticUnbanUserAsync(CancellationToken cancellationToken);
+
+    /// <summary>
     /// Get list of user's comments 
     /// </summary>
     /// <param name="userId">user id who is comment author</param>
