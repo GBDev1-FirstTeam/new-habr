@@ -5,6 +5,7 @@ using NewHabr.Business.Services;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Contracts.Services;
 using NewHabr.Domain.Dto;
+using NewHabr.Domain.Exceptions;
 using NewHabr.Domain.Models;
 
 namespace UnitTests.Services;
@@ -38,9 +39,8 @@ public class ArticeServiceTests
         _sut = new ArticleService(_repositoryManagerMock.Object, _mapper, _notificationServiceMock.Object);
     }
 
-
     [Fact]
-    public async Task CreateAsync_ValidModel_CreatesArticle()
+    public async Task CreateAsync_UserBanned_CannotCreatesArticle()
     {
         // Arrange
         var createRequest = new ArticleCreateRequest
@@ -48,20 +48,36 @@ public class ArticeServiceTests
             Title = "unittest title",
             Content = "unittest content",
             ImgURL = "unittest imgurl",
-            //Categories = new CategoryUpdateRequest[]
-            //{
-            //    new CategoryUpdateRequest { Name = "unittest category 01"}
-            //},
-            //Tags = new TagCreateRequest[]
-            //{
-            //    new TagCreateRequest{Name = "unittestTag01"}
-            //}
+        };
+
+        var requestingUser = new User { Id = Guid.NewGuid(), Banned = true, BannedAt = DateTimeOffset.UtcNow };
+        _userRepositoryMock
+            .Setup(ur => ur.GetByIdAsync(requestingUser.Id, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(requestingUser);
+
+        // Act
+        var Act = async () => await _sut.CreateAsync(createRequest, requestingUser.Id, default);
+
+        // Assert
+        await Assert.ThrowsAsync<UserBannedException>(Act);
+    }
+
+    [Fact]
+    public async Task CreateAsync_UserNotBanned_CreatesArticle()
+    {
+        // Arrange
+        var createRequest = new ArticleCreateRequest
+        {
+            Title = "unittest title",
+            Content = "unittest content",
+            ImgURL = "unittest imgurl",
         };
 
         var requestingUser = new User { Id = Guid.NewGuid() };
         _userRepositoryMock
             .Setup(ur => ur.GetByIdAsync(requestingUser.Id, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(requestingUser);
+
         var callArgs = new List<Article>();
         _articleRepositoryMock
             .Setup(ar => ar.Create(It.IsAny<Article>()))
