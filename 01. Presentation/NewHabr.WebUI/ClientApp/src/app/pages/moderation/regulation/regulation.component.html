@@ -22,7 +22,18 @@
             <button [class.no-active]="!user.Banned" [disabled]="!user.Banned" type="button" class="btn btn-outline-success" (click)="disableBan(user)">Снять бан</button>
             <button [class.no-active]="user.Banned" [disabled]="user.Banned" type="button" class="btn btn-outline-danger" (click)="ban(user, banRaise.value)">Забанить</button>
         </div>
+        
+        <label>Роль:</label>
+        <select [class.disable]="!isAdmin" class="form-select set-role" #roleSelector>
+            <option value="1">Пользователь</option>
+            <option value="2">Модератор</option>
+            <option value="3">Администратор</option>
+        </select>
+        <div class="role-actions">
+            <button type="button" class="btn btn-outline-success" (click)="setRole(roleSelector.value, user)">Установить роль</button>
+        </div>
     </div>
 </div>
 
 <app-succesful-send [(visible)]="succesfulBan" [text]="'Пользователь заблокирован'"></app-succesful-send>
+<app-succesful-send [(visible)]="succesfulSetRole" [text]="'Роль успешно применена'"></app-succesful-send>

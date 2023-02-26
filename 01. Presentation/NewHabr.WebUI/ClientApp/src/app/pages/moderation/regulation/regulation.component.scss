@@ -42,3 +42,21 @@ h5 {
 .bi-person-fill-dash {
     color: red;
 }
+
+.set-role {
+    width: unset;
+    margin: 10px;
+}
+
+.role-actions {
+    display: flex;
+    justify-content: center;
+
+    button {
+        margin: 10px;
+    }
+}
+
+label {
+    margin-left: 10px;
+}

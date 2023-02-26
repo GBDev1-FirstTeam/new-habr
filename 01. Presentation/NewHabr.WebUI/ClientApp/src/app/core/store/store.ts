@@ -76,7 +76,7 @@ export class AppStoreProvider {
                 auth: auth,
                 isAuth: this.isAuth(auth),
                 isUser: this.isUser(auth),
-                isAdmmin: this.isAdmin(auth),
+                isAdmin: this.isAdmin(auth),
                 isModerator: this.isModerator(auth),
             }))
         } else {
@@ -85,7 +85,7 @@ export class AppStoreProvider {
                 auth: null,
                 isAuth: false,
                 isUser: false,
-                isAdmmin: false,
+                isAdmin: false,
                 isModerator: false,
             }))
         }
@@ -122,7 +122,7 @@ export class AppStoreProvider {
             auth: null,
             isAuth: false,
             isUser: false,
-            isAdmmin: false,
+            isAdmin: false,
             isModerator: false,
         }))
         localStorage.removeItem(this.authObjectName)

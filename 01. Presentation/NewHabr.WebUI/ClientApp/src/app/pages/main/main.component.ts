@@ -19,6 +19,7 @@ export class MainComponent {
   auth: Authorization | null;
   isAuth: boolean;
   isModerator: boolean;
+  isAdmin: boolean;
   
   userInfo: UserInfo | null;
 
@@ -53,6 +54,7 @@ export class MainComponent {
     const authSubscribtion = this.store.getAuth().subscribe(auth => this.auth = auth);
     const isAuthSubscribtion = this.store.getIsAuth().subscribe(isAuth => this.isAuth = isAuth);
     const isModeratorSubscribtion = this.store.getIsModerator().subscribe(isModerator => this.isModerator = isModerator);
+    const isAdminSubscribtion = this.store.getIsAdmin().subscribe(isAdmin => this.isAdmin = isAdmin);
     const userInfoSubscribtion = this.store.getUserInfo().subscribe(userInfo => {
       this.userInfo = userInfo;
       
@@ -68,6 +70,7 @@ export class MainComponent {
     this.subscribtions.push(authSubscribtion);
     this.subscribtions.push(isAuthSubscribtion);
     this.subscribtions.push(isModeratorSubscribtion);
+    this.subscribtions.push(isAdminSubscribtion);
     this.subscribtions.push(userInfoSubscribtion);
   }
 

@@ -14,7 +14,7 @@ import { SecureQuestion } from '../models/SecureQuestion';
 import { AppStoreProvider } from '../store/store';
 import { Category } from '../models/Category';
 import { Tag } from '../models/Tag';
-import { BanStruct, NameStruct, QuestionStruct } from '../models/Structures';
+import { BanStruct, NameStruct, QuestionStruct, RoleStruct } from '../models/Structures';
 
 @Injectable({
   providedIn: 'root',
@@ -140,6 +140,10 @@ export class HttpRequestService {
   banUser(id: string, body: BanStruct): Observable<Array<UserInfo>> {
     const url = this.backend.baseURL + `/Users/${id}/ban`;
     return this.put<BanStruct, any>(url, body);
+  }
+  setUserRole(id: string, body: RoleStruct): Observable<any> {
+    const url = this.backend.baseURL + `/Users/${id}/setroles`;
+    return this.put<RoleStruct, any>(url, body);
   }
   getUserInfo(id: string) {
     const url = this.backend.baseURL + `/Users/${id}`;

@@ -10,6 +10,10 @@ export interface BanStruct {
     BanReason: string;
 }
 
+export interface RoleStruct {
+    Roles: string[];
+}
+
 export interface Metadata {
     CurrentPage: number;
     PageSize: number;

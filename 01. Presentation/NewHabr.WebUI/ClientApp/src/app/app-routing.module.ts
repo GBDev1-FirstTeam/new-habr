@@ -1,6 +1,6 @@
 import { Injectable, NgModule } from "@angular/core";
 import { ActivatedRouteSnapshot, CanActivate, NavigationCancel, Router, RouterModule, RouterStateSnapshot, Routes, UrlTree } from "@angular/router";
-import { Observable } from "rxjs";
+import { combineLatest, map, Observable } from "rxjs";
 import { AppStoreProvider } from "./core/store/store";
 
 @Injectable()
@@ -17,8 +17,11 @@ export class ModeratorGuard implements CanActivate {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree {  
-    return this.store.getIsModerator();
+  ): Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree {
+    let combineRoles = combineLatest([this.store.getIsModerator(), this.store.getIsAdmin()]).pipe(
+        map(([isModerator, isAdmin]) => isModerator || isAdmin)
+    );
+    return combineRoles;
   }
 }
 
