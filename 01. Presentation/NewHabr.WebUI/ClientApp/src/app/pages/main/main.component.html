@@ -21,7 +21,11 @@
                 <div class="login">
                     <span>Привет, {{ auth?.User?.UserName }}!</span>
                 </div>
-                <div class="ban" *ngIf="userInfo?.Banned">Аккаунт временно заблокирован</div>
+                <button [class.disable]="!userInfo?.Banned"
+                        type="button" class="btn btn-secondary ban"
+                        data-bs-toggle="tooltip" data-bs-placement="left"
+                        data-bs-custom-class="custom-tooltip"
+                        [attr.data-bs-title]="blockString">Аккаунт временно заблокирован</button>
                 <hr>
                 <div class="info">
                     Ваша роль - <strong>{{ auth?.User!.Roles[0] }}</strong>
