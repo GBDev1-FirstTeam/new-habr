@@ -38,7 +38,7 @@ public class UserService : IUserService
 
     public async Task SetUserRolesAsync(Guid id, UserAssignRolesRequest request, CancellationToken cancellationToken)
     {
-        var user = await GetUserAndCheckIfItExistsAsync(id, false, cancellationToken);
+        var user = await GetUserAndCheckIfItExistsAsync(id, true, cancellationToken);
 
         await CheckIfUserRolesExist(request.Roles);
 
