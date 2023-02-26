@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Linq;
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using NewHabr.DAL.EF;
 using NewHabr.DAL.Extensions;
@@ -120,7 +121,26 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             UserName = article.User.UserName,
             Categories = article.Categories,
             Tags = article.Tags,
-            Comments = includeComments ? IncludeComments(whoAskingId, article) : Array.Empty<CommentModel>(),
+            Comments = includeComments
+                ? article
+                    .Comments
+                    .OrderBy(comment => comment.CreatedAt)
+                    .Select(
+                        comment => new CommentModel
+                        {
+                            ArticleId = comment.ArticleId,
+                            CreatedAt = comment.CreatedAt,
+                            Id = comment.Id,
+                            ModifiedAt = comment.ModifiedAt,
+                            Text = comment.Text,
+                            UserId = comment.UserId,
+                            UserName = comment.User.UserName,
+                            LikesCount = comment.Likes.Count(),
+                            IsLiked = Guid.Empty.Equals(whoAskingId) ? false : comment.Likes.Any(sender => sender.Id.Equals(whoAskingId))
+                        }
+                    )
+                    .ToArray()
+                : Array.Empty<CommentModel>(),
             ApproveState = article.ApproveState,
             CreatedAt = article.CreatedAt,
             ModifiedAt = article.ModifiedAt,
@@ -132,25 +152,5 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             LikesCount = article.Likes.Count(),
             IsLiked = Guid.Empty.Equals(whoAskingId) ? false : article.Likes.Any(sender => sender.Id.Equals(whoAskingId))
         };
-    }
-
-    private static CommentModel[] IncludeComments(Guid whoAskingId, Article article)
-    {
-        return article
-            .Comments
-            .OrderBy(comment => comment.CreatedAt)
-            .Select(comment => new CommentModel
-            {
-                ArticleId = comment.ArticleId,
-                CreatedAt = comment.CreatedAt,
-                Id = comment.Id,
-                ModifiedAt = comment.ModifiedAt,
-                Text = comment.Text,
-                UserId = comment.UserId,
-                UserName = comment.User.UserName,
-                LikesCount = comment.Likes.Count(),
-                IsLiked = Guid.Empty.Equals(whoAskingId) ? false : comment.Likes.Any(sender => sender.Id.Equals(whoAskingId))
-            })
-            .ToArray();
     }
 }

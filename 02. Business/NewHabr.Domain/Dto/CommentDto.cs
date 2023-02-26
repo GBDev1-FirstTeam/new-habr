@@ -18,4 +18,8 @@ public class CommentDto
     public long CreatedAt { get; set; }
 
     public long ModifiedAt { get; set; }
+
+    public int LikesCount { get; set; }
+
+    public bool IsLiked { get; set; }
 }
