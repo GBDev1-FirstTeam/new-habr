@@ -23,15 +23,17 @@
             <button [class.no-active]="user.Banned" [disabled]="user.Banned" type="button" class="btn btn-outline-danger" (click)="ban(user, banRaise.value)">Забанить</button>
         </div>
         
-        <label>Роль:</label>
-        <select [class.disable]="!isAdmin" class="form-select set-role" #roleSelector>
-            <option value="1">Пользователь</option>
-            <option value="2">Модератор</option>
-            <option value="3">Администратор</option>
-        </select>
-        <div class="role-actions">
-            <button type="button" class="btn btn-outline-success" (click)="setRole(roleSelector.value, user)">Установить роль</button>
-        </div>
+        <ng-container *ngIf="isAdmin">
+            <label>Роль:</label>
+            <select class="form-select set-role" #roleSelector>
+                <option value="1">Пользователь</option>
+                <option value="2">Модератор</option>
+                <option value="3">Администратор</option>
+            </select>
+            <div class="role-actions">
+                <button type="button" class="btn btn-outline-success" (click)="setRole(roleSelector.value, user)">Установить роль</button>
+            </div>
+        </ng-container>
     </div>
 </div>
 
