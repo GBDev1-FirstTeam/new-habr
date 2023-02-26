@@ -213,6 +213,23 @@ public class UserService : IUserService
         return result;
     }
 
+    public async Task<ICollection<UserProfileDto>> GetUsers(CancellationToken cancellationToken)
+    {
+        var users = await _repositoryManager
+            .UserRepository
+            .GetAllAsync(false, cancellationToken);
+
+        List<UserProfileDto> userProfileDtos = new List<UserProfileDto>();
+
+        foreach (var user in users)
+        {
+            var dto = _mapper.Map<UserProfileDto>(user);
+            dto.Roles = await _userManager.GetRolesAsync(user);
+            userProfileDtos.Add(dto);
+        }
+        return userProfileDtos;
+    }
+
 
 
     private async Task<User> GetUserAndCheckIfItExistsAsync(Guid id, bool trackChanges, CancellationToken cancellationToken)
@@ -251,12 +268,5 @@ public class UserService : IUserService
 
         if (user!.Banned)
             throw new UserBannedException(user.BannedAt!.Value);
-    }
-
-    public async Task<ICollection<UserProfileDto>> GetUsers(CancellationToken cancellationToken)
-    {
-        var users = await _repositoryManager.UserRepository.GetAllAsync(false, cancellationToken);
-        var usersDto = _mapper.Map<ICollection<UserProfileDto>>(users);
-        return usersDto;
     }
 }
