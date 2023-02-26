@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, Injector } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Backend } from '../models/Configuration';
-import { Publication, PublicationRequest, PublicationsResponse, PublicationUser } from '../models/Publication';
+import { Publication, PublicationRequest, PublicationsResponse, PublicationsUserResponse } from '../models/Publication';
 import { Commentary } from '../models/Commentary';
 import { PutUserInfo, User, UserInfo } from '../models/User';
 import { ConfigurationService } from './ConfigurationService';
@@ -145,9 +145,9 @@ export class HttpRequestService {
     const url = this.backend.baseURL + `/Users/${id}`;
     return this.get<UserInfo>(url);
   }
-  getUserPublications(id: string): Observable<PublicationUser[]> {
+  getUserPublications(id: string): Observable<PublicationsUserResponse> {
     const url = this.backend.baseURL + `/Users/${id}/articles`;
-    return this.get<Array<PublicationUser>>(url);
+    return this.get<PublicationsUserResponse>(url);
   }
   // #endregion
 

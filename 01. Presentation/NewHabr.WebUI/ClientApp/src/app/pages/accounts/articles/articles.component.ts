@@ -33,7 +33,7 @@ export class ArticlesComponent implements OnInit {
       this.accountId = params.id;
        const publicationsSubscribtion = this.http.getUserPublications(this.accountId).subscribe(p => {
         if (p) {
-          this.publications = _.orderBy(p, ['CreatedAt'], ['desc']);
+          this.publications = _.orderBy(p.Articles, ['CreatedAt'], ['desc']);
         }
       })
 
