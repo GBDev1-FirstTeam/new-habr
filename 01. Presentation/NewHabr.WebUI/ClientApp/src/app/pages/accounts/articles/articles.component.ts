@@ -2,8 +2,8 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { PublicationUser } from 'src/app/core/models/Publication';
-import { ApproveState } from 'src/app/core/models/Structures';
 import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
+import { ArticleState } from 'src/app/core/static/ArticleState';
 import * as _ from 'lodash';
 
 @Component({
@@ -21,6 +21,7 @@ export class ArticlesComponent implements OnInit {
 
   succesfulModerate: boolean = false;
   succesfulPublicate: boolean = false;
+  succesfulUnPublicate: boolean = false;
 
   constructor(
     private http: HttpRequestService,
@@ -48,20 +49,25 @@ export class ArticlesComponent implements OnInit {
 
   create = () => this.router.navigate(['accounts', this.accountId, 'articles', 'create']);
 
-  publicate = (post: PublicationUser) => {
-    lastValueFrom(this.http.publishArticle(post.Id!)).then(() => {
-      this.succesfulPublicate = true;
-      post.Published = true;
+  publish = (post: PublicationUser) => {
+    lastValueFrom(this.http.publishPost(post.Id!)).then(() => {
+      if (post.ApproveState === ArticleState.NotApproved) {
+        this.succesfulModerate = true;
+        post.ApproveState = ArticleState.WaitApproval;
+      } else {
+        this.succesfulPublicate = true;
+        post.Published = true;
+      }
     });
   };
 
-  moderate = (post: PublicationUser) => {
-    lastValueFrom(this.http.setPublicationState(post.Id!, ApproveState.WaitApproval)).then(() => {
-      this.succesfulModerate = true;
-      post.ApproveState = 'WaitApproval';
+  unpublish = (post: PublicationUser) => {
+    lastValueFrom(this.http.unpublishPost(post.Id!)).then(() => {
+      this.succesfulUnPublicate = true;
+      post.Published = false;
     });
   };
 
-  mayBePublish = (post: PublicationUser) => (!post.Published && post.ApproveState === 'Approved');
-  mayBeModerate = (post: PublicationUser) => (!post.Published && post.ApproveState === 'NotApproved');
+  mayBePublish = (post: PublicationUser) => !post.Published && post.ApproveState !== ArticleState.WaitApproval;
+  mayBeUnPublish = (post: PublicationUser) => post.Published;
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Publication } from 'src/app/core/models/Publication';
 import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
+import { ArticleState } from 'src/app/core/static/ArticleState';
 
 @Component({
   selector: 'app-approval',
@@ -30,11 +31,11 @@ export class ApprovalComponent implements OnInit {
       case '1':
         this.showPublications = this.publications; break;
       case '2':
-        this.showPublications = this.publications?.filter(x => x.ApproveState === 'WaitApproval'); break;
+        this.showPublications = this.publications?.filter(x => x.ApproveState === ArticleState.WaitApproval); break;
       case '3':
-        this.showPublications = this.publications?.filter(x => x.ApproveState === 'NotApproved'); break;
+        this.showPublications = this.publications?.filter(x => x.ApproveState === ArticleState.NotApproved); break;
       case '4':
-        this.showPublications = this.publications?.filter(x => x.ApproveState === 'Approved'); break;
+        this.showPublications = this.publications?.filter(x => x.ApproveState === ArticleState.Approved); break;
     }
   }
 }

@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { Publication } from 'src/app/core/models/Publication';
-import { ApproveState } from 'src/app/core/models/Structures';
 import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
 import { AppStoreProvider } from 'src/app/core/store/store';
 
@@ -44,13 +43,13 @@ export class ApprovalPostComponent implements OnInit, OnDestroy {
   }
 
   approve = (post: Publication) => {
-    lastValueFrom(this.http.setPublicationState(this.postId, ApproveState.Approved)).then(() => {
+    lastValueFrom(this.http.approvePost(this.postId)).then(() => {
       this.succesfulApprove = true;
     })
   }
 
   refuse = (post: Publication) => {
-    lastValueFrom(this.http.setPublicationState(this.postId, ApproveState.NotApproved)).then(() => {
+    lastValueFrom(this.http.disapprovePost(this.postId)).then(() => {
       this.succesfulRefuse = true;
     })
   }

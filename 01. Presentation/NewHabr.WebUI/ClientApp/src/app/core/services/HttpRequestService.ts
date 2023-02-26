@@ -14,7 +14,7 @@ import { SecureQuestion } from '../models/SecureQuestion';
 import { AppStoreProvider } from '../store/store';
 import { Category } from '../models/Category';
 import { Tag } from '../models/Tag';
-import { NameStruct, QuestionStruct } from '../models/Structures';
+import { BanStruct, NameStruct, QuestionStruct } from '../models/Structures';
 
 @Injectable({
   providedIn: 'root',
@@ -133,6 +133,14 @@ export class HttpRequestService {
     const url = this.backend.baseURL + `/Users/${id}`;
     return this.put<PutUserInfo, any>(url, body);
   }
+  getUsers(): Observable<Array<UserInfo>> {
+    const url = this.backend.baseURL + `/Users`;
+    return this.get<Array<UserInfo>>(url);
+  }
+  banUser(id: string, body: BanStruct): Observable<Array<UserInfo>> {
+    const url = this.backend.baseURL + `/Users/${id}/ban`;
+    return this.put<BanStruct, any>(url, body);
+  }
   getUserInfo(id: string) {
     const url = this.backend.baseURL + `/Users/${id}`;
     return this.get<UserInfo>(url);
@@ -156,8 +164,20 @@ export class HttpRequestService {
     const url = this.backend.baseURL + `/Articles/${id}/publish`;
     return this.put<any, any>(url, undefined);
   }
-  setPublicationState(id: string, approveState: number): Observable<any> {
-    const url = this.backend.baseURL + `/Articles/${id}/approve?approveState=${approveState}`;
+  publishPost(id: string): Observable<any> {
+    const url = this.backend.baseURL + `/Articles/${id}/publish`;
+    return this.put<any, any>(url, null);
+  }
+  unpublishPost(id: string): Observable<any> {
+    const url = this.backend.baseURL + `/Articles/${id}/unpublish`;
+    return this.put<any, any>(url, null);
+  }
+  approvePost(id: string): Observable<any> {
+    const url = this.backend.baseURL + `/Articles/${id}/approve`;
+    return this.put<any, any>(url, null);
+  }
+  disapprovePost(id: string): Observable<any> {
+    const url = this.backend.baseURL + `/Articles/${id}/disapprove`;
     return this.put<any, any>(url, null);
   }
   getPublications(step: number, count: number): Observable<PublicationsResponse> {

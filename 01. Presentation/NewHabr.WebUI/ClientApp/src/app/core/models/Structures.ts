@@ -6,15 +6,13 @@ export interface QuestionStruct {
     Question: string;
 }
 
+export interface BanStruct {
+    BanReason: string;
+}
+
 export interface Metadata {
     CurrentPage: number;
     PageSize: number;
     TotalCount: number;
     TotalPages: number;
-}
-
-export enum ApproveState {
-    NotApproved,
-    WaitApproval,
-    Approved
 }
