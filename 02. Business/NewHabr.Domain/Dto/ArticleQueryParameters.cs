@@ -1,5 +1,7 @@
 ﻿#nullable disable
 
+using static NewHabr.Domain.QueryParametersDefinitions;
+
 namespace NewHabr.Domain.Dto;
 
 public class ArticleQueryParameters : QueryParameters
@@ -10,5 +12,5 @@ public class ArticleQueryParameters : QueryParameters
 
     public string OrderBy { get; set; }
 
-    public string ByRating { get; set; }
+    public RatingOrderBy ByRating { get; set; }
 }

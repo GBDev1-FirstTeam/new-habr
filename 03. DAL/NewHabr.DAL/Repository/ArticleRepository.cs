@@ -106,12 +106,12 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
         var articleModels = query
             .Select(ArticleToArticleModel(whoAskingId, withComments));
 
-        if (queryParams.ByRating is not null && queryParams.ByRating.Equals(QueryParametersDefinitions.OrderingRatingTypes.Descending, StringComparison.OrdinalIgnoreCase))
+        if (queryParams.ByRating == QueryParametersDefinitions.RatingOrderBy.Descending)
         {
             articleModels = articleModels
                 .OrderByDescending(article => article.LikesCount);
         }
-        else if (queryParams.ByRating is not null && queryParams.ByRating.Equals(QueryParametersDefinitions.OrderingRatingTypes.Ascending, StringComparison.OrdinalIgnoreCase))
+        else if (queryParams.ByRating == QueryParametersDefinitions.RatingOrderBy.Ascending)
         {
             articleModels = articleModels
                 .OrderBy(article => article.LikesCount);

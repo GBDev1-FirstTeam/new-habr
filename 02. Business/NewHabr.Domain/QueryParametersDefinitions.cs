@@ -8,11 +8,11 @@ public struct QueryParametersDefinitions
         public const string Descending = "descending";
     }
 
-    public struct OrderingRatingTypes
+    public enum RatingOrderBy
     {
-        public const string None = "";
-        public const string Ascending = "asc";
-        public const string Descending = "desc";
+        None,
+        Ascending,
+        Descending,
     }
 
     public const string PageNumber = "pageNumber";

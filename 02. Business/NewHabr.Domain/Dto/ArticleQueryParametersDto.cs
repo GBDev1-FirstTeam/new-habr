@@ -18,5 +18,5 @@ public class ArticleQueryParametersDto : QueryParameters
     public string OrderBy { get; set; } = QueryParametersDefinitions.OrderingTypes.Descending;
 
     [FromQuery]
-    public string ByRating { get; set; } = QueryParametersDefinitions.OrderingRatingTypes.None;
+    public QueryParametersDefinitions.RatingOrderBy ByRating { get; set; } = QueryParametersDefinitions.RatingOrderBy.None;
 }
