@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\01. Presentation\NewHabr.WebApi\NewHabr.WebApi.csproj" />
     <ProjectReference Include="..\..\02. Business\NewHabr.Business\NewHabr.Business.csproj" />
   </ItemGroup>
   <ItemGroup>

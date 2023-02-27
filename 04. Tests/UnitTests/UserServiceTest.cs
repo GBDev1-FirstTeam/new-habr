@@ -49,7 +49,7 @@ public class UserServiceTest
             .Setup(repman => repman.NotificationRepository).Returns(_notificationRepositoryMock.Object);
 
         var opt = Options.Create(new AppSettings { UserBanExpiresInDays = 14 });
-        _userService = new UserService(opt, _mapper, _repositoryManagerMock.Object, null, null);
+        _userService = new UserService(opt, _mapper, _repositoryManagerMock.Object, null, null, null);
     }
 
     [Fact]

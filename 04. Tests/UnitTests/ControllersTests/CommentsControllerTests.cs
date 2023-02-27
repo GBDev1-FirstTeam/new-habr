@@ -1,27 +1,24 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NewHabr.Domain.Contracts.Services;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Models;
 using NewHabr.WebApi.Controllers;
-using Microsoft.AspNetCore.Authorization;
 using NewHabr.Domain.Exceptions;
 using NewHabr.WebApi.Extensions;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
-using NewHabr.Domain;
 
-namespace UnitTests.Controllers;
+namespace UnitTests.ControllersTests;
 
 public class CommentsControllerTests
 {
     private readonly CommentsController _commentsController;
     private readonly Mock<ICommentService> _commentServiceMock;
     private readonly Mock<ILogger<CommentsController>> _loggerMock;
-    private Mock<UserManager<User>> _userManagerMock;
+    private readonly Mock<UserManager<User>> _userManagerMock;
     private readonly Mock<IUserStore<User>> _userStoreMock;
     private readonly Comment _comment;
     private readonly User _user;
@@ -31,10 +28,9 @@ public class CommentsControllerTests
         _loggerMock = new Mock<ILogger<CommentsController>>();
         _comment = new Comment() { Id = Guid.NewGuid() };
         _userStoreMock = new Mock<IUserStore<User>>();
-        //ConfigureUserManagerMocking();
 
         _commentsController = new CommentsController(_commentServiceMock.Object, _loggerMock.Object);
-        
+
         var claims = new Claim[]
         {
             new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString())
@@ -56,7 +52,7 @@ public class CommentsControllerTests
         Assert.NotNull(result);
         Assert.IsAssignableFrom<ActionResult<List<CommentDto>>>(result);
         _commentServiceMock.Verify(service => service.GetAllAsync(It.IsAny<CancellationToken>()), Times.Once);
-    }    
+    }
 
     [Fact]
 
@@ -120,7 +116,7 @@ public class CommentsControllerTests
         var okResult = result as NoContentResult;
         // Assert
         Assert.NotNull(result);
-        
+
         Assert.Equal(204, okResult.StatusCode);
 
         _commentServiceMock.Verify(service =>
@@ -170,7 +166,7 @@ public class CommentsControllerTests
     public async Task Update_Throws_UserBannedExeption_403StatusCode()
     {
         //Arrange        
-        _commentServiceMock.Setup(s => 
+        _commentServiceMock.Setup(s =>
             s.UpdateAsync(_comment.Id,
                 _user.Id,
                 It.IsAny<CommentUpdateRequest>(),
@@ -290,7 +286,7 @@ public class CommentsControllerTests
             .Throws(new Exception());
         //Act
         var result = await _commentsController.GetAll(It.IsAny<CancellationToken>());
-        
+
         var okResult = result.Result as StatusCodeResult;
 
         //Assert
@@ -302,7 +298,7 @@ public class CommentsControllerTests
     public async Task Create_Throws_Exception_500StatusCode()
     {
         //Arrange
-        _commentServiceMock.Setup(s => 
+        _commentServiceMock.Setup(s =>
             s.CreateAsync(_user.Id,
                 It.IsAny<CommentCreateRequest>(),
                 It.IsAny<CancellationToken>()))
