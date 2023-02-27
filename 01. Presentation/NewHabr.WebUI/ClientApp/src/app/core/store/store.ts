@@ -1,16 +1,21 @@
+import { UserInfo } from './../models/User';
 import { Publication } from "../models/Publication";
 import { createStore, withProps, Store, StoreDef, select } from '@ngneat/elf';
 import { Injectable } from "@angular/core";
 import { HttpRequestService } from "../services/HttpRequestService";
-import { Authorization } from "../models/Authorization";
-import { RegistrationRequest } from "../models/Registration";
 import { RecoveryRequestAnswer } from "../models/Recovery";
+import { Authorization, LoginRequest, RegisterRequest } from "../models/Authorization";
 
 export interface AppStore {
     publications: Array<Publication> | null,
-    post: Publication | null,
+    
+    userInfo: UserInfo | null,
+    
     auth: Authorization | null,
-    isAuth: boolean
+    isAuth: boolean,
+    isUser: boolean,
+    isAdmin: boolean,
+    isModerator: boolean,
 }
 
 @Injectable({
@@ -30,13 +35,19 @@ export class AppStoreProvider {
 
             withProps<AppStore>({
                 publications: null,
-                post: null,
+                
+                userInfo: null,
+                
                 auth: auth,
-                isAuth: !!auth?.User && !!auth?.Token && !!auth?.RefreshToken
+                isAuth: this.isAuth(auth),
+                isUser: this.isUser(auth),
+                isAdmin: this.isAdmin(auth),
+                isModerator: this.isModerator(auth),
             })
         );
     }
 
+    /*
     loadPublications() {
         if (this.store.getValue().publications == null) {
             const publicationsSubscribtion = this.http.getPublications().subscribe(publications => {
@@ -47,21 +58,8 @@ export class AppStoreProvider {
             });
         }
     }
-    
-    loadPublicationById(id: string) {
-        const post = this.store.getValue().post;
-        if (post == null || post.Id !== id) {
-            const postSubscribtion = this.http.getPostById(id).subscribe(post => {
-                if (post) {
-                    this.updatePost(post);
-                    postSubscribtion.unsubscribe();
-                }
-            });
-        }
-    }
 
     getPublicationsFromStore = () => this.store.pipe(select((state => state.publications)));
-    getPostFromStore = () => this.store.pipe(select((state => state.post)));
     
     private updatePublications(publications: Array<Publication>) {
         this.store.update(st => ({
@@ -69,54 +67,50 @@ export class AppStoreProvider {
             publications: publications
         }))
     }
-    
-    private updatePost(post: Publication) {
-        this.store.update(st => ({
-            ...st,
-            post: post
-        }))
-    }
+    */
 
     private authSubscribtion = (auth: Authorization) => {
-        const isAuth = !!auth?.User && !!auth?.Token && !!auth?.RefreshToken;
-        if (isAuth) {
+        if (this.isAuth(auth)) {
             this.store.update(st => ({
                 ...st,
                 auth: auth,
-                isAuth: isAuth
+                isAuth: this.isAuth(auth),
+                isUser: this.isUser(auth),
+                isAdmmin: this.isAdmin(auth),
+                isModerator: this.isModerator(auth),
             }))
         } else {
             this.store.update(st => ({
                 ...st,
                 auth: null,
-                isAuth: false
+                isAuth: false,
+                isUser: false,
+                isAdmmin: false,
+                isModerator: false,
             }))
         }
         this.saveToLocalStorage(auth);
     }
 
-    authentication(login: string, password: string) {
-        const authenticationSubscribtion = this.http.postAuthentication({
-            Login: login,
-            Password: password
-        }).subscribe(auth => {
+    login(loginData: LoginRequest) {
+        const loginSubscribtion = this.http.login(loginData).subscribe(auth => {
             this.authSubscribtion(auth);
-            authenticationSubscribtion.unsubscribe();
+            loginSubscribtion.unsubscribe();
         });
     }
     
-    register(registerData: RegistrationRequest) {
-        const registrationSubscribtion =
-            this.http.postRegistration(registerData).subscribe(auth => {
+    register(registerData: RegisterRequest) {
+        const registerSubscribtion =
+            this.http.register(registerData).subscribe(auth => {
             this.authSubscribtion(auth);
-            registrationSubscribtion.unsubscribe();
+            registerSubscribtion.unsubscribe();
         });
     }
 
     recovery(recoveryData: RecoveryRequestAnswer) {
         const recoverySubscribtion =
             this.http.postRecoveryAnswer(recoveryData).subscribe(auth => {
-            this.authSubscribtion(auth);
+            // this.authSubscribtion(auth);
             recoverySubscribtion.unsubscribe();
         });
     }
@@ -124,14 +118,21 @@ export class AppStoreProvider {
     logout() {
         this.store.update(st => ({
             ...st,
+            userInfo: null,
             auth: null,
-            isAuth: false
+            isAuth: false,
+            isUser: false,
+            isAdmmin: false,
+            isModerator: false,
         }))
         localStorage.removeItem(this.authObjectName)
     }
 
     getAuth = () => this.store.pipe(select((state => state.auth)));
     getIsAuth = () => this.store.pipe(select((state => state.isAuth)));
+    getIsUser = () => this.store.pipe(select((state => state.isUser)));
+    getIsAdmin = () => this.store.pipe(select((state => state.isAdmin)));
+    getIsModerator = () => this.store.pipe(select((state => state.isModerator)));
 
     private saveToLocalStorage(auth: Authorization) {
         localStorage.setItem(this.authObjectName, JSON.stringify(auth))
@@ -140,4 +141,33 @@ export class AppStoreProvider {
     private readFromLocalStorage(): Authorization | null {
         return JSON.parse(localStorage.getItem(this.authObjectName)!) as Authorization | null;
     }
+
+    loadUserInfo(id: string) {
+        if (this.store.getValue().userInfo == null) {
+            const userInfoSubscribtion = this.http.getUserInfo(id).subscribe(info => {
+                if (info) {
+                    this.updateUserInfo(info);
+                    userInfoSubscribtion.unsubscribe();
+                }
+            });
+        }
+    }
+    private updateUserInfo(userInfo: UserInfo) {
+        this.store.update(st => ({
+            ...st,
+            userInfo: userInfo
+        }))
+    }
+    getUserInfo = () => this.store.pipe(select((state => state.userInfo)));
+    clearUserInfo() {
+        this.store.update(st => ({
+            ...st,
+            userInfo: null
+        }))
+    }
+
+    private isAuth = (auth: Authorization | null) : boolean => !!auth?.User && !!auth?.Token;
+    private isUser = (auth: Authorization | null) : boolean => auth?.User?.Roles.includes('User') || false;
+    private isAdmin = (auth: Authorization | null) : boolean => auth?.User?.Roles.includes('Administrator') || false;
+    private isModerator = (auth: Authorization | null) : boolean => auth?.User?.Roles.includes('Moderator') || false;
 }

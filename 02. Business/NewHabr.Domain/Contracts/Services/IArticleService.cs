@@ -6,34 +6,34 @@ namespace NewHabr.Domain.Contracts;
 
 public interface IArticleService
 {
-    /// <exception cref="ArticleNotFoundException"></exception>
-    Task<IReadOnlyCollection<CommentWithLikedMark>> GetCommentsWithLikedMarkAsync(
-        Guid id,
-        Guid userId,
-        CancellationToken cancellationToken = default);
+    Task<ArticleDto> GetByIdAsync(Guid articleId, Guid whoAskingId, CancellationToken cancellationToken);
 
-    /// <exception cref="ArticleNotFoundException"></exception>
-    Task<ArticleDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<ArticlesGetResponse> GetPublishedAsync(Guid whoAskingId, ArticleQueryParametersDto queryParams, CancellationToken cancellationToken);
 
-    Task<IReadOnlyCollection<ArticleDto>> GetUnpublishedAsync(CancellationToken cancellationToken = default);
+    Task<ArticlesGetResponse> GetUnpublishedAsync(ArticleQueryParametersDto queryParams, CancellationToken cancellationToken);
 
-    Task<IReadOnlyCollection<ArticleDto>> GetDeletedAsync(CancellationToken cancellationToken = default);
+    Task<ArticlesGetResponse> GetDeletedAsync(ArticleQueryParametersDto queryParams, CancellationToken cancellationToken);
 
-    /// <exception cref="CategoryNotFoundException"></exception>
-    Task CreateAsync(ArticleCreateRequest request, Guid creatorId, CancellationToken cancellationToken = default);
+    Task CreateAsync(ArticleCreateRequest request, Guid creatorId, CancellationToken cancellationToken);
 
-    /// <exception cref="ArticleNotFoundException"></exception>
-    Task UpdateAsync(Guid articleId, Guid modifierId, ArticleUpdateRequest articleToUpdate, CancellationToken cancellationToken = default);
+    Task UpdateAsync(Guid articleId, Guid modifierId, ArticleUpdateRequest articleToUpdate, CancellationToken cancellationToken);
 
-    /// <exception cref="ArticleNotFoundException"></exception>
-    Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
 
-    /// <exception cref="ArticleNotFoundException"></exception>
-    /// <exception cref="ArticleIsNotApproveException"></exception>
-    Task SetPublicationStatusAsync(Guid id, bool publicationStatus, CancellationToken cancellationToken = default);
+    /// <summary>
+    /// Switch Published state(published or unpublished). If Artice is not approved, approval process starts
+    /// </summary>
+    Task PublishAsync(Guid id, bool publicationStatus, CancellationToken cancellationToken);
 
-    /// <exception cref="ArticleNotFoundException"></exception>
-    Task SetApproveStateAsync(Guid id, ApproveState state, CancellationToken cancellationToken = default);
+    /// <summary>
+    /// Approve article if in WaitApproval state, after approval, article turns published
+    /// </summary>
+    Task SetApproveStateAsync(Guid id, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Disapprove article if in WaitApproval state
+    /// </summary>
+    Task SetDisapproveStateAsync(Guid articleId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Sets 'Like' mark at article

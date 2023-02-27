@@ -1,8 +1,12 @@
 <div class="post-container">
-    <div class="author">
-        <span (click)="navigate(post?.UserId)">{{ post?.UserLogin }}&nbsp;</span>
-        <span *ngIf="post?.PublishedAt">опубликовано {{ (post?.PublishedAt || 0).toTime() }}</span>
-        <span style="color: red" *ngIf="!post?.PublishedAt">не опубликовано</span>
+    <div class="author" *ngIf="userId && userName">
+        <span (click)="navigate(userId)">{{ userName }}</span> опубликовал <span>{{ post!.PublishedAt | convertDate }}</span>
+    </div>
+    <div class="cats" *ngIf="post?.Categories?.length !== 0">
+        <span *ngFor="let cat of post?.Categories">{{ cat.Name }}</span>
+    </div>
+    <div class="tags" *ngIf="post?.Tags?.length !== 0">
+        <span class="badge bg-light" *ngFor="let tag of post?.Tags">#{{ tag.Name }}</span>
     </div>
     <div class="title">
         <h3>{{ post?.Title }}</h3>
@@ -10,9 +14,9 @@
     <div class="image">
         <img [attr.src]="post?.ImgURL">
     </div>
-    <div class="preview">
-        <p>{{ post?.Content }}</p>
-    </div>
+    
+    <div [innerHTML]="getInnerHtml()"></div>
+    
     <app-like [likeData]="post!" [path]="'publications'"></app-like>
 
     <ng-content #name></ng-content>

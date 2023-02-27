@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Xml.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NewHabr.Domain.ConfigurationModels;
 using NewHabr.Domain.Contracts;
@@ -9,6 +9,7 @@ using NewHabr.Domain.Contracts.Services;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Exceptions;
 using NewHabr.Domain.Models;
+using NewHabr.Domain.ServiceModels;
 
 namespace NewHabr.Business.Services;
 
@@ -17,6 +18,7 @@ public class UserService : IUserService
     private readonly IRepositoryManager _repositoryManager;
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<UserRole> _roleManager;
+    private readonly ILogger<UserService> _logger;
     private readonly IMapper _mapper;
     private readonly AppSettings _appSettings;
 
@@ -26,11 +28,13 @@ public class UserService : IUserService
         IMapper mapper,
         IRepositoryManager repositoryManager,
         UserManager<User> userManager,
-        RoleManager<UserRole> roleManager)
+        RoleManager<UserRole> roleManager,
+        ILogger<UserService> logger)
     {
         _repositoryManager = repositoryManager;
         _userManager = userManager;
         _roleManager = roleManager;
+        _logger = logger;
         _mapper = mapper;
         _appSettings = appSettings.Value;
     }
@@ -38,7 +42,7 @@ public class UserService : IUserService
 
     public async Task SetUserRolesAsync(Guid id, UserAssignRolesRequest request, CancellationToken cancellationToken)
     {
-        var user = await GetUserAndCheckIfItExistsAsync(id, false, cancellationToken);
+        var user = await GetUserAndCheckIfItExistsAsync(id, true, cancellationToken);
 
         await CheckIfUserRolesExist(request.Roles);
 
@@ -67,17 +71,23 @@ public class UserService : IUserService
 
     public async Task UpdateUserProfileAsync(Guid id, UserForManipulationDto userDataDto, CancellationToken cancellationToken)
     {
+        if (userDataDto.BirthDay.HasValue && (userDataDto.BirthDay.Value < -62135596800000 || userDataDto.BirthDay.Value > 253402300799999))
+            throw new ArgumentException("DateTime out of range", nameof(userDataDto));
+
         var user = await GetUserAndCheckIfItExistsAsync(id, true, cancellationToken);
         _mapper.Map(userDataDto, user);
-        await _repositoryManager.SaveAsync();
+        await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task<ICollection<UserArticleDto>> GetUserArticlesAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<ArticlesGetResponse> GetUserArticlesAsync(Guid id, Guid whoAskingId, ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken)
     {
         var user = await GetUserAndCheckIfItExistsAsync(id, false, cancellationToken);
-        var articles = await _repositoryManager.ArticleRepository.GetUserArticlesAsync(id, false, cancellationToken);
+        var queryParams = _mapper.Map<ArticleQueryParameters>(queryParamsDto);
+        var articles = await _repositoryManager
+            .ArticleRepository
+            .GetByAuthorIdAsync(id, whoAskingId, false, queryParams, cancellationToken);
 
-        return _mapper.Map<List<UserArticleDto>>(articles);
+        return new ArticlesGetResponse { Articles = _mapper.Map<ICollection<ArticleDto>>(articles), Metadata = articles.Metadata };
     }
 
     public async Task<ICollection<NotificationDto>> GetUserNotificationsAsync(Guid id, bool unreadOnly, CancellationToken cancellationToken)
@@ -93,25 +103,27 @@ public class UserService : IUserService
     {
         var user = await GetUserAndCheckIfItExistsAsync(id, false, cancellationToken);
 
-        var comments = await _repositoryManager.CommentRepository.GetUserCommentAsync(id, cancellationToken);
+        var comments = await _repositoryManager.CommentRepository.GetUserCommentAsync(id, false, cancellationToken);
 
         var commentsDto = _mapper.Map<List<UserCommentDto>>(comments);
         return commentsDto;
     }
 
-    public async Task<ICollection<LikedArticleDto>> GetUserLikedArticlesAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task<ArticlesGetResponse> GetUserLikedArticlesAsync(Guid userId, ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken)
     {
         var user = await GetUserAndCheckIfItExistsAsync(userId, false, cancellationToken);
-        var articles = await _repositoryManager.ArticleRepository.GetUserLikedArticlesAsync(userId, cancellationToken);
+        var queryParams = _mapper.Map<ArticleQueryParameters>(queryParamsDto);
+        var articles = await _repositoryManager
+            .ArticleRepository
+            .GetUserLikedArticlesAsync(userId, Guid.Empty, false, queryParams, cancellationToken);
 
-        var articlesDto = _mapper.Map<ICollection<LikedArticleDto>>(articles);
-        return articlesDto;
+        return new ArticlesGetResponse { Articles = _mapper.Map<ICollection<ArticleDto>>(articles), Metadata = articles.Metadata };
     }
 
     public async Task<ICollection<LikedCommentDto>> GetUserLikedCommentsAsync(Guid userId, CancellationToken cancellationToken)
     {
         var user = await GetUserAndCheckIfItExistsAsync(userId, false, cancellationToken);
-        var comments = await _repositoryManager.CommentRepository.GetUserLikedCommentsAsync(userId, cancellationToken);
+        var comments = await _repositoryManager.CommentRepository.GetUserLikedCommentsAsync(userId, false, cancellationToken);
 
         var commentsDto = _mapper.Map<ICollection<LikedCommentDto>>(comments);
         return commentsDto;
@@ -120,19 +132,25 @@ public class UserService : IUserService
     public async Task<ICollection<LikedUserDto>> GetUserLikedUsersAsync(Guid userId, CancellationToken cancellationToken)
     {
         var user = await GetUserAndCheckIfItExistsAsync(userId, false, cancellationToken);
-        var users = await _repositoryManager.UserRepository.GetUserLikedUsersAsync(userId, cancellationToken);
+        var users = await _repositoryManager.UserRepository.GetUserLikedUsersAsync(userId, false, cancellationToken);
 
         var usersDto = _mapper.Map<ICollection<LikedUserDto>>(users);
         return usersDto;
     }
 
-    public async Task<UserProfileDto> GetUserInfoAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task<UserProfileDto> GetUserInfoAsync(Guid userId, Guid authUserId, CancellationToken cancellationToken)
     {
-        var user = await GetUserAndCheckIfItExistsAsync(userId, false, cancellationToken);
+        var user = await _repositoryManager
+            .UserRepository
+            .GetUserInfoAsync(userId, authUserId, cancellationToken);
+
+        if (user is null)
+            throw new UserNotFoundException();
+
         var userDto = _mapper.Map<UserProfileDto>(user);
         userDto.ReceivedLikes = await _repositoryManager
             .UserRepository
-            .GetReceivedLikesCountAsync(userId, cancellationToken);
+            .GetReceivedLikesCountAsync(userId, false, cancellationToken);
 
         return userDto;
     }
@@ -177,6 +195,79 @@ public class UserService : IUserService
 
         likeReceiverUser.ReceivedLikes.Remove(likeReceiverUser.ReceivedLikes.FirstOrDefault(lsu => lsu.Id == likeSenderUser!.Id));
         await _repositoryManager.SaveAsync(cancellationToken);
+    }
+
+    public async Task<IdentityResult> ChangeUsername(Guid userId, UsernameChangeRequest request, CancellationToken cancellationToken)
+    { // при смене юзернейма, claim username в токене останется прежним
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user is null)
+            throw new UserNotFoundException();
+
+        var result = await _userManager.SetUserNameAsync(user, request.Username);
+        return result;
+    }
+
+    public async Task<IdentityResult> ChangePassword(Guid userId, UserPasswordChangeRequest request, CancellationToken cancellationToken)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user is null)
+            throw new UserNotFoundException();
+
+        var result = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+        return result;
+    }
+
+    public async Task<ICollection<UserProfileDto>> GetUsers(CancellationToken cancellationToken)
+    {
+        var users = await _repositoryManager
+            .UserRepository
+            .GetAllAsync(false, cancellationToken);
+
+        List<UserProfileDto> userProfileDtos = new List<UserProfileDto>();
+
+        foreach (var user in users)
+        {
+            var dto = _mapper.Map<UserProfileDto>(user);
+            dto.Roles = await _userManager.GetRolesAsync(user);
+            userProfileDtos.Add(dto);
+        }
+        return userProfileDtos;
+    }
+    
+    public async Task UnBanUserAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var user = await GetUserAndCheckIfItExistsAsync(userId, true, cancellationToken);
+
+        if (!user.Banned)
+            return;
+
+        user.Banned = false;
+        user.BannedAt = null;
+        user.BanReason = null;
+        user.BanExpiratonDate = null;
+        await _repositoryManager.SaveAsync(cancellationToken);
+    }
+
+    public async Task AutomaticUnbanUserAsync(CancellationToken cancellationToken)
+    {
+        var bannedUsers = await _repositoryManager
+            .UserRepository
+            .GetBannedUsersReadyToBeUnbannedAsync(true, cancellationToken);
+
+        if (bannedUsers.Count == 0)
+            return;
+
+        foreach (var user in bannedUsers)
+        {
+            _logger.LogInformation($"User '{user.UserName}'(ID: {user.Id}) was unbanned automatically. User was banned at '{user.BannedAt}' for reason: '{user.BanReason}' till '{user.BanExpiratonDate}'");
+            user.Banned = false;
+            user.BannedAt = null;
+            user.BanExpiratonDate = null;
+            user.BanReason = null;
+        }
+
+        await _repositoryManager
+            .SaveAsync(cancellationToken);
     }
 
 

@@ -208,6 +208,9 @@ namespace NewHabr.PostgreSQL.Migrations
                     b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("ImgURL")
+                        .HasColumnType("text");
+
                     b.Property<DateTimeOffset>("ModifiedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -494,21 +497,21 @@ namespace NewHabr.PostgreSQL.Migrations
                         new
                         {
                             Id = new Guid("00a98c8e-6a15-4447-9343-063f4f1efefc"),
-                            ConcurrencyStamp = "2863b9b8-f85f-4059-bb45-4f3cdf406bc4",
+                            ConcurrencyStamp = "aada65cc-b576-4f4a-9f9d-ebfd0b9280bc",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = new Guid("1bfc496b-ebd2-4c5a-b3e8-4b2c1e334391"),
-                            ConcurrencyStamp = "b17c68ab-f2cc-4ff5-bd1e-3eab2c878943",
+                            ConcurrencyStamp = "9fb110ea-6629-4101-afab-d66d6391efd1",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         },
                         new
                         {
                             Id = new Guid("aec1eede-5f3f-43ba-9ec3-454a3002c013"),
-                            ConcurrencyStamp = "6dd93045-d806-477b-a63f-4f87d2a94a23",
+                            ConcurrencyStamp = "933268c1-3283-414d-bd9a-6cebd1ece76a",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });

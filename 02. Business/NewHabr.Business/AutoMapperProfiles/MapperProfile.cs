@@ -30,9 +30,8 @@ public class MapperProfile : Profile
             .ConstructUsing((src, dst) => src.ToUnixTimeMilliseconds());
 
 
-        CreateMap<UserArticle, UserArticleDto>();
-
         CreateMap<User, UserProfileDto>();
+        CreateMap<UserInfo, UserProfileDto>();
 
         CreateMap<RegistrationRequest, AuthorizationRequest>();
 

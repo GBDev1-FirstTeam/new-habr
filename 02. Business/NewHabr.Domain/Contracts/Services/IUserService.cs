@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Identity;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Models;
 
@@ -7,12 +8,16 @@ namespace NewHabr.Domain.Contracts.Services;
 public interface IUserService
 {
     /// <summary>
+    /// Get All Users
+    /// </summary>
+    Task<ICollection<UserProfileDto>> GetUsers(CancellationToken cancellationToken);
+    /// <summary>
     /// Get list of authored articles
     /// </summary>
     /// <param name="id">user id</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ICollection<UserArticleDto>> GetUserArticlesAsync(Guid id, CancellationToken cancellationToken);
+    Task<ArticlesGetResponse> GetUserArticlesAsync(Guid id, Guid whoAskingId, ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken);
 
     /// <summary>
     /// Get User profile info
@@ -20,7 +25,7 @@ public interface IUserService
     /// <param name="userId"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<UserProfileDto> GetUserInfoAsync(Guid userId, CancellationToken cancellationToken);
+    Task<UserProfileDto> GetUserInfoAsync(Guid userId, Guid authUserId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Update user's profile
@@ -56,6 +61,16 @@ public interface IUserService
     Task SetBanOnUserAsync(Guid id, UserBanDto userBanDto, CancellationToken cancellationToken);
 
     /// <summary>
+    /// Reset ban flag
+    /// </summary>
+    Task UnBanUserAsync(Guid userId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Finds users banned where ban expiration time reached and unban them
+    /// </summary>
+    Task AutomaticUnbanUserAsync(CancellationToken cancellationToken);
+
+    /// <summary>
     /// Get list of user's comments 
     /// </summary>
     /// <param name="userId">user id who is comment author</param>
@@ -74,7 +89,7 @@ public interface IUserService
     /// </summary>
     /// <param name="userId">'like' author</param>
     /// <returns></returns>
-    Task<ICollection<LikedArticleDto>> GetUserLikedArticlesAsync(Guid userId, CancellationToken cancellationToken);
+    Task<ArticlesGetResponse> GetUserLikedArticlesAsync(Guid userId, ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken);
 
     /// <summary>
     /// Get list of comments where 'like' was set
@@ -99,5 +114,15 @@ public interface IUserService
     /// Unsets 'Like' mark at user
     /// </summary>
     Task UnsetLikeAsync(Guid userId, Guid authUserId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Change username, username must be unique
+    /// </summary>
+    Task<IdentityResult> ChangeUsername(Guid userId, UsernameChangeRequest request, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Change password
+    /// </summary>
+    Task<IdentityResult> ChangePassword(Guid userId, UserPasswordChangeRequest request, CancellationToken cancellationToken);
 }
 

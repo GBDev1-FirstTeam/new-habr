@@ -35,32 +35,32 @@ public abstract class RepositoryBase<TEntity, TKey> : IRepository<TEntity, TKey>
         Set.Update(data);
     }
 
-    protected IQueryable<TEntity> FindAll(bool trackChanges = false)
+    protected IQueryable<TEntity> FindAll(bool trackChanges)
     {
         return trackChanges ? Set : Set.AsNoTracking();
     }
 
-    protected IQueryable<TEntity> FindByCondition(Expression<Func<TEntity, bool>> expression, bool trackChanges = false)
+    protected IQueryable<TEntity> FindByCondition(Expression<Func<TEntity, bool>> expression, bool trackChanges)
     {
         return FindAll(trackChanges).Where(expression);
     }
 
-    protected IQueryable<TEntity> GetById(TKey id, bool trackChanges = false)
+    protected IQueryable<TEntity> GetById(TKey id, bool trackChanges)
     {
         return FindByCondition(e => e.Id.Equals(id) && !e.Deleted, trackChanges);
     }
 
-    protected IQueryable<TEntity> GetAll(bool trackChanges = false)
+    protected IQueryable<TEntity> GetAll(bool trackChanges)
     {
         return FindAll(trackChanges);
     }
 
-    protected IQueryable<TEntity> GetDeleted(bool trackChanges = false)
+    protected IQueryable<TEntity> GetDeleted(bool trackChanges)
     {
         return FindByCondition(a => a.Deleted, trackChanges);
     }
 
-    protected IQueryable<TEntity> GetAvailable(bool trackChanges = false)
+    protected IQueryable<TEntity> GetAvailable(bool trackChanges)
     {
         return FindByCondition(a => !a.Deleted, trackChanges);
     }

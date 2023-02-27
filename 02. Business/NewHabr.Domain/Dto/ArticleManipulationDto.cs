@@ -11,6 +11,8 @@ public abstract class ArticleManipulationDto
     [Required]
     public string Content { get; set; }
 
+    public string ImgURL { get; set; }
+
     public CategoryUpdateRequest[] Categories { get; set; } = Array.Empty<CategoryUpdateRequest>();
 
     public TagCreateRequest[] Tags { get; set; } = Array.Empty<TagCreateRequest>();

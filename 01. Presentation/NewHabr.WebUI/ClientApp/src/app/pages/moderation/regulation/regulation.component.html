@@ -1,0 +1,28 @@
+<select class="form-select" (change)="changeSelection($event)">
+    <option value="1" selected>Все пользователи платформы</option>
+    <option value="2">Активные пользователи</option>
+    <option value="3">Заблокированные пользователи</option>
+</select>
+
+<div class="cards-container">
+    <div class="card" style="width: 18rem;" *ngFor="let user of showUsers">
+        <div class="card-body">
+            <i *ngIf="!user.Banned" class="bi bi-person-check-fill"></i>
+            <i *ngIf="user.Banned" class="bi bi-person-fill-dash"></i>
+            <h5 class="card-title">{{user?.UserName}}</h5>
+        </div>
+        <div>
+            <p>{{user?.LastName}} {{user?.FirstName}} {{user?.Patronymic}}</p>
+            <p>Возраст: {{user?.Age || 'не указано'}}</p>
+            <p>Дата рождения: {{user?.BirthDay | convertDate }}</p>
+            <p>{{user?.Description}}</p>
+        </div>
+        <input [class.disable]="user.Banned" type="text" class="form-control" placeholder="Причина блокировки" #banRaise>
+        <div class="card-actions">
+            <button [class.no-active]="!user.Banned" [disabled]="!user.Banned" type="button" class="btn btn-outline-success" (click)="disableBan(user)">Снять бан</button>
+            <button [class.no-active]="user.Banned" [disabled]="user.Banned" type="button" class="btn btn-outline-danger" (click)="ban(user, banRaise.value)">Забанить</button>
+        </div>
+    </div>
+</div>
+
+<app-succesful-send [(visible)]="succesfulBan" [text]="'Пользователь заблокирован'"></app-succesful-send>

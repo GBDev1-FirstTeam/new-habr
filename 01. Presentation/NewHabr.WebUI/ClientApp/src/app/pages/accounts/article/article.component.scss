@@ -11,37 +11,56 @@
     }
 }
 
-.form-control {
-    margin: 10px 0px;
-    padding: 5px !important;
-    line-height: unset !important;
+.form-control,
+.form-select {
+  margin: 10px 0px;
+  padding: 5px !important;
+  line-height: unset !important;
 }
 
 .form-floating {
 
-    &-title {
-        textarea {
-            font-size: 1.5em;
-            height: 25px;
-        }
+  &-title {
+    textarea {
+      font-size: 1.5em;
+      height: 25px;
+    }
+  }
+
+  &-img {
+    max-height: 50vh;
+    overflow: hidden;
+
+    img {
+      width: 100%;
     }
 
-    &-img {
-        height: 50vh;
-        overflow: hidden;
-
-        img {
-            width: 100%;
-        }
-
-        textarea {
-            height: 15px;
-        }
+    textarea {
+      height: 15px;
     }
+  }
 
-    &-content {
-        textarea {
-            height: 50vh;
-        }
+  &-content {
+    textarea {
+      height: 50vh;
     }
+  }
+
+  .ql-container {
+    max-height: calc(100vh - 250px);
+    overflow: auto;
+  }
+}
+
+.btn {
+  max-width: 150px;
+}
+
+.del {
+  color: red;
+  cursor: pointer;
+}
+
+.badge {
+  margin-right: 5px;
 }

@@ -17,14 +17,14 @@ public class TagService : ITagService
         _mapper = mapper;
     }
 
-    public async Task<IReadOnlyCollection<TagDto>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<TagDto>> GetAllAsync(CancellationToken cancellationToken)
     {
-        var tags = await _repositoryManager.TagRepository.GetAvaliableAsync(cancellationToken: cancellationToken);
+        var tags = await _repositoryManager.TagRepository.GetAvaliableAsync(false, cancellationToken);
         return _mapper.Map<List<TagDto>>(tags);
     }
-    public async Task CreateAsync(TagCreateRequest request, CancellationToken cancellationToken = default)
+    public async Task CreateAsync(TagCreateRequest request, CancellationToken cancellationToken)
     {
-        var tag = _repositoryManager
+        var tag = await _repositoryManager
             .TagRepository
             .GetByNameAsync(request.Name, false, cancellationToken);
 
@@ -37,7 +37,7 @@ public class TagService : ITagService
         _repositoryManager.TagRepository.Create(newTag);
         await _repositoryManager.SaveAsync(cancellationToken);
     }
-    public async Task UpdateAsync(int id, TagUpdateRequest tagToUpdate, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(int id, TagUpdateRequest tagToUpdate, CancellationToken cancellationToken)
     {
         var targetTag = await _repositoryManager.TagRepository.GetByIdAsync(id, trackChanges: true, cancellationToken);
 
@@ -60,7 +60,7 @@ public class TagService : ITagService
 
         await _repositoryManager.SaveAsync(cancellationToken);
     }
-    public async Task DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task DeleteByIdAsync(int id, CancellationToken cancellationToken)
     {
         var tag = await _repositoryManager.TagRepository.GetByIdIncludeAsync(id, trackChanges: true, cancellationToken);
 

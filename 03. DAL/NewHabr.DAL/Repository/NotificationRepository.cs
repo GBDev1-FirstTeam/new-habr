@@ -22,7 +22,7 @@ public class NotificationRepository : RepositoryBase<Notification, Guid>, INotif
 
     public async Task<ICollection<Notification>> GetUserNotificationsAsync(Guid userId, bool unreadOnly, bool trackChanges, CancellationToken cancellationToken)
     {
-        var query = FindByCondition(n => !n.Deleted, trackChanges);
+        var query = GetAll(trackChanges);
 
         if (unreadOnly)
             query = query.Where(n => n.IsRead == false);

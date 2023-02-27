@@ -1,3 +1,4 @@
+import { ProfileComponent } from './profile/profile.component';
 import { RegisterComponent } from './register/register.component';
 import { Injectable, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -43,8 +44,17 @@ const routes: Routes = [
     component: AccountsComponent,
     children: [
       {
+        path:'',
+        redirectTo: 'profile',
+        pathMatch: 'full' 
+      },
+      {
         path: 'articles',
         component: ArticlesComponent
+      },
+      {
+        path: 'profile',
+        component: ProfileComponent
       },
       {
         path: 'articles/edit/:id',
@@ -66,7 +76,8 @@ const routes: Routes = [
     ArticlesComponent,
     ArticleComponent,
     RegisterComponent,
-    RecoveryComponent
+    RecoveryComponent,
+    ProfileComponent
   ],
   imports: [
     CommonModule,

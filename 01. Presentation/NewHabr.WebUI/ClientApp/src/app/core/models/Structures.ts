@@ -1,0 +1,18 @@
+export interface NameStruct {
+    Name: string;
+}
+
+export interface QuestionStruct {
+    Question: string;
+}
+
+export interface BanStruct {
+    BanReason: string;
+}
+
+export interface Metadata {
+    CurrentPage: number;
+    PageSize: number;
+    TotalCount: number;
+    TotalPages: number;
+}

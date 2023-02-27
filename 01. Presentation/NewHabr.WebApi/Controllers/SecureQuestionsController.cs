@@ -8,7 +8,7 @@ using NewHabr.Domain.Exceptions;
 namespace NewHabr.WebApi.Controllers;
 
 [ApiController, Route("api/[controller]")]
-[Authorize(Roles = "Administrator")]
+[Authorize(Roles = "Administrator, Moderator")]
 public class SecureQuestionsController : ControllerBase
 {
     private readonly ISecureQuestionsService _secureQuestionsService;

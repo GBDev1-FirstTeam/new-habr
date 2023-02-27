@@ -1,0 +1,34 @@
+<div class="form-container">
+    <h5>Ваши данные</h5>
+
+    <form>
+        <div class="form-group">
+            <label for="userName">Логин</label>
+            <input type="text" class="form-control" id="userName" [(ngModel)]="user && user.UserName" [value]="user?.UserName" name="userName">
+        </div>
+        <div class="form-group">
+            <label for="firstName">Имя</label>
+            <input type="text" class="form-control" id="firstName" [(ngModel)]="user && user.FirstName" [value]="user?.FirstName" name="firstName">
+        </div>
+        <div class="form-group">
+            <label for="lastName">Фамилия</label>
+            <input type="text" class="form-control" id="lastName" [(ngModel)]="user && user.LastName" [value]="user?.LastName" name="lastName">
+        </div>
+        <div class="form-group">
+            <label for="patronymic">Отчество</label>
+            <input type="text" class="form-control" id="patronymic" [(ngModel)]="user && user.Patronymic" [value]="user?.Patronymic" name="patronymic">
+        </div>
+        <div class="form-group">
+            <label for="birthDay">День рождения</label>
+            <input type="date" class="form-control" id="birthDay" [(ngModel)]="birthday" [value]="birthday" name="birthDay" (change)="changeBirthday($event)">
+        </div>
+        <div class="form-group">
+            <label for="description">Описание</label>
+            <input type="text" class="form-control" id="description" [(ngModel)]="user && user.Description" [value]="user?.Description" name="description">
+        </div>
+
+        <button type="submit" class="btn btn-outline-dark" (click)="save()">Сохранить</button>
+    </form>
+</div>
+
+<app-succesful-send [(visible)]="succesfulSend" [text]="'Данные успешно отправлены на сервер'"></app-succesful-send>

@@ -28,9 +28,14 @@
                         ],
                         "styles": [
                             "node_modules/bootstrap/dist/css/bootstrap.min.css",
+                            "node_modules/quill/dist/quill.snow.css",
+                            "node_modules/quill/dist/quill.core.css",
                             "src/styles.scss"
                         ],
-                        "scripts": []
+                        "scripts": [
+                            "node_modules/quill/dist/quill.js",
+                            "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+                        ]
                     },
                     "configurations": {
                         "production": {

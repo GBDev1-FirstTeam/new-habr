@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Models;
+using NewHabr.Domain.ServiceModels;
 
 namespace NewHabr.Business.AutoMapperProfiles;
 
@@ -14,9 +15,9 @@ public class ArticleProfile : Profile
             .ForMember(dest => dest.PublishedAt, e => e.MapFrom(src => src.PublishedAt.Value.ToUnixTimeMilliseconds()));
 
         CreateMap<ArticleDto, Article>()
-            .ForMember(dest => dest.CreatedAt, e => e.MapFrom(src => new DateTimeOffset(new DateTime(src.CreatedAt))))
-            .ForMember(dest => dest.ModifiedAt, e => e.MapFrom(src => new DateTimeOffset(new DateTime(src.ModifiedAt))))
-            .ForMember(dest => dest.PublishedAt, e => e.MapFrom(src => new DateTimeOffset(new DateTime(src.PublishedAt))));
+            .ForMember(dest => dest.CreatedAt, e => e.MapFrom(src => DateTimeOffset.FromUnixTimeMilliseconds(src.CreatedAt)))
+            .ForMember(dest => dest.ModifiedAt, e => e.MapFrom(src => DateTimeOffset.FromUnixTimeMilliseconds(src.ModifiedAt)))
+            .ForMember(dest => dest.PublishedAt, e => e.MapFrom(src => DateTimeOffset.FromUnixTimeMilliseconds(src.PublishedAt)));
 
         CreateMap<ArticleCreateRequest, Article>()
             .ForMember(dest => dest.Categories, options => options.Ignore())
@@ -25,5 +26,11 @@ public class ArticleProfile : Profile
         CreateMap<ArticleUpdateRequest, Article>()
             .ForMember(dest => dest.Categories, options => options.Ignore())
             .ForMember(dest => dest.Tags, options => options.Ignore());
+
+        CreateMap<ArticleModel, ArticleDto>();
+
+        CreateMap<ArticleQueryParametersDto, ArticleQueryParameters>()
+            .ForMember(dest => dest.From, e => e.MapFrom(src => DateTimeOffset.FromUnixTimeMilliseconds(src.From)))
+            .ForMember(dest => dest.To, e => e.MapFrom(src => DateTimeOffset.FromUnixTimeMilliseconds(src.To)));
     }
 }

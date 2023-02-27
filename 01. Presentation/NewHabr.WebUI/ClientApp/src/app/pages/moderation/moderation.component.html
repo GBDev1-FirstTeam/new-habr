@@ -1,0 +1,9 @@
+<div class="moderation-container">
+    <ul class="nav">
+        <li class="nav-item" *ngFor="let item of menu">
+          <a class="nav-link active" [class.active-path]="item.name === activePath" [routerLink]="item.url" (click)="changePath(item.name)">{{item.name}}</a>
+        </li>
+      </ul>
+    
+    <router-outlet></router-outlet>
+</div>

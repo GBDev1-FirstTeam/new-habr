@@ -43,7 +43,7 @@ export class LikeComponent implements OnInit, OnDestroy {
 
     lastValueFrom(this.http.postLike({
       Id: this.likeData.Id!,
-      Login: this.auth?.User.Login!,
+      Login: "dfn",
       UserId: this.auth?.User.Id!,
       Like: this.likeData.IsLiked
     },

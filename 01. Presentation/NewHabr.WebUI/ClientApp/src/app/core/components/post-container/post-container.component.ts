@@ -1,18 +1,30 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewEncapsulation } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { Publication } from 'src/app/core/models/Publication';
-
+import { Publication, PublicationUser } from 'src/app/core/models/Publication';
 
 @Component({
   selector: 'app-post-container',
   templateUrl: './post-container.component.html',
-  styleUrls: ['./post-container.component.scss']
+  styleUrls: ['./post-container.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class PostContainerComponent {
 
-  @Input() post: Publication | null;
+  @Input() post: Publication | PublicationUser | null;
+  userId?: string;
+  userName?: string;
+  
+  constructor(private router: Router, private sanitizer: DomSanitizer) { }
 
-  constructor(private router: Router) { }
+  ngOnInit() {
+    this.userId = (this.post as Publication)?.UserId;
+    this.userName = (this.post as Publication)?.Username;
+  }
+
+  getInnerHtml() {
+    return this.sanitizer.bypassSecurityTrustHtml(this.post?.Content as any);
+  }
 
   navigate = (id: string | undefined) => this.router.navigate(['users', id]);
 }

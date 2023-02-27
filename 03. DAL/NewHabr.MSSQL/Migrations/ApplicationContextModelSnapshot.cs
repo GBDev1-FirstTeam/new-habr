@@ -208,6 +208,9 @@ namespace NewHabr.MSSQL.Migrations
                     b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("ImgURL")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTimeOffset>("ModifiedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -496,21 +499,21 @@ namespace NewHabr.MSSQL.Migrations
                         new
                         {
                             Id = new Guid("00a98c8e-6a15-4447-9343-063f4f1efefc"),
-                            ConcurrencyStamp = "0193a15a-83ff-4049-953a-7393fe5d7492",
+                            ConcurrencyStamp = "bd9ea5f3-2f67-4ebc-a8f3-49e6144fa04b",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = new Guid("1bfc496b-ebd2-4c5a-b3e8-4b2c1e334391"),
-                            ConcurrencyStamp = "212844f9-7f66-427f-a49c-013ce0ae86dd",
+                            ConcurrencyStamp = "077d9d59-8582-4e63-9ef7-df57d251e412",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         },
                         new
                         {
                             Id = new Guid("aec1eede-5f3f-43ba-9ec3-454a3002c013"),
-                            ConcurrencyStamp = "5de83041-ee5d-444d-8b5d-10e5073a4a30",
+                            ConcurrencyStamp = "297a09dc-598f-4315-a6f8-505d9558f04b",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });

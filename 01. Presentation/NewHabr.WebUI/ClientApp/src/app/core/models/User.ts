@@ -10,3 +10,34 @@ export interface User extends Like {
     Age: number;
     Description: string;
 }
+
+export interface PutUserInfo {
+    FirstName: string;
+    LastName: string;
+    Patronymic: string;
+    BirthDay: number;
+    Description: string;
+}
+
+export interface UserInfo {
+    Id: string;
+    UserName: string;
+    Age: number;
+    Banned: boolean;
+    ReceivedLikes: number;
+    FirstName: string;
+    LastName: string;
+    Patronymic: string;
+    BirthDay: number;
+    Description: string;
+
+    BannedAt: number;
+    BanExpiratonDate: number;
+    BanReason: number;
+}
+
+export interface AuthUser {
+    Id: string;
+    UserName: string;
+    Roles: string[];
+}

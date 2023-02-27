@@ -12,5 +12,5 @@ public interface IRepositoryManager
     public ISecureQuestionsRepository SecureQuestionsRepository { get; }
     public INotificationRepository NotificationRepository { get; }
 
-    public Task SaveAsync(CancellationToken cancellationToken = default);
+    public Task SaveAsync(CancellationToken cancellationToken);
 }

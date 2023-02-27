@@ -3,7 +3,7 @@
         <nav class="nav-container-nav">
             <ul class="nav" *ngFor="let item of menu">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" [routerLink]="item.url">{{ item.name }}</a>
+                    <i [ngClass]="item.iClass"></i><a class="nav-link active" aria-current="page" [routerLink]="item.url">{{ item.name }}</a>
                 </li>
             </ul>
         </nav>
@@ -15,21 +15,25 @@
         <div class="account-container">
             <div *ngIf="isAuth; else login" class="user-container">
                 <div class="emoji">
-                    <i class="bi bi-person-check"></i>
+                    <i *ngIf="!userInfo?.Banned" class="bi bi-person-check"></i>
+                    <i *ngIf="userInfo?.Banned" class="bi bi-emoji-dizzy-fill"></i>
                 </div>
                 <div class="login">
-                    <span>Привет, {{ auth?.User?.Login }}!</span>
+                    <span>Привет, {{ auth?.User?.UserName }}!</span>
                 </div>
+                <button [class.disable]="!userInfo?.Banned"
+                        type="button" class="btn btn-secondary ban"
+                        data-bs-toggle="tooltip" data-bs-placement="left"
+                        data-bs-custom-class="custom-tooltip"
+                        [attr.data-bs-title]="blockString">Аккаунт временно заблокирован</button>
                 <hr>
                 <div class="info">
-                    Вы авторизованы как:
-                    <div>{{ auth?.User?.LastName }} {{ auth?.User?.FirstName }} {{ auth?.User?.Patronymic }}</div>
-                    <div>Возраст: {{ auth?.User?.Age }} лет</div>
-                    <div>Роль: {{ auth?.User?.Role }}</div>
+                    Ваша роль - <strong>{{ auth?.User!.Roles[0] }}</strong>
                 </div>
                 <div class="nav">
-                    <button type="button" class="btn btn-light" (click)="navigate(['accounts', auth?.User?.Id])">Мой профиль</button>
+                    <button type="button" class="btn btn-light" (click)="navigate(['accounts', auth?.User?.Id, 'profile'])">Мой профиль</button>
                     <button type="button" class="btn btn-light" (click)="navigate(['accounts', auth?.User?.Id, 'articles'])">Мои статьи</button>
+                    <button type="button" class="btn btn-light" *ngIf="isModerator" (click)="navigate(['moderation'])">Страница модератора</button>
                     <button type="button" class="btn btn-light" (click)="logout()">Выйти</button>
                 </div>
             </div>

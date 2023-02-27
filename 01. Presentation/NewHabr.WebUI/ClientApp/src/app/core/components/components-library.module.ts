@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { PostContainerComponent } from './post-container/post-container.component';
 import { CommentComponent } from './comment/comment.component';
 import { LikeComponent } from './like/like.component';
+import { SuccesfulSendComponent } from './succesful-send/succesful-send.component';
+import { PipesModule } from '../pipes/pipes.module';
 
 
 
@@ -10,15 +12,18 @@ import { LikeComponent } from './like/like.component';
   declarations: [
     PostContainerComponent,
     CommentComponent,
-    LikeComponent
+    LikeComponent,
+    SuccesfulSendComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    PipesModule
   ],
   exports: [
     PostContainerComponent,
     CommentComponent,
-    LikeComponent
+    LikeComponent,
+    SuccesfulSendComponent
   ]
 })
 export class ComponentsLibraryModule { }

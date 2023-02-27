@@ -1,21 +1,61 @@
 @import '/src/assets/scss/mixins.scss';
 
 .post-container {
-    @include card-container;
+  @include card-container;
+  @include opacity-animation;
 
-    .author {
-        span:first-child {
-            font-weight: bold;
-            cursor: pointer;
-        }
+  .author {
+    span:first-child {
+      font-weight: bold;
+      cursor: pointer;
+    }
+  }
+
+  .cats {
+    span {
+      margin-right: 10px;
+      border-bottom: 2px dotted darkslategrey;
     }
 
-    .image {
-        height: 50vh;
-        overflow: hidden;
+    margin-bottom: 10px;
+  }
 
-        img {
-            width: 100%;
-        }
+  .tags {
+    span {
+      margin-right: 10px;
     }
+
+    .bg-light {
+      color: darkslategrey;
+    }
+
+    margin-bottom: 5px;
+  }
+
+  .image {
+    height: 50vh;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+    }
+  }
+
+  .ql-syntax {
+    background-color: #23241f;
+    color: #f8f8f2;
+    overflow: auto;
+  }
+
+  .ql-align-center {
+    text-align: center;
+  }
+
+  .ql-align-justify {
+    text-align: justify;
+  }
+
+  .ql-align-right {
+    text-align: right;
+  }
 }

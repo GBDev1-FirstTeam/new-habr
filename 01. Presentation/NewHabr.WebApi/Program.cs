@@ -62,6 +62,12 @@ public class Program
 
         #endregion
 
+        #region Configure Background Services
+
+        services.AddHostedService<BackgroundUnbanUserService>();
+
+        #endregion
+
         services.Configure<AppSettings>(builder.Configuration.GetSection(AppSettings.Section));
 
         services.AddEndpointsApiExplorer();
@@ -78,6 +84,10 @@ public class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+
+        app.UseCors(
+               options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowAnyHeader().AllowCredentials()
+           );
 
         app.UseAuthentication();
         app.UseAuthorization();

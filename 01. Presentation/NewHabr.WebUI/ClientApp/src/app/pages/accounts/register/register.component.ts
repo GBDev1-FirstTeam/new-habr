@@ -2,6 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Authorization } from 'src/app/core/models/Authorization';
+import { SecureQuestion } from 'src/app/core/models/SecureQuestion';
+import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
 import { AppStoreProvider } from 'src/app/core/store/store';
 
 @Component({
@@ -13,20 +15,20 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   subscribtions: Subscription[] = [];
 
-  login: string;
-  name: string;
-  secondName: string;
-  patronymic: string;
-  age: number;
-  about: string;
+  userName: string;
+  questionsList: Array<SecureQuestion>;
+  activeQuestion: SecureQuestion;
+  answerQuestion: string;
   password: string;
   repeatPassword: string;
-
   incorrectPasswords: boolean = false;
 
   auth: Authorization;
 
-  constructor(private store: AppStoreProvider, private router: Router) { }
+  constructor(
+    private http: HttpRequestService,
+    private store: AppStoreProvider,
+    private router: Router) { }
   
   ngOnInit(): void {
     const authSubscribtion = this.store.getAuth().subscribe(auth => {
@@ -35,30 +37,33 @@ export class RegisterComponent implements OnInit, OnDestroy {
         this.router.navigate(['accounts', auth.User.Id]);
       }
     })
+    const questionsSubscribtion = this.http.getAllQuestions().subscribe(questions => {
+      if (questions) {
+        this.questionsList = questions;
+        this.activeQuestion = this.questionsList[0];
+      }
+    })
 
     this.subscribtions.push(authSubscribtion);
+    this.subscribtions.push(questionsSubscribtion);
   }
 
   ngOnDestroy(): void {
     this.subscribtions.forEach(element => element.unsubscribe());
   }
 
-  register() {
-    if (!!this.login && !!this.name && !!this.secondName && !!this.patronymic && !!this.age && !!this.about && !!this.password && !!this.repeatPassword) {
+  register(question: SecureQuestion) {
+    if (!!this.userName && !!this.answerQuestion && !!this.password && !!this.repeatPassword) {
       if (this.password !== this.repeatPassword) {
         this.incorrectPasswords = true;
         return;
       }
       this.store.register({
-        Login: this.login,
+        UserName: this.userName,
         Password: this.password,
-        FirstName: this.name,
-        LastName: this.secondName,
-        Patronymic: this.patronymic,
-        Role: 'user',
-        Age: this.age,
-        Description: this.about
-      });
+        SecurityQuestionId: question.Id,
+        SecurityQuestionAnswer: this.answerQuestion
+      })
 
       this.incorrectPasswords = false;
     }
