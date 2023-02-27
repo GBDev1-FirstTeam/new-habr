@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#nullable disable
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 
 namespace NewHabr.Domain.Dto;
@@ -16,4 +17,8 @@ public class ArticleQueryParametersDto : QueryParameters
     [FromQuery(Name = QueryParametersDefinitions.OrderBy)]
     [StringLength(10)]
     public string OrderBy { get; set; } = QueryParametersDefinitions.OrderingTypes.Descending;
+
+    [FromQuery]
+    public string Search { get; set; }
+
 }
