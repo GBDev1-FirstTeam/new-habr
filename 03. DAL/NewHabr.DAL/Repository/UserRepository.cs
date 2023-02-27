@@ -1,4 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
+﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using NewHabr.DAL.EF;
 using NewHabr.Domain.Contracts;
@@ -103,5 +103,14 @@ public class UserRepository : RepositoryBase<User, Guid>, IUserRepository
                 IsLiked = Guid.Empty.Equals(whoAskingId) ? false : user.ReceivedLikes.Any(sender => sender.Id == whoAskingId)
             })
             .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<ICollection<User>> GetBannedUsersReadyToBeUnbannedAsync(bool trackChanges, CancellationToken cancellationToken)
+    {
+        Expression<Func<User, bool>> readyToUnban = user => user.Banned
+                                                            && user.BanExpiratonDate.HasValue
+                                                            && user.BanExpiratonDate.Value.CompareTo(DateTimeOffset.UtcNow) < 0;
+        return await FindByCondition(readyToUnban, trackChanges)
+            .ToListAsync(cancellationToken);
     }
 }

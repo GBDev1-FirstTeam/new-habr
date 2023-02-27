@@ -62,6 +62,12 @@ public class Program
 
         #endregion
 
+        #region Configure Background Services
+
+        services.AddHostedService<BackgroundUnbanUserService>();
+
+        #endregion
+
         services.Configure<AppSettings>(builder.Configuration.GetSection(AppSettings.Section));
 
         services.AddEndpointsApiExplorer();

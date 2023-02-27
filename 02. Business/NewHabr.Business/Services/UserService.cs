@@ -1,6 +1,7 @@
 ﻿using System;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NewHabr.Domain.ConfigurationModels;
 using NewHabr.Domain.Contracts;
@@ -17,6 +18,7 @@ public class UserService : IUserService
     private readonly IRepositoryManager _repositoryManager;
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<UserRole> _roleManager;
+    private readonly ILogger<UserService> _logger;
     private readonly IMapper _mapper;
     private readonly AppSettings _appSettings;
 
@@ -26,11 +28,13 @@ public class UserService : IUserService
         IMapper mapper,
         IRepositoryManager repositoryManager,
         UserManager<User> userManager,
-        RoleManager<UserRole> roleManager)
+        RoleManager<UserRole> roleManager,
+        ILogger<UserService> logger)
     {
         _repositoryManager = repositoryManager;
         _userManager = userManager;
         _roleManager = roleManager;
+        _logger = logger;
         _mapper = mapper;
         _appSettings = appSettings.Value;
     }
@@ -228,6 +232,42 @@ public class UserService : IUserService
             userProfileDtos.Add(dto);
         }
         return userProfileDtos;
+    }
+    
+    public async Task UnBanUserAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var user = await GetUserAndCheckIfItExistsAsync(userId, true, cancellationToken);
+
+        if (!user.Banned)
+            return;
+
+        user.Banned = false;
+        user.BannedAt = null;
+        user.BanReason = null;
+        user.BanExpiratonDate = null;
+        await _repositoryManager.SaveAsync(cancellationToken);
+    }
+
+    public async Task AutomaticUnbanUserAsync(CancellationToken cancellationToken)
+    {
+        var bannedUsers = await _repositoryManager
+            .UserRepository
+            .GetBannedUsersReadyToBeUnbannedAsync(true, cancellationToken);
+
+        if (bannedUsers.Count == 0)
+            return;
+
+        foreach (var user in bannedUsers)
+        {
+            _logger.LogInformation($"User '{user.UserName}'(ID: {user.Id}) was unbanned automatically. User was banned at '{user.BannedAt}' for reason: '{user.BanReason}' till '{user.BanExpiratonDate}'");
+            user.Banned = false;
+            user.BannedAt = null;
+            user.BanExpiratonDate = null;
+            user.BanReason = null;
+        }
+
+        await _repositoryManager
+            .SaveAsync(cancellationToken);
     }
 
 
