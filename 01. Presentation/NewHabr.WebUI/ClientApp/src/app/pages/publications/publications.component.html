@@ -2,6 +2,7 @@
     *ngFor="let post of publications"
     [post]="post"
     >
+    <app-like [count]="post.LikesCount || 0" [isLiked]="post?.IsLiked || false" (doLike)="like($event, post)"></app-like>
     <div class="link">
         <button type="button" class="btn btn-outline-dark" (click)="navigate(post?.Id)">Читать далее...</button>
     </div>

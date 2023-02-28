@@ -1,8 +1,7 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { lastValueFrom, Subscription } from 'rxjs';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { Authorization } from '../../models/Authorization';
-import { Like } from '../../models/Like';
-import { HttpRequestService } from '../../services/HttpRequestService';
+import { LikeData } from '../../models/Like';
 import { AppStoreProvider } from '../../store/store';
 
 @Component({
@@ -17,10 +16,12 @@ export class LikeComponent implements OnInit, OnDestroy {
   auth: Authorization | null;
   isAuth: boolean;
 
-  @Input() likeData: Like;
-  @Input() path: string;
+  @Input() isLiked: boolean;
+  @Input() count: number;
 
-  constructor(private http: HttpRequestService, private store: AppStoreProvider) { }
+  @Output() doLike: EventEmitter<LikeData> = new EventEmitter<LikeData>()
+
+  constructor(private store: AppStoreProvider) { }
 
   ngOnInit(): void {
     const authSubscribtion = this.store.getAuth().subscribe(auth => this.auth = auth);
@@ -35,18 +36,12 @@ export class LikeComponent implements OnInit, OnDestroy {
   }
 
   like() {
-    if (!this.isAuth) return;
-
-    if (this.likeData.IsLiked) this.likeData.LikesCount!--;
-    else this.likeData.LikesCount!++;
-    this.likeData.IsLiked = !this.likeData.IsLiked;
-
-    lastValueFrom(this.http.postLike({
-      Id: this.likeData.Id!,
-      Login: "dfn",
-      UserId: this.auth?.User.Id!,
-      Like: this.likeData.IsLiked
-    },
-    this.path))
+    this.count = this.isLiked ? this.count - 1 : this.count + 1;
+    this.isLiked = !this.isLiked;
+    
+    this.doLike.emit({
+      count: this.count,
+      isLiked: this.isLiked
+    })
   }
 }

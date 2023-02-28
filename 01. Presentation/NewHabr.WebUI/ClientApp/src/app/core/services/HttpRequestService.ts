@@ -3,7 +3,7 @@ import { Injectable, Injector } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Backend } from '../models/Configuration';
 import { Publication, PublicationRequest, PublicationsResponse, PublicationsResponseUser } from '../models/Publication';
-import { Commentary } from '../models/Commentary';
+import { Commentary, CommentRequest } from '../models/Commentary';
 import { PutUserInfo, User, UserInfo } from '../models/User';
 import { ConfigurationService } from './ConfigurationService';
 import { LikeRequest } from '../models/Like';
@@ -196,6 +196,10 @@ export class HttpRequestService {
     const url = this.backend.baseURL + `/Articles/unpublished?PageNumber=${step}&PageSize=${count}`;
     return this.get<PublicationsResponse>(url);
   }
+  likeArticle(id: string, mode: string): Observable<any> {
+    const url = this.backend.baseURL + `/Articles/${id}/${mode}`;
+    return this.put<any, any>(url, null);
+  }
   // #endregion
 
   // #region /Categories
@@ -217,6 +221,13 @@ export class HttpRequestService {
   addTag(body: NameStruct) {
     const url = this.backend.baseURL + `/Tags`;
     return this.post<NameStruct, any>(url, body);
+  }
+  // #endregion
+
+  // #region /Comments
+  addComment(body: CommentRequest) {
+    const url = this.backend.baseURL + `/Comments`;
+    return this.post<CommentRequest, any>(url, body);
   }
   // #endregion
 }
