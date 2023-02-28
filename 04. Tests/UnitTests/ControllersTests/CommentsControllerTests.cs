@@ -145,7 +145,7 @@ public class CommentsControllerTests
     }
 
     [Fact]
-    public async Task Create_Throws_UserBannedExeption_403StatusCode()
+    public async Task Create_WhenUserBanned_Returns403()
     {
         //Arrange
         _commentServiceMock.Setup(s =>
@@ -163,7 +163,7 @@ public class CommentsControllerTests
     }
 
     [Fact]
-    public async Task Update_Throws_UserBannedExeption_403StatusCode()
+    public async Task Update_WhenUserBanned_Returns403()
     {
         //Arrange        
         _commentServiceMock.Setup(s =>
@@ -184,7 +184,7 @@ public class CommentsControllerTests
     }
 
     [Fact]
-    public async Task SetLike_Throws_UserBannedExeption_403StatusCode()
+    public async Task SetLike_WhenUserBanned_Returns403()
     {
         //Arrange        
         _commentServiceMock.Setup(s => s.SetLikeAsync(_comment.Id, _user.Id, It.IsAny<CancellationToken>()))
@@ -198,7 +198,7 @@ public class CommentsControllerTests
     }
 
     [Fact]
-    public async Task Update_Throws_CommentNotFoundExeption_404StatusCode()
+    public async Task Update_WhenCommentNotFound_Returns404()
     {
         //Arrange        
         _commentServiceMock.Setup(s =>
@@ -220,7 +220,7 @@ public class CommentsControllerTests
     }
 
     [Fact]
-    public async Task Delete_Throws_CommentNotFoundExeption_404StatusCode()
+    public async Task Delete_WhenCommentNotFound_Returns404()
     {
         //Arrange        
         _commentServiceMock.Setup(s =>
@@ -239,7 +239,7 @@ public class CommentsControllerTests
     }
 
     [Fact]
-    public async Task SetLike_Throws_CommentNotFoundExeption_404StatusCode()
+    public async Task SetLike_WhenCommentNotFound_Returns404()
     {
         //Arrange        
         _commentServiceMock.Setup(s =>
@@ -259,7 +259,7 @@ public class CommentsControllerTests
     }
 
     [Fact]
-    public async Task UnsetLike_Throws_CommentNotFoundExeption_404StatusCode()
+    public async Task UnsetLike_WhenCommentNotFound_Returns404()
     {
         //Arrange        
         _commentServiceMock.Setup(s =>
@@ -279,7 +279,7 @@ public class CommentsControllerTests
     }
 
     [Fact]
-    public async Task GetAll_Throws_Exception_500StatusCode()
+    public async Task GetAll_WhenAnyException_Returns500()
     {
         //Arrange
         _commentServiceMock.Setup(s => s.GetAllAsync(It.IsAny<CancellationToken>()))
@@ -295,7 +295,7 @@ public class CommentsControllerTests
     }
 
     [Fact]
-    public async Task Create_Throws_Exception_500StatusCode()
+    public async Task Create_WhenAnyException_Returns500()
     {
         //Arrange
         _commentServiceMock.Setup(s =>
@@ -314,7 +314,7 @@ public class CommentsControllerTests
     }
 
     [Fact]
-    public async Task Update_Throws_Exception_500StatusCode()
+    public async Task Update_WhenAnyException_Returns500()
     {
         //Arrange
         _commentServiceMock.Setup(s => s.UpdateAsync(_comment.Id, _user.Id, It.IsAny<CommentUpdateRequest>(), It.IsAny<CancellationToken>())).Throws(new Exception());
@@ -329,7 +329,7 @@ public class CommentsControllerTests
     }
 
     [Fact]
-    public async Task Delete_Throws_Exception_500StatusCode()
+    public async Task Delete_WhenAnyException_Returns500()
     {
         //Arrange
         _commentServiceMock.Setup(s => s.DeleteAsync(_comment.Id, It.IsAny<CancellationToken>())).Throws(new Exception());
