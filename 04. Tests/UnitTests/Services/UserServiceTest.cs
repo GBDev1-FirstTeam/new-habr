@@ -51,7 +51,7 @@ public class UserServiceTest
 
         var opt = Options.Create(new AppSettings { UserBanExpiresInDays = 14 });
         _appSettings = opt.Value;
-        _userService = new UserService(opt, _mapper, _repositoryManagerMock.Object, null, null);
+        _userService = new UserService(opt, _mapper, _repositoryManagerMock.Object, null, null, null);
     }
 
     [Fact]
