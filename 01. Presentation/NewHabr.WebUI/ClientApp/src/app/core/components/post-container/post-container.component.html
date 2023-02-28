@@ -15,7 +15,7 @@
         <img [attr.src]="post?.ImgURL">
     </div>
     
-    <div [innerHTML]="getInnerHtml()"></div>
+    <div #htmlContainer></div>
     
     <app-like [likeData]="post!" [path]="'publications'"></app-like>
 

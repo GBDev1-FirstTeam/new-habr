@@ -48,3 +48,8 @@ export interface PublicationsResponse {
     Articles: Array<Publication>;
     Metadata: Metadata;
 }
+
+export interface PublicationsUserResponse {
+    Articles: Array<PublicationUser>;
+    Metadata: Metadata;
+}
