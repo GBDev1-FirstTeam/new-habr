@@ -30,6 +30,7 @@ export interface UserInfo {
     Patronymic: string;
     BirthDay: number;
     Description: string;
+    Roles: string[];
 
     BannedAt: number;
     BanExpiratonDate: number;

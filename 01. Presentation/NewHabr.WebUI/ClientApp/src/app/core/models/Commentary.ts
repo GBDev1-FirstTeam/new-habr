@@ -1,7 +1,7 @@
 export interface Commentary {
     Id?: string;
     UserId: string;
-    UserName: string;
+    Username: string;
     ArticleId: string;
     Text: string;
     CreatedAt?: number;

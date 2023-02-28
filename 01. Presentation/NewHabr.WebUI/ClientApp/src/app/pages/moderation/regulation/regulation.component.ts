@@ -63,18 +63,19 @@ export class RegulationComponent implements OnInit {
     }
   }
   
-  setRole(select: string, user: UserInfo) {
-    const setRoleLocal = (id: string, role: string) => lastValueFrom(this.http.setUserRole(id, { Roles: [role] })).then(() => {
+  setRole(userId: string, isUser: boolean, isModerator: boolean, isAdmin: boolean) {
+    const roles = [];
+
+    if (isUser) roles.push(UserRole.User);
+    if (isModerator) roles.push(UserRole.Moderator);
+    if (isAdmin) roles.push(UserRole.Administrator);
+
+    lastValueFrom(this.http.setUserRole(userId, { Roles: roles })).then(() => {
       this.succesfulSetRole = true;
     })
-
-    switch (select) {
-      case '1':
-        setRoleLocal(user.Id, UserRole.User); break;
-      case '2':
-        setRoleLocal(user.Id, UserRole.Moderator); break;
-      case '3':
-        setRoleLocal(user.Id, UserRole.Administrator); break;
-    }
   }
+
+  isUser = (roles: string[]) => roles.includes(UserRole.User);
+  isModerator = (roles: string[]) => roles.includes(UserRole.Moderator);
+  isAdministrator = (roles: string[]) => roles.includes(UserRole.Administrator);
 }

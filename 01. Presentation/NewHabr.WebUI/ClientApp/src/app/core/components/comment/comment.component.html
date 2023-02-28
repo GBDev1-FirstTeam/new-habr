@@ -1,7 +1,7 @@
 <div class="comment-container">
     <div class="author">
-        <span (click)="navigate(comment.UserId)">{{ comment.UserName }}&nbsp;</span>
-        <span>({{ comment.ModifiedAt | convertDate }})</span>
+        <span (click)="navigate(comment.UserId)">{{ comment.Username }}&nbsp;</span>
+        <span>прокомментировал {{ comment.ModifiedAt | convertDate }}</span>
     </div>
     <div class="text">
         <span>{{ comment.Text }}</span>

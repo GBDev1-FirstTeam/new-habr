@@ -6,6 +6,7 @@ import { HttpRequestService } from "../services/HttpRequestService";
 import { RecoveryRequestAnswer } from "../models/Recovery";
 import { Authorization, LoginRequest, RegisterRequest } from "../models/Authorization";
 import { StorageKeys } from '../static/StorageKeys';
+import { UserRole } from '../static/UserRole';
 
 export interface AppStore {
     publications: Array<Publication> | null,
@@ -167,7 +168,7 @@ export class AppStoreProvider {
     }
 
     private isAuth = (auth: Authorization | null) : boolean => !!auth?.User && !!auth?.Token;
-    private isUser = (auth: Authorization | null) : boolean => auth?.User?.Roles.includes('User') || false;
-    private isAdmin = (auth: Authorization | null) : boolean => auth?.User?.Roles.includes('Administrator') || false;
-    private isModerator = (auth: Authorization | null) : boolean => auth?.User?.Roles.includes('Moderator') || false;
+    private isUser = (auth: Authorization | null) : boolean => auth?.User?.Roles.includes(UserRole.User) || false;
+    private isAdmin = (auth: Authorization | null) : boolean => auth?.User?.Roles.includes(UserRole.Administrator) || false;
+    private isModerator = (auth: Authorization | null) : boolean => auth?.User?.Roles.includes(UserRole.Moderator) || false;
 }

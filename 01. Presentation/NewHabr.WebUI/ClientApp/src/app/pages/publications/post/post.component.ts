@@ -63,7 +63,7 @@ export class PostComponent implements OnInit, OnDestroy {
     this.post.Comments?.push({
       Id: undefined,
       UserId: this.auth!.User.Id,
-      UserName: this.auth!.User.UserName,
+      Username: this.auth!.User.UserName,
       ArticleId: this.postId,
       Text: this.commentText,
       ModifiedAt: Date.now()

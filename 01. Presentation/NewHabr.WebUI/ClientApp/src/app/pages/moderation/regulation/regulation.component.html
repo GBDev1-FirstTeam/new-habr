@@ -23,19 +23,26 @@
             <button [class.no-active]="user.Banned" [disabled]="user.Banned" type="button" class="btn btn-outline-danger" (click)="ban(user, banRaise.value)">Забанить</button>
         </div>
         
-        <ng-container *ngIf="isAdmin">
-            <label>Роль:</label>
-            <select class="form-select set-role" #roleSelector>
-                <option value="1">Пользователь</option>
-                <option value="2">Модератор</option>
-                <option value="3">Администратор</option>
-            </select>
+        <ng-container [class.disabled]="!isAdmin">
+            <label>Роли:</label>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" [checked]="isUser(user.Roles)" #roleUserInput>
+                <label class="form-check-label">Пользователь</label>
+            </div>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" [checked]="isModerator(user.Roles)" #roleModeratorInput>
+                <label class="form-check-label" for="set-role-moderator">Модератор</label>
+            </div>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" [checked]="isAdministrator(user.Roles)" #roleAdminInput>
+                <label class="form-check-label">Администратор</label>
+            </div>
             <div class="role-actions">
-                <button type="button" class="btn btn-outline-success" (click)="setRole(roleSelector.value, user)">Установить роль</button>
+                <button type="button" class="btn btn-outline-success" (click)="setRole(user.Id, roleUserInput.checked, roleModeratorInput.checked, roleAdminInput.checked)">Установить роли</button>
             </div>
         </ng-container>
     </div>
 </div>
 
 <app-succesful-send [(visible)]="succesfulBan" [text]="'Пользователь заблокирован'"></app-succesful-send>
-<app-succesful-send [(visible)]="succesfulSetRole" [text]="'Роль успешно применена'"></app-succesful-send>
+<app-succesful-send [(visible)]="succesfulSetRole" [text]="'Роли успешно применены'"></app-succesful-send>

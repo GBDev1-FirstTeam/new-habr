@@ -3,7 +3,7 @@
 
     <h6>Комментарии:</h6>
     <app-comment *ngFor="let comment of post?.Comments" [comment]="comment"></app-comment>
-    <div *ngIf="post?.Comments!.length == 0" class="comments-banner">Добавьте первый комментарий к данной статье!</div>
+    <div *ngIf="post?.Comments!.length == 0" class="comments-banner">Список комментариев пуст!</div>
 
     <ng-container *ngIf="isAuth">
         <h6>Добавление нового комментария:</h6>
