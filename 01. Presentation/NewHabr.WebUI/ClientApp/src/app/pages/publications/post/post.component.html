@@ -1,4 +1,6 @@
 <app-post-container [post]="post">
+    <app-like [count]="post.LikesCount || 0" [isLiked]="post?.IsLiked || false" (doLike)="like($event)"></app-like>
+
     <h6>Комментарии:</h6>
     <app-comment *ngFor="let comment of post?.Comments" [comment]="comment"></app-comment>
     <div *ngIf="post?.Comments!.length == 0" class="comments-banner">Добавьте первый комментарий к данной статье!</div>

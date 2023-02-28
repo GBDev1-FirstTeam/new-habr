@@ -6,6 +6,7 @@ import { CommentRequest } from 'src/app/core/models/Commentary';
 import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
 import { Authorization } from 'src/app/core/models/Authorization';
 import { AppStoreProvider } from 'src/app/core/store/store';
+import { LikeData } from 'src/app/core/models/Like';
 
 @Component({
   selector: 'app-post',
@@ -71,5 +72,14 @@ export class PostComponent implements OnInit, OnDestroy {
     lastValueFrom(this.http.addComment(comment));
 
     this.commentText = '';
+  }
+
+  like(likeData: LikeData) {
+    if(likeData.isLiked) {
+      lastValueFrom(this.http.likeArticle(this.postId || '', 'like'))
+    }
+    else {
+      lastValueFrom(this.http.likeArticle(this.postId || '', 'unlike'))
+    }
   }
 }

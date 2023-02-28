@@ -36,6 +36,8 @@ export class LikeComponent implements OnInit, OnDestroy {
   }
 
   like() {
+    if (!this.isAuth) return;
+
     this.count = this.isLiked ? this.count - 1 : this.count + 1;
     this.isLiked = !this.isLiked;
     

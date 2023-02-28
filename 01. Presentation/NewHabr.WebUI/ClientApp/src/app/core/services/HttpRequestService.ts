@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, Injector } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Backend } from '../models/Configuration';
 import { Publication, PublicationRequest, PublicationsResponse, PublicationsResponseUser } from '../models/Publication';
@@ -11,10 +11,10 @@ import { Registration, RegistrationRequest } from '../models/Registration';
 import { Recovery, RecoveryChangePassword, RecoveryQuestion, RecoveryRequestAnswer, RecoveryRequestLogin } from '../models/Recovery';
 import { Authorization, LoginRequest, RegisterRequest } from '../models/Authorization';
 import { SecureQuestion } from '../models/SecureQuestion';
-import { AppStoreProvider } from '../store/store';
 import { Category } from '../models/Category';
 import { Tag } from '../models/Tag';
 import { BanStruct, NameStruct, QuestionStruct, RoleStruct } from '../models/Structures';
+import { StorageKeys } from '../static/StorageKeys';
 
 @Injectable({
   providedIn: 'root',
@@ -22,47 +22,44 @@ import { BanStruct, NameStruct, QuestionStruct, RoleStruct } from '../models/Str
 export class HttpRequestService {
 
   backend: Backend;
-  auth: Authorization;
 
   constructor(
     private http: HttpClient,
-    private configService: ConfigurationService,
-    private injector: Injector) {
+    private configService: ConfigurationService) {
     this.backend = this.configService.configuration.backend;
-    
-    setTimeout(() => {
-      const store = this.injector.get(AppStoreProvider);
-      store.getAuth().subscribe(auth => {
-        if (auth) {
-          this.auth = auth;
-        }
-      })
-    });
   }
 
   private get<Type>(url: string): Observable<Type> {
+    const auth = this.getAuth();
+
     return this.http.get<Type>(url, {
       headers: {
-        "Authorization": `Bearer ${this.auth?.Token}`
+        "Authorization": `Bearer ${auth?.Token}`
       }
     });
   }
   
   private post<InType, OutType>(url: string, body: InType): Observable<OutType> {
+    const auth = this.getAuth();
+
     return this.http.post<OutType>(url, body, {
       headers: {
-        "Authorization": `Bearer ${this.auth?.Token}`
+        "Authorization": `Bearer ${auth?.Token}`
       }
     });
   }
   
   private put<InType, OutType>(url: string, body: InType): Observable<OutType> {
+    const auth = this.getAuth();
+
     return this.http.put<OutType>(url, body, {
       headers: {
-        "Authorization": `Bearer ${this.auth?.Token}`
+        "Authorization": `Bearer ${auth?.Token}`
       }
     });
   }
+
+  private getAuth = () => JSON.parse(localStorage.getItem(StorageKeys.AuthObject)!) as Authorization | null;
   
   getUserById(id: string): Observable<User> {
     const url = this.backend.baseURL + `/users/${id}`;

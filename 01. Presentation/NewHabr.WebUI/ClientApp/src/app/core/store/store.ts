@@ -5,6 +5,7 @@ import { Injectable } from "@angular/core";
 import { HttpRequestService } from "../services/HttpRequestService";
 import { RecoveryRequestAnswer } from "../models/Recovery";
 import { Authorization, LoginRequest, RegisterRequest } from "../models/Authorization";
+import { StorageKeys } from '../static/StorageKeys';
 
 export interface AppStore {
     publications: Array<Publication> | null,
@@ -23,7 +24,6 @@ export interface AppStore {
 })
 export class AppStoreProvider {
 
-    private authObjectName: string = 'auth-object';
     private store: Store<StoreDef<AppStore>>;
 
     constructor(private http: HttpRequestService) {
@@ -125,7 +125,7 @@ export class AppStoreProvider {
             isAdmin: false,
             isModerator: false,
         }))
-        localStorage.removeItem(this.authObjectName)
+        localStorage.removeItem(StorageKeys.AuthObject)
     }
 
     getAuth = () => this.store.pipe(select((state => state.auth)));
@@ -135,11 +135,11 @@ export class AppStoreProvider {
     getIsModerator = () => this.store.pipe(select((state => state.isModerator)));
 
     private saveToLocalStorage(auth: Authorization) {
-        localStorage.setItem(this.authObjectName, JSON.stringify(auth))
+        localStorage.setItem(StorageKeys.AuthObject, JSON.stringify(auth))
     }
     
     private readFromLocalStorage(): Authorization | null {
-        return JSON.parse(localStorage.getItem(this.authObjectName)!) as Authorization | null;
+        return JSON.parse(localStorage.getItem(StorageKeys.AuthObject)!) as Authorization | null;
     }
 
     loadUserInfo(id: string) {
