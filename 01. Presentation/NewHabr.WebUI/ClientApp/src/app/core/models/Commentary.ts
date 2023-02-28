@@ -1,10 +1,14 @@
-import { Like } from "./Like";
-
-export interface Commentary extends Like {
+export interface Commentary {
     Id?: string;
     UserId: string;
-    UserLogin: string;
+    UserName: string;
     ArticleId: string;
     Text: string;
-    CreatedAt: number;
+    CreatedAt?: number;
+    ModifiedAt: number;
+}
+
+export interface CommentRequest {
+    Text: string;
+    ArticleId: string;
 }

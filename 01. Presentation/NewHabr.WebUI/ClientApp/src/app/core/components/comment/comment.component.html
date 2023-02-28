@@ -1,10 +1,9 @@
 <div class="comment-container">
     <div class="author">
-        <span (click)="navigate(comment.UserId)">{{ comment.UserLogin }}&nbsp;</span>
-        <span>({{ (comment.CreatedAt || 0).toTime() }})</span>
+        <span (click)="navigate(comment.UserId)">{{ comment.UserName }}&nbsp;</span>
+        <span>({{ comment.ModifiedAt | convertDate }})</span>
     </div>
     <div class="text">
         <span>{{ comment.Text }}</span>
     </div>
-    <app-like [likeData]="comment" [path]="'comments'"></app-like>
 </div>

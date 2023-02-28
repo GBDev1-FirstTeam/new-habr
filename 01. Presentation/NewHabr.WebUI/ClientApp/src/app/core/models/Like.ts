@@ -10,3 +10,8 @@ export interface Like {
   LikesCount?: number | undefined;
   IsLiked?: boolean | undefined;
 }
+
+export interface LikeData {
+  count: number;
+  isLiked: boolean;
+}
