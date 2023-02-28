@@ -14,8 +14,8 @@
     <div class="image">
         <img [attr.src]="post?.ImgURL">
     </div>
-    
-    <div [innerHTML]="getInnerHtml()"></div>
+
+    <div #htmlContainer></div>
 
     <ng-content #name></ng-content>
 </div>

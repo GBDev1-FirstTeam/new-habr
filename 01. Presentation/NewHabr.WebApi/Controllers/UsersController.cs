@@ -202,7 +202,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPut("{id}/ban")]
-    [Authorize(Roles = "Moderator")]
+    [Authorize(Roles = "Moderator,Administrator")]
     public async Task<IActionResult> SetBanOnUser([FromRoute] Guid id, [FromBody] UserBanDto userBanDto, CancellationToken cancellationToken)
     {
         try
@@ -219,6 +219,26 @@ public class UsersController : ControllerBase
         }
         return NoContent();
     }
+
+    [HttpPut("{id}/unban")]
+    [Authorize(Roles = "Moderator,Administrator")]
+    public async Task<IActionResult> UnBanOnUser([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _userService.UnBanUserAsync(id, cancellationToken);
+        }
+        catch (UserNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+        return NoContent();
+    }
+
 
     [Authorize]
     [HttpPut("{userId}/like")]

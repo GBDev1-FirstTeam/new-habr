@@ -21,4 +21,6 @@ public class UserProfileDto : UserForManipulationDto
     public int ReceivedLikes { get; set; }
 
     public bool IsLiked { get; set; }
+
+    public ICollection<string> Roles { get; set; }
 }

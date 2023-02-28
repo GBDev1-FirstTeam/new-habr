@@ -1,5 +1,4 @@
-import { Component, Input, ViewEncapsulation } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
+import { Component, ElementRef, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { Publication, PublicationUser } from 'src/app/core/models/Publication';
 
@@ -9,21 +8,20 @@ import { Publication, PublicationUser } from 'src/app/core/models/Publication';
   styleUrls: ['./post-container.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class PostContainerComponent {
+export class PostContainerComponent implements OnInit {
 
   @Input() post: Publication | PublicationUser | null;
   userId?: string;
   userName?: string;
+
+  @ViewChild('htmlContainer', { static: true }) viewMe: ElementRef;
   
-  constructor(private router: Router, private sanitizer: DomSanitizer) { }
+  constructor(private router: Router) { }
 
   ngOnInit() {
     this.userId = (this.post as Publication)?.UserId;
     this.userName = (this.post as Publication)?.Username;
-  }
-
-  getInnerHtml() {
-    return this.sanitizer.bypassSecurityTrustHtml(this.post?.Content as any);
+    this.viewMe.nativeElement.innerHTML = (this.post as Publication)?.Content
   }
 
   navigate = (id: string | undefined) => this.router.navigate(['users', id]);
