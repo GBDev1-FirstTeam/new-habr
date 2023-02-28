@@ -17,7 +17,7 @@ public interface IUserService
     /// <param name="id">user id</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ArticlesGetResponse> GetUserArticlesAsync(Guid id, Guid whoAskingId, ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken);
+    Task<ArticlesGetResponse> GetUserArticlesAsync(Guid userId, Guid whoAskingId, ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken);
 
     /// <summary>
     /// Get User profile info

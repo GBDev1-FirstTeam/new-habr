@@ -3,6 +3,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NewHabr.Domain;
 using NewHabr.Domain.ConfigurationModels;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Contracts.Services;
@@ -79,13 +80,25 @@ public class UserService : IUserService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task<ArticlesGetResponse> GetUserArticlesAsync(Guid id, Guid whoAskingId, ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken)
+    public async Task<ArticlesGetResponse> GetUserArticlesAsync(Guid userId, Guid whoAskingId, ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken)
     {
-        var user = await GetUserAndCheckIfItExistsAsync(id, false, cancellationToken);
+        var user = await GetUserAndCheckIfItExistsAsync(userId, false, cancellationToken);
         var queryParams = _mapper.Map<ArticleQueryParameters>(queryParamsDto);
-        var articles = await _repositoryManager
-            .ArticleRepository
-            .GetByAuthorIdAsync(id, whoAskingId, false, queryParams, cancellationToken);
+
+        PagedList<ArticleModel> articles;
+
+        if (userId.Equals(whoAskingId))
+        {
+            articles = await _repositoryManager
+                .ArticleRepository
+                .GetAllByAuthorIdAsync(userId, false, queryParams, cancellationToken);
+        }
+        else
+        {
+            articles = await _repositoryManager
+                .ArticleRepository
+                .GetByAuthorIdAsync(userId, whoAskingId, false, queryParams, cancellationToken);
+        }
 
         return new ArticlesGetResponse { Articles = _mapper.Map<ICollection<ArticleDto>>(articles), Metadata = articles.Metadata };
     }
@@ -233,7 +246,7 @@ public class UserService : IUserService
         }
         return userProfileDtos;
     }
-    
+
     public async Task UnBanUserAsync(Guid userId, CancellationToken cancellationToken)
     {
         var user = await GetUserAndCheckIfItExistsAsync(userId, true, cancellationToken);

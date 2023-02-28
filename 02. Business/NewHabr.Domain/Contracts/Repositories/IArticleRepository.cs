@@ -22,7 +22,15 @@ public interface IArticleRepository : IRepository<Article, Guid>
 
     Task<PagedList<ArticleModel>> GetDeletedAsync(ArticleQueryParameters queryParams, CancellationToken cancellationToken);
 
+    /// <summary>
+    /// Get published articles belonging to Author
+    /// </summary>
     Task<PagedList<ArticleModel>> GetByAuthorIdAsync(Guid authorId, Guid whoAskingId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Get published and unpublished articles belonging to Author
+    /// </summary>
+    Task<PagedList<ArticleModel>> GetAllByAuthorIdAsync(Guid authorId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken);
 
     Task<PagedList<ArticleModel>> GetUserLikedArticlesAsync(Guid userId, Guid whoAskingId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken);
 }
