@@ -34,7 +34,7 @@
                     <button type="button" class="btn btn-light" (click)="navigate(['accounts', auth?.User?.Id, 'profile'])">Мой профиль</button>
                     <button type="button" class="btn btn-light" (click)="navigate(['accounts', auth?.User?.Id, 'articles'])">Мои статьи</button>
                     <button type="button" class="btn btn-light" *ngIf="isModerator || isAdmin" (click)="navigate(['moderation'])">
-                        {{isModerator ? 'Страница модератора' : 'Страница администратора'}}
+                        {{isAdmin ? 'Страница администратора' : 'Страница модератора'}}
                     </button>
                     <button type="button" class="btn btn-light" (click)="logout()">Выйти</button>
                 </div>
