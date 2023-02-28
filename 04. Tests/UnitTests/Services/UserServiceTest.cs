@@ -15,7 +15,7 @@ using NewHabr.Domain.Exceptions;
 using NewHabr.Domain.Models;
 using NewHabr.Domain.ServiceModels;
 
-namespace UnitTests;
+namespace UnitTests.Services;
 
 public class UserServiceTest
 {
@@ -26,11 +26,12 @@ public class UserServiceTest
     private readonly Mock<IArticleRepository> _articleRepositoryMock;
     private readonly IMapper _mapper;
     private readonly User _user;
+    private readonly AppSettings _appSettings;
 
     public UserServiceTest()
     {
         _user = new User { Id = Guid.NewGuid() };
-        _mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile(typeof(MapperProfile))));
+        _mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddMaps(typeof(MapperProfile))));
         _userRepositoryMock = new Mock<IUserRepository>();
         _userRepositoryMock
             .Setup(ur => ur.GetByIdAsync(_user.Id, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
@@ -49,11 +50,25 @@ public class UserServiceTest
             .Setup(repman => repman.NotificationRepository).Returns(_notificationRepositoryMock.Object);
 
         var opt = Options.Create(new AppSettings { UserBanExpiresInDays = 14 });
-        _userService = new UserService(opt, _mapper, _repositoryManagerMock.Object, null, null);
+        _appSettings = opt.Value;
+        _userService = new UserService(opt, _mapper, _repositoryManagerMock.Object, null, null, null);
     }
 
     [Fact]
-    public async Task SetBanOnUser_ValidState_SaveAsyncCalledOnce()
+    public async Task SetBanOnUser_UserIsBanned()
+    {
+        // arrange
+
+        // act
+        await _userService.SetBanOnUserAsync(_user.Id, new UserBanDto { BanReason = "unit testing" }, CancellationToken.None);
+
+        // assert
+        Assert.True(_user.Banned);
+        _repositoryManagerMock.Verify(r => r.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task SetBanOnUser_BanReasonIsSpecified()
     {
         // arrange
 
@@ -62,11 +77,37 @@ public class UserServiceTest
 
         // assert
         Assert.Equal("unit testing", _user.BanReason);
+        _repositoryManagerMock.Verify(r => r.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
 
+    [Fact]
+    public async Task SetBanOnUser_BanTimeIsSpecified()
+    {
+        // arrange
+
+        // act
+        await _userService.SetBanOnUserAsync(_user.Id, new UserBanDto { BanReason = "unit testing" }, CancellationToken.None);
+
+        // assert
         Assert.NotNull(_user.BannedAt);
-        Assert.InRange((DateTimeOffset)_user.BannedAt!, DateTimeOffset.UtcNow.AddMinutes(-1), DateTimeOffset.UtcNow.AddMinutes(1));
+        Assert.InRange((DateTimeOffset)_user.BannedAt, DateTimeOffset.UtcNow.AddMinutes(-1), DateTimeOffset.UtcNow.AddMinutes(1));
+        _repositoryManagerMock.Verify(r => r.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
 
+    [Fact]
+    public async Task SetBanOnUser_BanExpirationTimeIsSpecified()
+    {
+        // arrange
+
+        // act
+        await _userService.SetBanOnUserAsync(_user.Id, new UserBanDto { BanReason = "unit testing" }, CancellationToken.None);
+
+        // assert
         Assert.NotNull(_user.BanExpiratonDate);
+        Assert.InRange(
+            (DateTimeOffset)_user.BanExpiratonDate,
+            DateTimeOffset.UtcNow.AddMinutes(-1).AddDays(_appSettings.UserBanExpiresInDays),
+            DateTimeOffset.UtcNow.AddMinutes(1).AddDays(_appSettings.UserBanExpiresInDays));
 
         _repositoryManagerMock.Verify(r => r.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -173,14 +214,15 @@ public class UserServiceTest
                     PublishedAt = dto
                 }
             }, 10, 1, 100));
-
+        var queryParams = new ArticleQueryParametersDto();
         // act
-        var articles = await _userService.GetUserArticlesAsync(_user.Id, Guid.Empty, null, CancellationToken.None);
+        var articles = await _userService.GetUserArticlesAsync(_user.Id, Guid.Empty, queryParams, CancellationToken.None);
 
         // assert
         Assert.NotNull(articles);
         Assert.NotEmpty(articles.Articles);
-        Assert.IsAssignableFrom<ICollection<ArticleDto>>(articles);
+        Assert.IsAssignableFrom<ArticlesGetResponse>(articles);
+        Assert.IsAssignableFrom<ICollection<ArticleDto>>(articles.Articles);
         Assert.All(articles.Articles, item =>
         {
             Assert.Equal(item.ModifiedAt, dto.ToUnixTimeMilliseconds());
@@ -210,7 +252,7 @@ public class UserServiceTest
     }
 
     [Fact]
-    public async Task GetUserNotificationsAsync_as_ReturnsCollectionNotifications()
+    public async Task GetUserNotificationsAsync_ReturnsCollectionNotifications()
     {
         // arrange
         _notificationRepositoryMock
@@ -225,5 +267,18 @@ public class UserServiceTest
 
         // assert
         Assert.NotNull(notificationDto);
+    }
+
+    [Fact]
+    public async Task GetUserNotificationsAsync_UserNotExists_ThrowUserNotFoundException()
+    {
+        // arrange
+        _userRepositoryMock.Reset();
+
+        // act
+        var Act = async () => await _userService.GetUserNotificationsAsync(_user.Id, false, CancellationToken.None);
+
+        // assert
+        await Assert.ThrowsAsync<UserNotFoundException>(() => Act());
     }
 }

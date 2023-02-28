@@ -20,17 +20,30 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Moq" Version="4.18.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.14" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\01. Presentation\NewHabr.WebApi\NewHabr.WebApi.csproj" />
     <ProjectReference Include="..\..\02. Business\NewHabr.Business\NewHabr.Business.csproj" />
+    <ProjectReference Include="..\..\01. Presentation\NewHabr.WebApi\NewHabr.WebApi.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Moq" />
+    <None Remove="Services\" />
+    <None Remove="Controllers\" />
+    <None Remove="Repository\" />
+    <None Remove="Mocks\" />
   </ItemGroup>
   <ItemGroup>
     <None Update="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\" />
+    <Folder Include="Controllers\" />
+    <Folder Include="Repository\" />
+    <Folder Include="Mocks\" />
   </ItemGroup>
 </Project>
