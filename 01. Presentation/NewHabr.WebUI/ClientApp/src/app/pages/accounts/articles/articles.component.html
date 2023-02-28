@@ -15,12 +15,13 @@
     </div>
     <div class="buttons-container">
         <button type="button" class="btn btn-outline-dark" (click)="edit(post?.Id)">Редактировать</button>
-        <button *ngIf="mayBeModerate(post)"
-            type="button" class="btn btn-outline-dark" (click)="moderate(post)">Модерация</button>
         <button *ngIf="mayBePublish(post)"
-            type="button" class="btn btn-outline-dark" (click)="publicate(post)">Опубликовать</button>
+            type="button" class="btn btn-outline-dark" (click)="publish(post)">Опубликовать</button>
+        <button *ngIf="mayBeUnPublish(post)"
+            type="button" class="btn btn-outline-dark" (click)="unpublish(post)">Снять с публикации</button>
     </div>
 </app-post-container>
 
 <app-succesful-send [(visible)]="succesfulModerate" [text]="'Ваша статья отправлена модератору'"></app-succesful-send>
+<app-succesful-send [(visible)]="succesfulUnPublicate" [text]="'Статья снята с публикации'"></app-succesful-send>
 <app-succesful-send [(visible)]="succesfulPublicate" [text]="'Ваша статья успешно опубликована'"></app-succesful-send>

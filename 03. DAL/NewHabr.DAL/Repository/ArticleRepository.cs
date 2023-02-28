@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Linq;
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using NewHabr.DAL.EF;
 using NewHabr.DAL.Extensions;
@@ -47,8 +48,14 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
     public async Task<PagedList<ArticleModel>> GetPublishedAsync(Guid whoAskingId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken)
     {
         var query = FindByCondition(article => article.Published, false)
-            .Where(article => article.PublishedAt >= queryParams.From && article.PublishedAt <= queryParams.To)
-            .OrderByType(article => article.PublishedAt, queryParams.OrderBy);
+            .Where(article => article.PublishedAt >= queryParams.From && article.PublishedAt <= queryParams.To);
+
+        if (!string.IsNullOrEmpty(queryParams.Search))
+        {
+            query = query.Where(article => article.Title.Contains(queryParams.Search));
+        }
+
+        query = query.OrderByType(article => article.PublishedAt, queryParams.OrderBy);
         return await GetManyAsync(query, whoAskingId, withComments, queryParams, cancellationToken);
     }
 
@@ -103,8 +110,21 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
 
     private async Task<PagedList<ArticleModel>> GetManyAsync(IQueryable<Article> query, Guid whoAskingId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken)
     {
-        return await query
-            .Select(ArticleToArticleModel(whoAskingId, withComments))
+        var articleModels = query
+            .Select(ArticleToArticleModel(whoAskingId, withComments));
+
+        if (queryParams.ByRating == QueryParametersDefinitions.RatingOrderBy.Descending)
+        {
+            articleModels = articleModels
+                .OrderByDescending(article => article.LikesCount);
+        }
+        else if (queryParams.ByRating == QueryParametersDefinitions.RatingOrderBy.Ascending)
+        {
+            articleModels = articleModels
+                .OrderBy(article => article.LikesCount);
+        }
+
+        return await articleModels
             .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }
 
@@ -120,7 +140,26 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             UserName = article.User.UserName,
             Categories = article.Categories,
             Tags = article.Tags,
-            Comments = includeComments ? IncludeComments(whoAskingId, article) : Array.Empty<CommentModel>(),
+            Comments = includeComments
+                ? article
+                    .Comments
+                    .OrderBy(comment => comment.CreatedAt)
+                    .Select(
+                        comment => new CommentModel
+                        {
+                            ArticleId = comment.ArticleId,
+                            CreatedAt = comment.CreatedAt,
+                            Id = comment.Id,
+                            ModifiedAt = comment.ModifiedAt,
+                            Text = comment.Text,
+                            UserId = comment.UserId,
+                            UserName = comment.User.UserName,
+                            LikesCount = comment.Likes.Count(),
+                            IsLiked = Guid.Empty.Equals(whoAskingId) ? false : comment.Likes.Any(sender => sender.Id.Equals(whoAskingId))
+                        }
+                    )
+                    .ToArray()
+                : Array.Empty<CommentModel>(),
             ApproveState = article.ApproveState,
             CreatedAt = article.CreatedAt,
             ModifiedAt = article.ModifiedAt,
@@ -132,25 +171,5 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             LikesCount = article.Likes.Count(),
             IsLiked = Guid.Empty.Equals(whoAskingId) ? false : article.Likes.Any(sender => sender.Id.Equals(whoAskingId))
         };
-    }
-
-    private static CommentModel[] IncludeComments(Guid whoAskingId, Article article)
-    {
-        return article
-            .Comments
-            .OrderBy(comment => comment.CreatedAt)
-            .Select(comment => new CommentModel
-            {
-                ArticleId = comment.ArticleId,
-                CreatedAt = comment.CreatedAt,
-                Id = comment.Id,
-                ModifiedAt = comment.ModifiedAt,
-                Text = comment.Text,
-                UserId = comment.UserId,
-                UserName = comment.User.UserName,
-                LikesCount = comment.Likes.Count(),
-                IsLiked = Guid.Empty.Equals(whoAskingId) ? false : comment.Likes.Any(sender => sender.Id.Equals(whoAskingId))
-            })
-            .ToArray();
     }
 }

@@ -30,6 +30,10 @@ export interface UserInfo {
     Patronymic: string;
     BirthDay: number;
     Description: string;
+
+    BannedAt: number;
+    BanExpiratonDate: number;
+    BanReason: number;
 }
 
 export interface AuthUser {

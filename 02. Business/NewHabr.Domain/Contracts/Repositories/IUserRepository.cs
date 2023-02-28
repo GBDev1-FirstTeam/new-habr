@@ -11,6 +11,7 @@ public interface IUserRepository : IRepository<User, Guid>
     Task<IReadOnlyCollection<User>> GetByRoleIdAsync(int roleId, bool trackChanges, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<User>> GetDeletedUsersAsync(bool trackChanges, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<User>> GetBannedUsersAsync(bool trackChanges, CancellationToken cancellationToken);
+    Task<ICollection<User>> GetBannedUsersReadyToBeUnbannedAsync(bool trackChanges, CancellationToken cancellationToken);
     Task<int> GetUsersCountWithSecureQuestionIdAsync(int id, bool trackChanges, CancellationToken cancellationToken);
     Task<User?> GetByIdAsync(Guid id, bool trackChanges, CancellationToken cancellationToken);
     Task<UserInfo?> GetUserInfoAsync(Guid userId, Guid whoAskingId, CancellationToken cancellationToken);
