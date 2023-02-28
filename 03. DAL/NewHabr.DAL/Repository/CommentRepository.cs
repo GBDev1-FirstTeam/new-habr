@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using NewHabr.DAL.EF;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Models;
