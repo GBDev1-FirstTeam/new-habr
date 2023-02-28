@@ -91,6 +91,14 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
         return await GetManyAsync(query, whoAskingId, withComments, queryParams, cancellationToken);
     }
 
+    public async Task<PagedList<ArticleModel>> GetAllByAuthorIdAsync(Guid authorId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken)
+    {
+        var query = FindByCondition(article => article.UserId == authorId, false)
+            .Where(article => article.CreatedAt >= queryParams.From && article.CreatedAt <= queryParams.To)
+            .OrderByType(article => article.CreatedAt, queryParams.OrderBy);
+        return await GetManyAsync(query, authorId, withComments, queryParams, cancellationToken);
+    }
+
     public async Task<PagedList<ArticleModel>> GetUserLikedArticlesAsync(Guid userId, Guid whoAskingId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken)
     {
         var query = FindByCondition(article => article.Published && article.Likes.Any(u => u.Id == userId), false)
