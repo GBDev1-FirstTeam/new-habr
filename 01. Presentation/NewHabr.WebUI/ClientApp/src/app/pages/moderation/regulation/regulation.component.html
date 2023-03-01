@@ -26,19 +26,22 @@
         <ng-container [class.disabled]="!isAdmin">
             <label>Роли:</label>
             <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" [checked]="isUser(user.Roles)" #roleUserInput>
+                <input class="form-check-input" type="checkbox" [checked]="isUser(user.Roles)" #roleUserInput (change)="selectRole()">
                 <label class="form-check-label">Пользователь</label>
             </div>
             <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" [checked]="isModerator(user.Roles)" #roleModeratorInput>
+                <input class="form-check-input" type="checkbox" [checked]="isModerator(user.Roles)" #roleModeratorInput (change)="selectRole()">
                 <label class="form-check-label" for="set-role-moderator">Модератор</label>
             </div>
             <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" [checked]="isAdministrator(user.Roles)" #roleAdminInput>
+                <input class="form-check-input" type="checkbox" [checked]="isAdministrator(user.Roles)" #roleAdminInput (change)="selectRole()">
                 <label class="form-check-label">Администратор</label>
             </div>
             <div class="role-actions">
-                <button type="button" class="btn btn-outline-success" (click)="setRole(user.Id, roleUserInput.checked, roleModeratorInput.checked, roleAdminInput.checked)">Установить роли</button>
+                <button type="button" class="btn btn-outline-success"
+                    [class.no-active]="(roleUserInput.checked || roleModeratorInput.checked || roleAdminInput.checked) === false"
+                    [disabled]="(roleUserInput.checked || roleModeratorInput.checked || roleAdminInput.checked) === false"
+                    (click)="setRole(user.Id, roleUserInput.checked, roleModeratorInput.checked, roleAdminInput.checked)">Установить роли</button>
             </div>
         </ng-container>
     </div>

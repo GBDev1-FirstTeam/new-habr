@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { UserInfo } from 'src/app/core/models/User';
 import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
@@ -22,7 +22,7 @@ export class RegulationComponent implements OnInit {
   succesfulBan: boolean = false;
   succesfulSetRole: boolean = false;
 
-  constructor(private store: AppStoreProvider, private http: HttpRequestService) { }
+  constructor(private store: AppStoreProvider, private http: HttpRequestService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     const publicationsSubscribtion = this.http.getUsers().subscribe(users => {
@@ -64,6 +64,9 @@ export class RegulationComponent implements OnInit {
   }
   
   setRole(userId: string, isUser: boolean, isModerator: boolean, isAdmin: boolean) {
+    if ((isUser || isModerator || isAdmin) === false)
+      return;
+    
     const roles = [];
 
     if (isUser) roles.push(UserRole.User);
@@ -78,4 +81,6 @@ export class RegulationComponent implements OnInit {
   isUser = (roles: string[]) => roles.includes(UserRole.User);
   isModerator = (roles: string[]) => roles.includes(UserRole.Moderator);
   isAdministrator = (roles: string[]) => roles.includes(UserRole.Administrator);
+
+  selectRole = () => this.cdr.detectChanges();
 }
