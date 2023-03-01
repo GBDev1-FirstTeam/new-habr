@@ -1,11 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { lastValueFrom, Observable, Subscription } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import { lastValueFrom, Subscription } from 'rxjs';
 import { Publication } from 'src/app/core/models/Publication';
-import { Commentary } from 'src/app/core/models/Commentary';
+import { CommentRequest } from 'src/app/core/models/Commentary';
 import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
 import { Authorization } from 'src/app/core/models/Authorization';
 import { AppStoreProvider } from 'src/app/core/store/store';
+import { LikeData } from 'src/app/core/models/Like';
 
 @Component({
   selector: 'app-post',
@@ -15,9 +16,8 @@ import { AppStoreProvider } from 'src/app/core/store/store';
 export class PostComponent implements OnInit, OnDestroy {
 
   subscribtions: Subscription[] = [];
-  post$: Observable<Publication>;
+  post: Publication;
   postId: string;
-  comments: Array<Commentary> = [];
   commentText: string;
   
   auth: Authorization | null;
@@ -27,17 +27,14 @@ export class PostComponent implements OnInit, OnDestroy {
     private http: HttpRequestService,
     private activeRoute: ActivatedRoute,
     private store: AppStoreProvider) { }
-  
 
   ngOnInit(): void {
     this.activeRoute.params.subscribe(params => {
       this.postId = params.id;
-      this.post$ = this.http.getPublicationById(this.postId);
-      
-      const commentsSubscribtion = this.http.getCommentsByPostId(this.postId).subscribe(comments => {
-        if (comments) {
-          this.comments = comments;
-          this.subscribtions.push(commentsSubscribtion);
+      const postSubscribtion = this.http.getPublicationById(this.postId).subscribe(p => {
+        if (p) {
+          this.post = p;
+          postSubscribtion.unsubscribe();
         }
       })
     })
@@ -54,17 +51,35 @@ export class PostComponent implements OnInit, OnDestroy {
   }
 
   addComment() {
-    const comment: Commentary = {
-      UserId: this.auth?.User.Id!,
-      UserLogin: "sdjn",
-      ArticleId: this.postId,
+    if (!this.commentText) {
+      return;
+    }
+
+    const comment: CommentRequest = {
       Text: this.commentText,
-      CreatedAt: Date.now(),
+      ArticleId: this.postId
     }
     
-    this.commentText = '';
-    this.comments.push(comment);
+    this.post.Comments?.push({
+      Id: undefined,
+      UserId: this.auth!.User.Id,
+      Username: this.auth!.User.UserName,
+      ArticleId: this.postId,
+      Text: this.commentText,
+      ModifiedAt: Date.now()
+    });
     
-    lastValueFrom(this.http.postComment(comment));
+    lastValueFrom(this.http.addComment(comment));
+
+    this.commentText = '';
+  }
+
+  like(likeData: LikeData) {
+    if(likeData.isLiked) {
+      lastValueFrom(this.http.likeArticle(this.postId || '', 'like'))
+    }
+    else {
+      lastValueFrom(this.http.likeArticle(this.postId || '', 'unlike'))
+    }
   }
 }

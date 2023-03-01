@@ -28,12 +28,12 @@ h5 {
     button {
         width: 120px;
     }
+}
 
-    .no-active {
-        color: grey;
-        border-color: grey;
-        opacity: .25;
-    }
+.no-active {
+    color: grey;
+    border-color: grey;
+    opacity: .25;
 }
 
 .bi-person-check-fill {
@@ -41,4 +41,26 @@ h5 {
 }
 .bi-person-fill-dash {
     color: red;
+}
+
+.set-role {
+    width: unset;
+    margin: 10px;
+}
+
+.role-actions {
+    display: flex;
+    justify-content: center;
+
+    button {
+        margin: 10px;
+    }
+}
+
+label {
+    margin-left: 10px;
+}
+
+.form-check {
+    margin: 0px 10px;
 }

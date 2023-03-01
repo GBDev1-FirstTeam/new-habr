@@ -1,6 +1,9 @@
-<app-post-container [post]="(post$ | async)">
+<app-post-container [post]="post">
+    <app-like [count]="post.LikesCount || 0" [isLiked]="post?.IsLiked || false" (doLike)="like($event)"></app-like>
+
     <h6>Комментарии:</h6>
-    <app-comment *ngFor="let comment of comments" [comment]="comment"></app-comment>
+    <app-comment *ngFor="let comment of post?.Comments" [comment]="comment"></app-comment>
+    <div *ngIf="post?.Comments!.length == 0" class="comments-banner">Список комментариев пуст!</div>
 
     <ng-container *ngIf="isAuth">
         <h6>Добавление нового комментария:</h6>

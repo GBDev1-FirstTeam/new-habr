@@ -2,6 +2,7 @@ import { Category } from "./Category";
 import { Metadata, NameStruct } from "./Structures";
 import { Like } from "./Like";
 import { Tag } from "./Tag";
+import { Commentary } from "./Commentary";
 
 export interface Publication extends Like {
     Id?: string;
@@ -9,7 +10,7 @@ export interface Publication extends Like {
     Title: string;
     Categories: Array<Category>;
     Tags: Array<Tag>;
-    Comments?: Array<Comment>;
+    Comments?: Array<Commentary>;
     Content: string;
     CreatedAt?: number;
     ModifiedAt?: number;
@@ -49,7 +50,7 @@ export interface PublicationsResponse {
     Metadata: Metadata;
 }
 
-export interface PublicationsUserResponse {
+export interface PublicationsResponseUser {
     Articles: Array<PublicationUser>;
     Metadata: Metadata;
 }

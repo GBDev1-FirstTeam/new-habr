@@ -5,6 +5,8 @@ import { Injectable } from "@angular/core";
 import { HttpRequestService } from "../services/HttpRequestService";
 import { RecoveryRequestAnswer } from "../models/Recovery";
 import { Authorization, LoginRequest, RegisterRequest } from "../models/Authorization";
+import { StorageKeys } from '../static/StorageKeys';
+import { UserRole } from '../static/UserRole';
 
 export interface AppStore {
     publications: Array<Publication> | null,
@@ -23,7 +25,6 @@ export interface AppStore {
 })
 export class AppStoreProvider {
 
-    private authObjectName: string = 'auth-object';
     private store: Store<StoreDef<AppStore>>;
 
     constructor(private http: HttpRequestService) {
@@ -76,7 +77,7 @@ export class AppStoreProvider {
                 auth: auth,
                 isAuth: this.isAuth(auth),
                 isUser: this.isUser(auth),
-                isAdmmin: this.isAdmin(auth),
+                isAdmin: this.isAdmin(auth),
                 isModerator: this.isModerator(auth),
             }))
         } else {
@@ -85,7 +86,7 @@ export class AppStoreProvider {
                 auth: null,
                 isAuth: false,
                 isUser: false,
-                isAdmmin: false,
+                isAdmin: false,
                 isModerator: false,
             }))
         }
@@ -122,10 +123,10 @@ export class AppStoreProvider {
             auth: null,
             isAuth: false,
             isUser: false,
-            isAdmmin: false,
+            isAdmin: false,
             isModerator: false,
         }))
-        localStorage.removeItem(this.authObjectName)
+        localStorage.removeItem(StorageKeys.AuthObject)
     }
 
     getAuth = () => this.store.pipe(select((state => state.auth)));
@@ -135,11 +136,11 @@ export class AppStoreProvider {
     getIsModerator = () => this.store.pipe(select((state => state.isModerator)));
 
     private saveToLocalStorage(auth: Authorization) {
-        localStorage.setItem(this.authObjectName, JSON.stringify(auth))
+        localStorage.setItem(StorageKeys.AuthObject, JSON.stringify(auth))
     }
     
     private readFromLocalStorage(): Authorization | null {
-        return JSON.parse(localStorage.getItem(this.authObjectName)!) as Authorization | null;
+        return JSON.parse(localStorage.getItem(StorageKeys.AuthObject)!) as Authorization | null;
     }
 
     loadUserInfo(id: string) {
@@ -167,7 +168,7 @@ export class AppStoreProvider {
     }
 
     private isAuth = (auth: Authorization | null) : boolean => !!auth?.User && !!auth?.Token;
-    private isUser = (auth: Authorization | null) : boolean => auth?.User?.Roles.includes('User') || false;
-    private isAdmin = (auth: Authorization | null) : boolean => auth?.User?.Roles.includes('Administrator') || false;
-    private isModerator = (auth: Authorization | null) : boolean => auth?.User?.Roles.includes('Moderator') || false;
+    private isUser = (auth: Authorization | null) : boolean => auth?.User?.Roles.includes(UserRole.User) || false;
+    private isAdmin = (auth: Authorization | null) : boolean => auth?.User?.Roles.includes(UserRole.Administrator) || false;
+    private isModerator = (auth: Authorization | null) : boolean => auth?.User?.Roles.includes(UserRole.Moderator) || false;
 }

@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, Injector } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Backend } from '../models/Configuration';
-import { Publication, PublicationRequest, PublicationsResponse, PublicationsUserResponse } from '../models/Publication';
-import { Commentary } from '../models/Commentary';
+import { Publication, PublicationRequest, PublicationsResponse, PublicationsResponseUser } from '../models/Publication';
+import { Commentary, CommentRequest } from '../models/Commentary';
 import { PutUserInfo, User, UserInfo } from '../models/User';
 import { ConfigurationService } from './ConfigurationService';
 import { LikeRequest } from '../models/Like';
@@ -11,10 +11,10 @@ import { Registration, RegistrationRequest } from '../models/Registration';
 import { Recovery, RecoveryChangePassword, RecoveryQuestion, RecoveryRequestAnswer, RecoveryRequestLogin } from '../models/Recovery';
 import { Authorization, LoginRequest, RegisterRequest } from '../models/Authorization';
 import { SecureQuestion } from '../models/SecureQuestion';
-import { AppStoreProvider } from '../store/store';
 import { Category } from '../models/Category';
 import { Tag } from '../models/Tag';
-import { BanStruct, NameStruct, QuestionStruct } from '../models/Structures';
+import { BanStruct, NameStruct, QuestionStruct, RoleStruct } from '../models/Structures';
+import { StorageKeys } from '../static/StorageKeys';
 
 @Injectable({
   providedIn: 'root',
@@ -22,47 +22,44 @@ import { BanStruct, NameStruct, QuestionStruct } from '../models/Structures';
 export class HttpRequestService {
 
   backend: Backend;
-  auth: Authorization;
 
   constructor(
     private http: HttpClient,
-    private configService: ConfigurationService,
-    private injector: Injector) {
+    private configService: ConfigurationService) {
     this.backend = this.configService.configuration.backend;
-    
-    setTimeout(() => {
-      const store = this.injector.get(AppStoreProvider);
-      store.getAuth().subscribe(auth => {
-        if (auth) {
-          this.auth = auth;
-        }
-      })
-    });
   }
 
   private get<Type>(url: string): Observable<Type> {
+    const auth = this.getAuth();
+
     return this.http.get<Type>(url, {
       headers: {
-        "Authorization": `Bearer ${this.auth?.Token}`
+        "Authorization": `Bearer ${auth?.Token}`
       }
     });
   }
   
   private post<InType, OutType>(url: string, body: InType): Observable<OutType> {
+    const auth = this.getAuth();
+
     return this.http.post<OutType>(url, body, {
       headers: {
-        "Authorization": `Bearer ${this.auth?.Token}`
+        "Authorization": `Bearer ${auth?.Token}`
       }
     });
   }
   
   private put<InType, OutType>(url: string, body: InType): Observable<OutType> {
+    const auth = this.getAuth();
+
     return this.http.put<OutType>(url, body, {
       headers: {
-        "Authorization": `Bearer ${this.auth?.Token}`
+        "Authorization": `Bearer ${auth?.Token}`
       }
     });
   }
+
+  private getAuth = () => JSON.parse(localStorage.getItem(StorageKeys.AuthObject)!) as Authorization | null;
   
   getUserById(id: string): Observable<User> {
     const url = this.backend.baseURL + `/users/${id}`;
@@ -141,13 +138,17 @@ export class HttpRequestService {
     const url = this.backend.baseURL + `/Users/${id}/ban`;
     return this.put<BanStruct, any>(url, body);
   }
+  setUserRole(id: string, body: RoleStruct): Observable<any> {
+    const url = this.backend.baseURL + `/Users/${id}/setroles`;
+    return this.put<RoleStruct, any>(url, body);
+  }
   getUserInfo(id: string) {
     const url = this.backend.baseURL + `/Users/${id}`;
     return this.get<UserInfo>(url);
   }
-  getUserPublications(id: string): Observable<PublicationsUserResponse> {
+  getUserPublications(id: string): Observable<PublicationsResponseUser> {
     const url = this.backend.baseURL + `/Users/${id}/articles`;
-    return this.get<PublicationsUserResponse>(url);
+    return this.get<PublicationsResponseUser>(url);
   }
   // #endregion
 
@@ -192,6 +193,10 @@ export class HttpRequestService {
     const url = this.backend.baseURL + `/Articles/unpublished?PageNumber=${step}&PageSize=${count}`;
     return this.get<PublicationsResponse>(url);
   }
+  likeArticle(id: string, mode: string): Observable<any> {
+    const url = this.backend.baseURL + `/Articles/${id}/${mode}`;
+    return this.put<any, any>(url, null);
+  }
   // #endregion
 
   // #region /Categories
@@ -213,6 +218,13 @@ export class HttpRequestService {
   addTag(body: NameStruct) {
     const url = this.backend.baseURL + `/Tags`;
     return this.post<NameStruct, any>(url, body);
+  }
+  // #endregion
+
+  // #region /Comments
+  addComment(body: CommentRequest) {
+    const url = this.backend.baseURL + `/Comments`;
+    return this.post<CommentRequest, any>(url, body);
   }
   // #endregion
 }
