@@ -23,7 +23,7 @@
             <button [class.no-active]="user.Banned" [disabled]="user.Banned" type="button" class="btn btn-outline-danger" (click)="ban(user, banRaise.value)">Забанить</button>
         </div>
         
-        <ng-container [class.disabled]="!isAdmin">
+        <ng-container *ngIf="isAdmin">
             <label>Роли:</label>
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" [checked]="isUser(user.Roles)" #roleUserInput (change)="selectRole()">
