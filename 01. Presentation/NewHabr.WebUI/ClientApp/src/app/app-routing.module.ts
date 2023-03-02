@@ -44,6 +44,10 @@ const rootRoutes: Routes = [
         canActivate: [ModeratorGuard]
     },
     {
+        path: 'search',
+        loadChildren: () => import('./pages/search/search.module').then(m => m.SearchModule)
+    },
+    {
         path: '',
         redirectTo: 'publications',
         pathMatch: 'full'

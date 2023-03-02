@@ -1,16 +1,12 @@
 @function get-color($name) {
     @return var(--color-#{$name})
-}
-
-;
+};
 
 @mixin card-container {
     background-color: white;
     margin: 15px;
     padding: 15px;
-}
-
-;
+};
 
 @mixin opacity-animation {
     @keyframes fadein {
@@ -24,4 +20,4 @@
     }
 
     animation: fadein 500ms ease-in;
-}
+};

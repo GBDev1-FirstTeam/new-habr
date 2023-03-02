@@ -13,7 +13,7 @@ import { Authorization, LoginRequest, RegisterRequest } from '../models/Authoriz
 import { SecureQuestion } from '../models/SecureQuestion';
 import { Category } from '../models/Category';
 import { Tag } from '../models/Tag';
-import { BanStruct, NameStruct, QuestionStruct, RoleStruct } from '../models/Structures';
+import { ArticleQueryParameters, BanStruct, NameStruct, QuestionStruct, RoleStruct } from '../models/Structures';
 import { StorageKeys } from '../static/StorageKeys';
 
 @Injectable({
@@ -181,8 +181,13 @@ export class HttpRequestService {
     const url = this.backend.baseURL + `/Articles/${id}/disapprove`;
     return this.put<any, any>(url, null);
   }
-  getPublications(step: number, count: number): Observable<PublicationsResponse> {
-    const url = this.backend.baseURL + `/Articles?PageNumber=${step}&PageSize=${count}`;
+  getPublications(queryParams: ArticleQueryParameters): Observable<PublicationsResponse> {
+    let endpoint = '/Articles?';
+    for (let key in queryParams) {
+      endpoint = endpoint.concat(key, '=', (queryParams as any)[key], '&')
+    }
+
+    const url = this.backend.baseURL + endpoint;
     return this.get<PublicationsResponse>(url);
   }
   getPublicationById(id: string): Observable<Publication> {
