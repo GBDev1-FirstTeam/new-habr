@@ -1,14 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using AutoMapper;
+using AutoFixture;
 using Microsoft.Extensions.Options;
 using Moq;
-using NewHabr.Business.AutoMapperProfiles;
 using NewHabr.Business.Services;
+using NewHabr.DAL.Repository;
 using NewHabr.Domain;
 using NewHabr.Domain.ConfigurationModels;
-using NewHabr.Domain.Contracts;
-using NewHabr.Domain.Contracts.Repositories;
 using NewHabr.Domain.Contracts.Services;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Exceptions;
@@ -17,98 +15,45 @@ using NewHabr.Domain.ServiceModels;
 
 namespace UnitTests.Services;
 
-public class UserServiceTest
+public class UserServiceTest : ServiceTestsBase
 {
-    private readonly IUserService _userService;
-    private readonly Mock<IRepositoryManager> _repositoryManagerMock;
-    private readonly Mock<IUserRepository> _userRepositoryMock;
-    private readonly Mock<INotificationRepository> _notificationRepositoryMock;
-    private readonly Mock<IArticleRepository> _articleRepositoryMock;
-    private readonly IMapper _mapper;
+    private readonly IUserService _sut;
+
     private readonly User _user;
     private readonly AppSettings _appSettings;
+
 
     public UserServiceTest()
     {
         _user = new User { Id = Guid.NewGuid() };
-        _mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddMaps(typeof(MapperProfile))));
-        _userRepositoryMock = new Mock<IUserRepository>();
         _userRepositoryMock
             .Setup(ur => ur.GetByIdAsync(_user.Id, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(_user);
 
-        _articleRepositoryMock = new Mock<IArticleRepository>();
-
-        _notificationRepositoryMock = new Mock<INotificationRepository>();
-
-        _repositoryManagerMock = new Mock<IRepositoryManager>();
-        _repositoryManagerMock
-            .Setup(repman => repman.UserRepository).Returns(_userRepositoryMock.Object);
-        _repositoryManagerMock
-            .Setup(repman => repman.ArticleRepository).Returns(_articleRepositoryMock.Object);
-        _repositoryManagerMock
-            .Setup(repman => repman.NotificationRepository).Returns(_notificationRepositoryMock.Object);
-
         var opt = Options.Create(new AppSettings { UserBanExpiresInDays = 14 });
         _appSettings = opt.Value;
-        _userService = new UserService(opt, _mapper, _repositoryManagerMock.Object, null, null, null);
+        _sut = new UserService(opt, _mapper, _repositoryManagerMock.Object, null, null, null);
     }
 
     [Fact]
-    public async Task SetBanOnUser_UserIsBanned()
+    public async Task SetBanOnUser_BanPropertiesSetOnUser()
     {
         // arrange
+        var userBanProperties = _fixture
+            .Create<UserBanDto>();
 
         // act
-        await _userService.SetBanOnUserAsync(_user.Id, new UserBanDto { BanReason = "unit testing" }, CancellationToken.None);
+        await _sut.SetBanOnUserAsync(_user.Id, userBanProperties, CancellationToken.None);
 
         // assert
         Assert.True(_user.Banned);
-        _repositoryManagerMock.Verify(r => r.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
-    }
-
-    [Fact]
-    public async Task SetBanOnUser_BanReasonIsSpecified()
-    {
-        // arrange
-
-        // act
-        await _userService.SetBanOnUserAsync(_user.Id, new UserBanDto { BanReason = "unit testing" }, CancellationToken.None);
-
-        // assert
-        Assert.Equal("unit testing", _user.BanReason);
-        _repositoryManagerMock.Verify(r => r.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
-    }
-
-    [Fact]
-    public async Task SetBanOnUser_BanTimeIsSpecified()
-    {
-        // arrange
-
-        // act
-        await _userService.SetBanOnUserAsync(_user.Id, new UserBanDto { BanReason = "unit testing" }, CancellationToken.None);
-
-        // assert
+        Assert.Equal(userBanProperties.BanReason, _user.BanReason);
         Assert.NotNull(_user.BannedAt);
         Assert.InRange((DateTimeOffset)_user.BannedAt, DateTimeOffset.UtcNow.AddMinutes(-1), DateTimeOffset.UtcNow.AddMinutes(1));
-        _repositoryManagerMock.Verify(r => r.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
-    }
-
-    [Fact]
-    public async Task SetBanOnUser_BanExpirationTimeIsSpecified()
-    {
-        // arrange
-
-        // act
-        await _userService.SetBanOnUserAsync(_user.Id, new UserBanDto { BanReason = "unit testing" }, CancellationToken.None);
-
-        // assert
-        Assert.NotNull(_user.BanExpiratonDate);
         Assert.InRange(
             (DateTimeOffset)_user.BanExpiratonDate,
             DateTimeOffset.UtcNow.AddMinutes(-1).AddDays(_appSettings.UserBanExpiresInDays),
             DateTimeOffset.UtcNow.AddMinutes(1).AddDays(_appSettings.UserBanExpiresInDays));
-
         _repositoryManagerMock.Verify(r => r.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -116,11 +61,13 @@ public class UserServiceTest
     public async Task SetBanOnUser_UserNotExist_ThrowUserNotFoundException()
     {
         // arrange
-        var banDto = new UserBanDto { BanReason = "unit testing" };
-        _userRepositoryMock.Reset();
+        var userBanProperties = _fixture
+            .Create<UserBanDto>();
+        _userRepositoryMock
+            .Reset();
 
         // act
-        async Task Act() => await _userService.SetBanOnUserAsync(_user.Id, banDto, CancellationToken.None);
+        async Task Act() => await _sut.SetBanOnUserAsync(_user.Id, userBanProperties, CancellationToken.None);
 
         // assert
         await Assert.ThrowsAsync<UserNotFoundException>(Act);
@@ -131,11 +78,13 @@ public class UserServiceTest
     public async Task UpdateUserProfileAsync_UserNotExist_ThrowUserNotFoundException()
     {
         // arrange
-        var dto = new UserForManipulationDto();
-        _userRepositoryMock.Reset();
+        var dto = _fixture
+            .Create<UserForManipulationDto>();
+        _userRepositoryMock
+            .Reset();
 
         // act
-        async Task Act() => await _userService.UpdateUserProfileAsync(_user.Id, dto, CancellationToken.None);
+        async Task Act() => await _sut.UpdateUserProfileAsync(_user.Id, dto, CancellationToken.None);
 
         // assert
         await Assert.ThrowsAsync<UserNotFoundException>(Act);
@@ -146,41 +95,38 @@ public class UserServiceTest
     public async Task UpdateUserProfileAsync_UserExist_SaveAsyncCalledOnce()
     {
         // arrange
-        long bday = new DateTimeOffset(2018, 02, 25, 0, 0, 0, TimeSpan.Zero).ToUnixTimeMilliseconds();
-        UserForManipulationDto dto = new UserForManipulationDto
-        {
-            BirthDay = bday,
-            Description = "desc",
-            FirstName = "fName",
-            LastName = "lName",
-            Patronymic = "pName"
-        };
+        var bDay = _fixture
+            .Create<DateTimeOffset>()
+            .UtcDateTime;
+        var dto = _fixture
+            .Build<UserForManipulationDto>()
+            .With(x => x.BirthDay, new DateTimeOffset(bDay).ToUnixTimeMilliseconds())
+            .Create();
 
         // act
-        await _userService.UpdateUserProfileAsync(_user.Id, dto, CancellationToken.None);
+        await _sut.UpdateUserProfileAsync(_user.Id, dto, CancellationToken.None);
 
         // assert
-        Assert.Equal("fName", _user.FirstName);
-        Assert.Equal("lName", _user.LastName);
-        Assert.Equal("pName", _user.Patronymic);
-        Assert.Equal("desc", _user.Description);
-        Assert.Equal(new DateTime(2018, 02, 25), _user.BirthDay);
+        Assert.Equal(dto.FirstName, _user.FirstName);
+        Assert.Equal(dto.LastName, _user.LastName);
+        Assert.Equal(dto.Patronymic, _user.Patronymic);
+        Assert.Equal(dto.Description, _user.Description);
+        Assert.Equal(bDay, _user.BirthDay!.Value, TimeSpan.FromMinutes(10));
 
         _repositoryManagerMock.Verify(r => r.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
-    [Fact]
-    public async Task UpdateUserProfileAsync_BDayNotInRange_ThrowArgumentException()
+    [Theory]
+    [InlineData(253402300800000)]
+    [InlineData(-62135596800001)]
+    public async Task UpdateUserProfileAsync_BDayNotInRange_ThrowArgumentException(long date)
     {
         // arrange
-        UserForManipulationDto dto = new UserForManipulationDto
-        {
-            // Valid values are between -62135596800000 and 253402300799999, inclusive. (Parameter 'milliseconds')
-            BirthDay = long.MaxValue
-        };
+        // Valid values are between -62135596800000 and 253402300799999, inclusive. (Parameter 'milliseconds')
+        var dto = new UserForManipulationDto { BirthDay = date };
 
         // act
-        async Task Act() => await _userService.UpdateUserProfileAsync(_user.Id, dto, CancellationToken.None);
+        async Task Act() => await _sut.UpdateUserProfileAsync(_user.Id, dto, CancellationToken.None);
 
         // assert
         await Assert.ThrowsAsync<ArgumentException>(Act);
@@ -188,47 +134,70 @@ public class UserServiceTest
     }
 
     [Fact]
-    public async Task GetUserArticlesAsync_UserExists_ReturnArticles()
+    public async Task GetUserArticlesAsync_QueryingOthersArticles_CallGetByAuthorIdAsyncMethod()
     {
         // arrange
-        DateTimeOffset dto = new DateTimeOffset(2018, 02, 25, 0, 0, 0, TimeSpan.Zero);
+        var articleModels = _fixture
+            .Build<ArticleModel>()
+            .Without(a => a.Comments)
+            .Without(a => a.Categories)
+            .Without(a => a.Tags)
+            .CreateMany()
+            .ToList();
 
         _articleRepositoryMock
-            .Setup(ar => ar.GetByAuthorIdAsync(_user.Id, It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<ArticleQueryParameters>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new PagedList<ArticleModel>(new List<ArticleModel>
-            {
-                new ArticleModel
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "Title1",
-                    CreatedAt = dto,
-                    ModifiedAt = dto,
-                    PublishedAt = dto
-                },
-                new ArticleModel
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "Title2",
-                    CreatedAt = dto,
-                    ModifiedAt = dto,
-                    PublishedAt = dto
-                }
-            }, 10, 1, 100));
-        var queryParams = new ArticleQueryParametersDto();
+            .Setup(ar => ar.GetByAuthorIdAsync(_user.Id, It.IsAny<Guid>(), false, It.IsAny<ArticleQueryParameters>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PagedList<ArticleModel>(articleModels, 10, 1, 100));
+
         // act
-        var articles = await _userService.GetUserArticlesAsync(_user.Id, Guid.Empty, queryParams, CancellationToken.None);
+        var articles = await _sut.GetUserArticlesAsync(_user.Id, Guid.NewGuid(), It.IsAny<ArticleQueryParametersDto>(), CancellationToken.None);
 
         // assert
         Assert.NotNull(articles);
         Assert.NotEmpty(articles.Articles);
         Assert.IsAssignableFrom<ArticlesGetResponse>(articles);
         Assert.IsAssignableFrom<ICollection<ArticleDto>>(articles.Articles);
-        Assert.All(articles.Articles, item =>
-        {
-            Assert.Equal(item.ModifiedAt, dto.ToUnixTimeMilliseconds());
-            Assert.Equal(item.CreatedAt, dto.ToUnixTimeMilliseconds());
-            Assert.Equal(item.PublishedAt, dto.ToUnixTimeMilliseconds());
-        });
+        _articleRepositoryMock.Verify(
+            ar => ar.GetByAuthorIdAsync(_user.Id, It.IsAny<Guid>(), false, It.IsAny<ArticleQueryParameters>(), It.IsAny<CancellationToken>()),
+            Times.Once);
+        _articleRepositoryMock
+            .Verify(
+                ar => ar.GetAllByAuthorIdAsync(_user.Id, false, It.IsAny<ArticleQueryParameters>(), It.IsAny<CancellationToken>()),
+                Times.Never);
+        _repositoryManagerMock.Verify(rm => rm.SaveAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task GetUserArticlesAsync_QueryingOwnArticles_CallGetAllByAuthorIdAsyncMethod()
+    {
+        // arrange
+        var articleModels = _fixture
+            .Build<ArticleModel>()
+            .Without(a => a.Comments)
+            .Without(a => a.Categories)
+            .Without(a => a.Tags)
+            .CreateMany()
+            .ToList();
+
+        _articleRepositoryMock
+            .Setup(ar => ar.GetAllByAuthorIdAsync(_user.Id, false, It.IsAny<ArticleQueryParameters>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PagedList<ArticleModel>(articleModels, 10, 1, 100));
+
+        // act
+        var articles = await _sut.GetUserArticlesAsync(_user.Id, _user.Id, It.IsAny<ArticleQueryParametersDto>(), CancellationToken.None);
+
+        // assert
+        Assert.NotNull(articles);
+        Assert.NotEmpty(articles.Articles);
+        Assert.IsAssignableFrom<ArticlesGetResponse>(articles);
+        Assert.IsAssignableFrom<ICollection<ArticleDto>>(articles.Articles);
+        _articleRepositoryMock
+            .Verify(
+                ar => ar.GetAllByAuthorIdAsync(_user.Id, false, It.IsAny<ArticleQueryParameters>(), It.IsAny<CancellationToken>()),
+                Times.Once);
+        _articleRepositoryMock
+            .Verify(ar => ar.GetByAuthorIdAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), false, It.IsAny<ArticleQueryParameters>(), It.IsAny<CancellationToken>()),
+                    Times.Never);
         _repositoryManagerMock.Verify(rm => rm.SaveAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -239,7 +208,7 @@ public class UserServiceTest
         _userRepositoryMock.Reset();
 
         // act
-        async Task Act() => await _userService.GetUserArticlesAsync(_user.Id, Guid.Empty, null, CancellationToken.None);
+        async Task Act() => await _sut.GetUserArticlesAsync(_user.Id, Guid.Empty, null, CancellationToken.None);
 
         // assert
         await Assert.ThrowsAsync<UserNotFoundException>(Act);
@@ -255,18 +224,21 @@ public class UserServiceTest
     public async Task GetUserNotificationsAsync_ReturnsCollectionNotifications()
     {
         // arrange
+        var notifications = _fixture
+            .Build<Notification>()
+            .Without(n => n.Users)
+            .CreateMany()
+            .ToList();
         _notificationRepositoryMock
             .Setup(nr => nr.GetUserNotificationsAsync(_user.Id, It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Notification>
-            {
-                new Notification()
-            });
+            .ReturnsAsync(notifications);
 
         // act
-        var notificationDto = await _userService.GetUserNotificationsAsync(_user.Id, false, CancellationToken.None);
+        var notificationDto = await _sut.GetUserNotificationsAsync(_user.Id, false, CancellationToken.None);
 
         // assert
         Assert.NotNull(notificationDto);
+        Assert.NotEmpty(notificationDto);
     }
 
     [Fact]
@@ -276,7 +248,7 @@ public class UserServiceTest
         _userRepositoryMock.Reset();
 
         // act
-        var Act = async () => await _userService.GetUserNotificationsAsync(_user.Id, false, CancellationToken.None);
+        var Act = async () => await _sut.GetUserNotificationsAsync(_user.Id, false, CancellationToken.None);
 
         // assert
         await Assert.ThrowsAsync<UserNotFoundException>(() => Act());
