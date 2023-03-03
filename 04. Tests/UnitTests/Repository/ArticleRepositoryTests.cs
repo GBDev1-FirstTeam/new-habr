@@ -26,7 +26,7 @@ public class ArticleRepositoryTests
 
 
     [Fact]
-    public async Task Create_SyccessfullyCreates()
+    public async Task Create_SuccessfullyCreates()
     {
         // Arrange
         var article = Helper.CreateArticle();
