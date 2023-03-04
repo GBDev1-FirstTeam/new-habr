@@ -43,7 +43,7 @@ public class ArticleService : IArticleService
         var queryParams = _mapper.Map<ArticleQueryParameters>(queryParamsDto);
         var articles = await _repositoryManager
             .ArticleRepository
-            .GetPublishedAsync(whoAskingId, true, queryParams, cancellationToken);
+            .GetPublishedAsync(whoAskingId, false, queryParams, cancellationToken);
 
         ConvertToPreview(articles, 2);
 
