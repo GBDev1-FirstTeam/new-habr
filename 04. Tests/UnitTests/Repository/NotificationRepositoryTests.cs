@@ -196,7 +196,7 @@ public class NotificationRepositoryTests
                 .With(n => n.IsRead, true)
                 .CreateMany();
 
-            var list = new List<Notification>(readNotifications);
+            var list = new List<Notification>(expectedNotifications);
             list.AddRange(readNotifications);
             expectedUser.Notifications = list;
             _context

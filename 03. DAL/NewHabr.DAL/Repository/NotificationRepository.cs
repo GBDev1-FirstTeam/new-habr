@@ -17,7 +17,7 @@ public class NotificationRepository : RepositoryBase<Notification, Guid>, INotif
     {
         return await GetById(notificationId, trackChanges)
             .Include(n => n.Users.Where(u => u.Id == userId))
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(n => n.Users.Any(user => user.Id.Equals(userId)), cancellationToken);
     }
 
     public async Task<ICollection<Notification>> GetUserNotificationsAsync(Guid userId, bool unreadOnly, bool trackChanges, CancellationToken cancellationToken)
@@ -29,6 +29,7 @@ public class NotificationRepository : RepositoryBase<Notification, Guid>, INotif
 
         var notifications = await query
             .Include(n => n.Users.Where(u => u.Id == userId))
+            .Where(n => n.Users.Any(user => user.Id.Equals(userId)))
             .ToListAsync(cancellationToken);
 
         return notifications;
