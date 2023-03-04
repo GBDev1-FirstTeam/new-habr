@@ -1,12 +1,15 @@
-﻿using AutoMapper;
+﻿using AutoFixture;
+using AutoMapper;
 using Moq;
 using NewHabr.Business.AutoMapperProfiles;
 using NewHabr.Business.Services;
+using NewHabr.Domain;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Contracts.Services;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Exceptions;
 using NewHabr.Domain.Models;
+using NewHabr.Domain.ServiceModels;
 
 namespace UnitTests.Services;
 
@@ -19,6 +22,7 @@ public class ArticeServiceTests
     private Mock<ICategoryRepository> _categoryRepositoryMock;
     private Mock<ITagRepository> _tagRepositoryMock;
     private Mock<INotificationService> _notificationServiceMock;
+    private IFixture _fixture = new Fixture();
 
     //private readonly User _user;
     private readonly ArticleService _sut;
@@ -101,6 +105,35 @@ public class ArticeServiceTests
             Assert.Equal(createRequest.Title, item.Title);
             Assert.Equal(createRequest.Content, item.Content);
         });
+    }
+
+    [Theory]
+    [InlineData("<p>one</p><p>two</p>", "<p>one</p><p>two</p><p>three</p><p>four</p>")]
+    [InlineData("<p>one</p>", "<p>one</p>")]
+    [InlineData("<p>one</p><p>two</p>", "<p>one</p><p>two</p>")]
+    [InlineData("content without p tags", "content without p tags")]
+    [InlineData("", "")]
+    public async Task GetPublishedAsync_returns_preview_articles(string expected, string content)
+    {
+        // Arrange
+        var articles = _fixture
+            .Build<ArticleModel>()
+            .Without(a => a.Comments)
+            .Without(a => a.Categories)
+            .Without(a => a.Tags)
+            .With(a => a.Content, content)
+            .CreateMany(10)
+            .ToList();
+        _articleRepositoryMock
+            .Setup(r => r.GetPublishedAsync(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<ArticleQueryParameters>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PagedList<ArticleModel>(articles, 10, 1, 10));
+        // Act
+        var pagedArticles = await _sut.GetPublishedAsync(Guid.Empty, new ArticleQueryParametersDto(), default);
+
+        // Assert
+        Assert.NotNull(articles);
+        Assert.Equal(articles.Count, pagedArticles.Articles.Count);
+        Assert.All(pagedArticles.Articles, item => Assert.True(item.Content.Equals(expected)));
     }
 
 

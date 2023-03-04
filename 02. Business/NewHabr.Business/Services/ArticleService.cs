@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using NewHabr.Business.Extensions;
+using NewHabr.Domain;
 using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Contracts.Services;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Exceptions;
 using NewHabr.Domain.Models;
+using NewHabr.Domain.ServiceModels;
 
 namespace NewHabr.Business.Services;
 
@@ -42,6 +44,8 @@ public class ArticleService : IArticleService
         var articles = await _repositoryManager
             .ArticleRepository
             .GetPublishedAsync(whoAskingId, true, queryParams, cancellationToken);
+
+        ConvertToPreview(articles, 2);
 
         return new ArticlesGetResponse
         {
@@ -385,5 +389,32 @@ public class ArticleService : IArticleService
 
         await _notificationService
             .CreateAsync(notification, user, cancellationToken);
+    }
+
+
+    private void ConvertToPreview(PagedList<ArticleModel> articles, int numOfParagraphs)
+    {
+        if (articles is null || articles.Count == 0)
+            return;
+
+        foreach (var article in articles)
+        {
+            article.Content = string.Join(string.Empty, GetNextParagraph(article.Content).Take(numOfParagraphs));
+        }
+    }
+
+    private IEnumerable<string> GetNextParagraph(string content)
+    {
+        string delimeter = "</p>";
+        int lastDelimPosition = 0, pos = int.MinValue;
+
+        if (content.IndexOf(delimeter) == -1)
+            yield return content;
+
+        while ((pos = content.IndexOf(delimeter, lastDelimPosition)) != -1)
+        {
+            yield return content.Substring(lastDelimPosition, pos - lastDelimPosition + delimeter.Length);
+            lastDelimPosition = pos + delimeter.Length;
+        }
     }
 }
