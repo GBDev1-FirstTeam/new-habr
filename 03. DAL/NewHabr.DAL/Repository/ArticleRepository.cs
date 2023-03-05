@@ -133,6 +133,7 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
         }
 
         return await articleModels
+            .AsSplitQuery()
             .ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }
 
