@@ -43,7 +43,7 @@ export class MainComponent {
     },
     {
       name: 'Поиск',
-      url: 'find',
+      url: 'search',
       iClass: 'bi bi-search'
     }
   ]

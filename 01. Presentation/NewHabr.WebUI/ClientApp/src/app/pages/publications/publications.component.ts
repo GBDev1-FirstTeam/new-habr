@@ -21,7 +21,7 @@ export class PublicationsComponent implements OnInit {
   constructor(private http: HttpRequestService, private router: Router, private store: AppStoreProvider) { }
 
   ngOnInit(): void {
-    const publicationsSubscribtion = this.http.getPublications(1, 10).subscribe(p => {
+    const publicationsSubscribtion = this.http.getPublications({ pageNumber: 1, pageSize: 10 }).subscribe(p => {
       if (p) {
         this.publications = p.Articles;
         publicationsSubscribtion.unsubscribe();
@@ -30,6 +30,10 @@ export class PublicationsComponent implements OnInit {
     const isAuthSubscribtion = this.store.getIsAuth().subscribe(isAuth => this.isAuth = isAuth);
 
     this.subscribtions.push(isAuthSubscribtion);
+  }
+
+  ngOnDestroy(): void {
+    this.subscribtions.forEach(element => element.unsubscribe());
   }
 
   navigate = (id: string | undefined) => this.router.navigate(['publications', id]);

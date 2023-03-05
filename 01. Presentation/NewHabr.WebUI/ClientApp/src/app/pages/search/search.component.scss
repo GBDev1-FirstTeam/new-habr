@@ -1,0 +1,29 @@
+@import '/src/assets/scss/mixins.scss';
+@import '/src/assets/scss/colors.scss';
+
+.search-container {
+    @include card-container;
+
+    position: sticky;
+    top: 15px;
+    border-bottom: 1px solid lightgrey;
+    z-index: 5;
+    margin-top: unset;
+
+    .btn {
+        max-width: 150px;
+    }
+}
+
+.main-container {
+    height: calc(100vh - 116px);
+    overflow-x: auto;
+}
+
+.plug {
+    height: 15px;
+    background-color: get-color(light-grey);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}

@@ -20,3 +20,13 @@ export interface Metadata {
     TotalCount: number;
     TotalPages: number;
 }
+
+export interface ArticleQueryParameters {
+    from?: number;
+    to?: number;
+    orderBy?: number;
+    search?: string;
+    byRating?: number;
+    pageNumber?: number;
+    pageSize?: number;
+}

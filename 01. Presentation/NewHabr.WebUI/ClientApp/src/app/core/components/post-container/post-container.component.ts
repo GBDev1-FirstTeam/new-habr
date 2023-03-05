@@ -20,9 +20,11 @@ export class PostContainerComponent implements AfterViewInit {
   constructor(private router: Router) { }
 
   ngAfterViewInit() {
-    this.userId = (this.post as Publication)?.UserId;
-    this.userName = (this.post as Publication)?.Username;
-    this.viewMe.nativeElement.innerHTML = (this.post as Publication)?.Content
+    setTimeout(() => {
+      this.userId = (this.post as Publication)?.UserId;
+      this.userName = (this.post as Publication)?.Username;
+      this.viewMe.nativeElement.innerHTML = (this.post as Publication)?.Content;
+    }, 100)
   }
 
   navigate = (id: string | undefined) => this.router.navigate(['users', id]);

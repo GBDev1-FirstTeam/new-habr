@@ -26,3 +26,13 @@ body {
 .disable {
   display: none;
 }
+
+.info-bar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  i {
+      color: gray;
+  }
+}
