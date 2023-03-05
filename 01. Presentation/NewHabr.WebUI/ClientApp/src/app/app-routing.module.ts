@@ -48,6 +48,10 @@ const rootRoutes: Routes = [
         loadChildren: () => import('./pages/search/search.module').then(m => m.SearchModule)
     },
     {
+        path: 'help',
+        loadChildren: () => import('./pages/help/help.module').then(m => m.HelpModule)
+    },
+    {
         path: '',
         redirectTo: 'publications',
         pathMatch: 'full'
