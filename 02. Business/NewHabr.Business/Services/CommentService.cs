@@ -158,7 +158,7 @@ public class CommentService : ICommentService
 
         var text = new StringBuilder();
         text.AppendLine($"Модератора желают видеть в комментариях к статье '{article.Title}'");
-        text.AppendLine(comment.Text.Substring(anchor.Length).Trim());
+        text.AppendLine($"Текст комментария: \"{comment.Text.Substring(anchor.Length).Trim()}\"");
         var notification = new NotificationCreateRequest
         {
             Text = text.ToString()
