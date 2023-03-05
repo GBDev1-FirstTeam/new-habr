@@ -103,6 +103,7 @@
         
         a {
             color: white;
+            cursor: pointer;
         }
 
         ul {
@@ -133,5 +134,22 @@ footer {
     a {
         display: inline;
         padding-left: 5px;
+    }
+}
+
+.notify-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0px;
+
+    .delete {
+        cursor: pointer;
+        color: lightgrey;
+        margin-left: 20px;
+
+        &:hover {
+            color: black;
+        }
     }
 }

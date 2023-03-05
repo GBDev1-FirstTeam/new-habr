@@ -6,6 +6,12 @@
                     <i [ngClass]="item.iClass"></i><a class="nav-link active" aria-current="page" [routerLink]="item.url">{{ item.name }}</a>
                 </li>
             </ul>
+            <ul class="nav" *ngIf="notifications.length > 0 && isAuth">
+                <li class="nav-item">
+                    <i class="bi bi-bell-fill" style="display: inline-block" [@notify]="notifyPos"></i>
+                    <a class="nav-link active" aria-current="page" data-bs-toggle="modal" data-bs-target="#notifyModal">Уведомления ({{notifications.length}})</a>
+                </li>
+            </ul>
         </nav>
     </div>
     <div class="main-container-grid">
@@ -64,4 +70,22 @@
             GitHub проекта <a target="_blank" href="https://github.com/GBDev1-FirstTeam/new-habr"><i class="bi bi-github"></i></a>
         </div>
     </footer>
+</div>
+
+<!-- Модальное окно уведомлений -->
+<div class="modal modal-lg" id="notifyModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Уведомления</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngFor="let notification of notifications; let i = index" class="notify-item">
+            <div>{{i + 1}}) {{notification.Text}}</div>
+            <div (click)="deleteNotify(notification.Id)" class="delete">Удалить</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

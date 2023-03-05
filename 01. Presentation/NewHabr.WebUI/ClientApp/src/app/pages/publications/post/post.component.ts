@@ -7,6 +7,7 @@ import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
 import { Authorization } from 'src/app/core/models/Authorization';
 import { AppStoreProvider } from 'src/app/core/store/store';
 import { LikeData } from 'src/app/core/models/Like';
+import { UserInfo } from 'src/app/core/models/User';
 
 @Component({
   selector: 'app-post',
@@ -19,6 +20,7 @@ export class PostComponent implements OnInit, OnDestroy {
   post: Publication;
   postId: string;
   commentText: string;
+  userInfo: UserInfo | null;
   
   auth: Authorization | null;
   isAuth: boolean | null;
@@ -35,6 +37,13 @@ export class PostComponent implements OnInit, OnDestroy {
         if (p) {
           this.post = p;
           postSubscribtion.unsubscribe();
+        }
+      })
+
+      const userSubscribtion = this.store.getUserInfo().subscribe(userInfo => {
+        if (userInfo) {
+          this.userInfo = userInfo;
+          userSubscribtion.unsubscribe();
         }
       })
     })
