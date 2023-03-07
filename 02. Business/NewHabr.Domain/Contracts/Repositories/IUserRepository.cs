@@ -18,4 +18,5 @@ public interface IUserRepository : IRepository<User, Guid>
     Task<ICollection<UserLikedUser>> GetUserLikedUsersAsync(Guid userId, bool trackChanges, CancellationToken cancellationToken);
     Task<int> GetReceivedLikesCountAsync(Guid userId, bool trackChanges, CancellationToken cancellationToken);
     Task<User?> GetByIdWithLikesAsync(Guid id, bool trackChanges, CancellationToken cancellationToken);
+    Task<bool> IsBanned(Guid userId, CancellationToken cancellationToken);
 }

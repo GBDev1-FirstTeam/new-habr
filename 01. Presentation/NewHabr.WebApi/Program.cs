@@ -68,6 +68,13 @@ public class Program
 
         #endregion
 
+        #region Configure policies
+
+        services.ConfigurePolicies();
+        services.RegisterHandlers();
+
+        #endregion
+
         services.Configure<AppSettings>(builder.Configuration.GetSection(AppSettings.Section));
 
         services.AddEndpointsApiExplorer();

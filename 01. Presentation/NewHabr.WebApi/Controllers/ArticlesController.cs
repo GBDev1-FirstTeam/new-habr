@@ -13,12 +13,14 @@ namespace NewHabr.WebApi.Controllers;
 public class ArticlesController : ControllerBase
 {
     private readonly IArticleService _articleService;
+    private readonly IAuthorizationService _authorizationService;
     private readonly ILogger<ArticlesController> _logger;
 
 
-    public ArticlesController(IArticleService articleService, ILogger<ArticlesController> logger)
+    public ArticlesController(IArticleService articleService, IAuthorizationService authorizationService, ILogger<ArticlesController> logger)
     {
         _articleService = articleService;
+        _authorizationService = authorizationService;
         _logger = logger;
     }
 
@@ -59,6 +61,7 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet("unpublished")]
+    [Authorize(Roles = "Moderator,Administrator")]
     public async Task<ActionResult<ArticlesGetResponse>> GetUnpublished([FromQuery] ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken)
     {
         try
@@ -73,6 +76,7 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet("deleted")]
+    [Authorize(Roles = "Moderator,Administrator")]
     public async Task<ActionResult<ArticlesGetResponse>> GetDeleted([FromQuery] ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken)
     {
         try
@@ -87,7 +91,7 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize]
+    [Authorize(Policy = "CanCreate")]
     public async Task<ActionResult> Create([FromBody] ArticleCreateRequest request, CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
@@ -116,10 +120,13 @@ public class ArticlesController : ControllerBase
     [Authorize]
     public async Task<ActionResult> Update([FromRoute] Guid id, [FromBody] ArticleUpdateRequest request, CancellationToken cancellationToken)
     {
-        var userId = User.GetUserId();
+        var authResult = await _authorizationService
+            .AuthorizeAsync(User, id, "CanManageArticle");
+        if (!authResult.Succeeded)
+            return new ForbidResult();
         try
         {
-            await _articleService.UpdateAsync(id, userId, request, cancellationToken);
+            await _articleService.UpdateAsync(id, request, cancellationToken);
             return Ok();
         }
         catch (EntityNotFoundException ex)
@@ -142,6 +149,11 @@ public class ArticlesController : ControllerBase
     [Authorize]
     public async Task<ActionResult> Publish([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        var authResult = await _authorizationService
+            .AuthorizeAsync(User, id, "CanManageArticle");
+        if (!authResult.Succeeded)
+            return new ForbidResult();
+
         try
         {
             await _articleService.PublishAsync(id, true, cancellationToken);
@@ -168,6 +180,11 @@ public class ArticlesController : ControllerBase
     [Authorize]
     public async Task<ActionResult> Unpublish([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        var authResult = await _authorizationService
+            .AuthorizeAsync(User, id, "CanManageArticle");
+        if (!authResult.Succeeded)
+            return new ForbidResult();
+
         try
         {
             await _articleService.PublishAsync(id, false, cancellationToken);
@@ -227,7 +244,7 @@ public class ArticlesController : ControllerBase
         }
     }
 
-    [Authorize]
+    [Authorize(Policy = "CanLike")]
     [HttpPut("{articleId}/like")]
     public async Task<IActionResult> SetLike([FromRoute] Guid articleId, CancellationToken cancellationToken)
     {
@@ -247,7 +264,7 @@ public class ArticlesController : ControllerBase
         }
     }
 
-    [Authorize]
+    [Authorize(Policy = "CanLike")]
     [HttpPut("{articleId}/unlike")]
     public async Task<IActionResult> UnsetLike([FromRoute] Guid articleId, CancellationToken cancellationToken)
     {
@@ -266,6 +283,11 @@ public class ArticlesController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        var authResult = await _authorizationService
+            .AuthorizeAsync(User, id, "CanManageArticle");
+        if (!authResult.Succeeded)
+            return new ForbidResult();
+
         try
         {
             await _articleService.DeleteByIdAsync(id, cancellationToken);

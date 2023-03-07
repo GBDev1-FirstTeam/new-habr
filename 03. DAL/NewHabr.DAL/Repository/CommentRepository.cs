@@ -80,4 +80,10 @@ public class CommentRepository : RepositoryBase<Comment, Guid>, ICommentReposito
             })
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<bool> IsAuthor(Guid commentId, Guid userId, CancellationToken cancellationToken)
+    {
+        return await FindByCondition(comment => comment.Id.Equals(commentId) && comment.UserId.Equals(userId), false)
+            .AnyAsync(cancellationToken);
+    }
 }

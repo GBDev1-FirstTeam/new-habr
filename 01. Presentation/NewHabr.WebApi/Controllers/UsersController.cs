@@ -15,11 +15,13 @@ namespace NewHabr.WebApi.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IAuthorizationService _authorizationService;
 
 
-    public UsersController(IUserService userService)
+    public UsersController(IUserService userService, IAuthorizationService authorizationService)
     {
         _userService = userService;
+        _authorizationService = authorizationService;
     }
 
 
@@ -139,12 +141,17 @@ public class UsersController : ControllerBase
     }
 
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateUserProfile([FromRoute] Guid id, [FromBody] UserForManipulationDto userDto, CancellationToken cancellationToken)
+    [HttpPut("{userId}")]
+    [Authorize]
+    public async Task<IActionResult> UpdateUserProfile([FromRoute] Guid userId, [FromBody] UserForManipulationDto userDto, CancellationToken cancellationToken)
     {
+        var authResult = await _authorizationService.AuthorizeAsync(User, userId, "CanUpdateUserProfile");
+        if (!authResult.Succeeded)
+            return new ForbidResult();
+
         try
         {
-            await _userService.UpdateUserProfileAsync(id, userDto, cancellationToken);
+            await _userService.UpdateUserProfileAsync(userId, userDto, cancellationToken);
             return NoContent();
         }
         catch (UserNotFoundException ex)
@@ -240,7 +247,7 @@ public class UsersController : ControllerBase
     }
 
 
-    [Authorize]
+    [Authorize(Policy = "CanLike")]
     [HttpPut("{userId}/like")]
     public async Task<IActionResult> SetLike([FromRoute] Guid userId, CancellationToken cancellationToken)
     {
@@ -260,7 +267,7 @@ public class UsersController : ControllerBase
         }
     }
 
-    [Authorize]
+    [Authorize(Policy = "CanLike")]
     [HttpPut("{userId}/unlike")]
     public async Task<IActionResult> UnsetLike([FromRoute] Guid userId, CancellationToken cancellationToken)
     {

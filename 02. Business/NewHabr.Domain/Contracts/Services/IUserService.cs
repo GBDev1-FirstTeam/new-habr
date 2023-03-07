@@ -124,5 +124,7 @@ public interface IUserService
     /// Change password
     /// </summary>
     Task<IdentityResult> ChangePassword(Guid userId, UserPasswordChangeRequest request, CancellationToken cancellationToken);
+
+    Task<bool> IsBanned(Guid userId, CancellationToken cancellationToken);
 }
 

@@ -84,8 +84,6 @@ public class ArticleService : IArticleService
 
     public async Task CreateAsync(ArticleCreateRequest request, Guid creatorId, CancellationToken cancellationToken)
     {
-        await CheckIfUserNotBannedOrThrow(creatorId, cancellationToken);
-
         var creationDateTime = DateTimeOffset.UtcNow;
         var article = _mapper.Map<Article>(request);
         article.UserId = creatorId;
@@ -100,10 +98,8 @@ public class ArticleService : IArticleService
         await CreateNotificationIfMentionSomeoneAsync(article, cancellationToken);
     }
 
-    public async Task UpdateAsync(Guid articleId, Guid modifierId, ArticleUpdateRequest articleToUpdate, CancellationToken cancellationToken)
+    public async Task UpdateAsync(Guid articleId, ArticleUpdateRequest articleToUpdate, CancellationToken cancellationToken)
     {
-        await CheckIfUserNotBannedOrThrow(modifierId, cancellationToken);
-
         var article = await _repositoryManager
             .ArticleRepository
             .GetByIdWithTagsWithCategoriesAsync(articleId, trackChanges: true, cancellationToken);
@@ -111,11 +107,6 @@ public class ArticleService : IArticleService
         if (article is null)
         {
             throw new ArticleNotFoundException();
-        }
-
-        if (article.UserId != modifierId)
-        {
-            throw new UnauthorizedAccessException();
         }
 
         await UpdateCategoresAsync(article, articleToUpdate.Categories, cancellationToken);
@@ -225,8 +216,6 @@ public class ArticleService : IArticleService
         if (article.UserId == userId)
             return;
 
-        await CheckIfUserNotBannedOrThrow(userId, cancellationToken);
-
         var user = await _repositoryManager
             .UserRepository
             .GetByIdAsync(userId, true, cancellationToken);
@@ -260,17 +249,14 @@ public class ArticleService : IArticleService
         }
     }
 
-
-
-    private async Task CheckIfUserNotBannedOrThrow(Guid userId, CancellationToken cancellationToken)
+    public async Task<bool> IsAuthor(Guid articleId, Guid userId, CancellationToken cancellationToken)
     {
-        var user = await _repositoryManager
-            .UserRepository
-            .GetByIdAsync(userId, true, cancellationToken);
-
-        if (user!.Banned)
-            throw new UserBannedException(user.BannedAt!.Value);
+        return await _repositoryManager
+            .ArticleRepository
+            .IsAuthor(articleId, userId, cancellationToken);
     }
+
+
 
     private async Task<Article> GetArticleAndCheckIfItExistsAsync(Guid articleId, bool trackChanges, CancellationToken cancellationToken)
     {
