@@ -20,7 +20,7 @@ public class IsBannedUserHandler : IAuthorizationHandler
 
     public async Task HandleAsync(AuthorizationHandlerContext context)
     {
-        foreach (var requirement in context.PendingRequirements)
+        foreach (var requirement in context.Requirements)
         {
             switch (requirement)
             {
