@@ -38,8 +38,7 @@ public class AuthenticationService : IAuthenticationService
         _logger = logger;
         _jwtConfiguration = jwtConfiguration.Value;
     }
-
-
+    
     public async Task<Result<AuthorizationResponse>> RegisterUserAndCreateToken(RegistrationRequest request, CancellationToken cancellationToken)
     {
         var registerUserResult = await RegisterUserAsync(request, cancellationToken);

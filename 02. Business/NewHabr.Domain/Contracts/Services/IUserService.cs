@@ -124,5 +124,21 @@ public interface IUserService
     /// Change password
     /// </summary>
     Task<IdentityResult> ChangePassword(Guid userId, UserPasswordChangeRequest request, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// If password fogotten
+    /// </summary>
+    /// <param name="recoveryRequest"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>returns RecoveryResponse class</returns>
+    Task<RecoveryResponse> ForgotPasswordAsync(RecoveryRequest recoveryRequest, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Resets password
+    /// </summary>
+    /// <param name="resetPasswordRequest"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<IdentityResult> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest, CancellationToken cancellationToken)
 }
 
