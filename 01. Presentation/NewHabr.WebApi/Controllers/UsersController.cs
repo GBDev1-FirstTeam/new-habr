@@ -19,6 +19,7 @@ public class UsersController : ControllerBase
         _userService = userService;
     }
 
+
     [HttpPost("requestRecovery")]
     [AllowAnonymous]
     public async Task<IActionResult> ForgotPassword([FromBody] RecoveryRequest recoveryRequest, CancellationToken cancellationToken)
