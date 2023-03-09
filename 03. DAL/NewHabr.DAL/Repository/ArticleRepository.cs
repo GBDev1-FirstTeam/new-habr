@@ -107,6 +107,12 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
         return await GetManyAsync(query, whoAskingId, withComments, queryParams, cancellationToken);
     }
 
+    public async Task<bool> IsAuthor(Guid articleId, Guid userId, CancellationToken cancellationToken)
+    {
+        return await FindByCondition(article => article.Id.Equals(articleId) && article.UserId.Equals(userId), false)
+            .AnyAsync(cancellationToken);
+    }
+
 
 
     private async Task<ArticleModel?> GetOneAsync(IQueryable<Article> query, Guid whoAskingId, bool withComments, CancellationToken cancellationToken)

@@ -283,6 +283,13 @@ public class UserService : IUserService
             .SaveAsync(cancellationToken);
     }
 
+    public async Task<bool> IsBanned(Guid userId, CancellationToken cancellationToken)
+    {
+        return await _repositoryManager
+            .UserRepository
+            .IsBanned(userId, cancellationToken);
+    }
+
 
 
     private async Task<User> GetUserAndCheckIfItExistsAsync(Guid id, bool trackChanges, CancellationToken cancellationToken)

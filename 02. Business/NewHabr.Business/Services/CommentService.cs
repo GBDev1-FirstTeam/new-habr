@@ -27,8 +27,6 @@ public class CommentService : ICommentService
 
     public async Task CreateAsync(Guid CreatorId, CommentCreateRequest data, CancellationToken cancellationToken)
     {
-        await CheckIfUserNotBannedOrThrow(CreatorId, cancellationToken);
-
         var article = await _repositoryManager
             .ArticleRepository
             .GetByIdAsync(data.ArticleId, true, cancellationToken);
@@ -68,6 +66,13 @@ public class CommentService : ICommentService
         return _mapper.Map<List<CommentDto>>(comments);
     }
 
+    public async Task<bool> IsAuthor(Guid commentId, Guid userId, CancellationToken cancellationToken)
+    {
+        return await _repositoryManager
+            .CommentRepository
+            .IsAuthor(commentId, userId, cancellationToken);
+    }
+
     public async Task SetLikeAsync(Guid commentId, Guid userId, CancellationToken cancellationToken)
     {
         var comment = await _repositoryManager.CommentRepository.GetByIdWithLikesAsync(commentId, true, cancellationToken);
@@ -79,8 +84,6 @@ public class CommentService : ICommentService
 
         if (comment.UserId == userId)
             return; // нечего лайкать свои комментарии
-
-        await CheckIfUserNotBannedOrThrow(userId, cancellationToken);
 
         var user = await _repositoryManager.UserRepository.GetByIdAsync(userId, true, cancellationToken);
 
@@ -106,20 +109,13 @@ public class CommentService : ICommentService
         await _repositoryManager.SaveAsync(cancellationToken);
     }
 
-    public async Task UpdateAsync(Guid commentId, Guid modifierId, CommentUpdateRequest updatedComment, CancellationToken cancellationToken)
+    public async Task UpdateAsync(Guid commentId, CommentUpdateRequest updatedComment, CancellationToken cancellationToken)
     {
-        await CheckIfUserNotBannedOrThrow(modifierId, cancellationToken);
-
         var comment = await _repositoryManager.CommentRepository.GetByIdAsync(commentId, true, cancellationToken: cancellationToken);
 
         if (comment is null)
         {
             throw new CommentNotFoundException();
-        }
-
-        if (comment.UserId != modifierId)
-        {
-            throw new UnauthorizedAccessException();
         }
 
         _mapper.Map(updatedComment, comment);
@@ -129,14 +125,6 @@ public class CommentService : ICommentService
     }
 
 
-
-    private async Task CheckIfUserNotBannedOrThrow(Guid userId, CancellationToken cancellationToken)
-    {
-        var user = await _repositoryManager.UserRepository.GetByIdAsync(userId, true, cancellationToken);
-
-        if (user!.Banned)
-            throw new UserBannedException(user.BannedAt!.Value);
-    }
 
     private async Task CreateNotificationIfMentionSomeoneAsync(Article article, Comment comment, CancellationToken cancellationToken)
     {

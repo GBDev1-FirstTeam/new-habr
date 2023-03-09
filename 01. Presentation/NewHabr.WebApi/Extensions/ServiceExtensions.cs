@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using NewHabr.Domain;
+using NewHabr.WebApi.Authorization.Requirements;
+using Microsoft.AspNetCore.Authorization;
+using NewHabr.WebApi.Authorization.Handlers;
 
 namespace NewHabr.WebApi.Extensions;
 
@@ -77,5 +80,46 @@ public static class ServiceExtensions
         var mapperConfigurations = new MapperConfiguration(config => config.AddMaps(assembliesToScan));
         var mapper = mapperConfigurations.CreateMapper();
         services.AddSingleton(mapper);
+    }
+
+    public static void ConfigurePolicies(this IServiceCollection services)
+    {
+        services.AddAuthorization(configure =>
+        {
+            configure.AddPolicy(
+                "CanCreate",
+                policyBuilder => policyBuilder
+                    .AddRequirements(new AllowedCreateRequirement()));
+            configure.AddPolicy(
+                "CanManageArticle",
+                policyBuilder => policyBuilder
+                    .AddRequirements(new AllowedManageArticleRequirement()));
+            configure.AddPolicy(
+                "CanManageComment",
+                policyBuilder => policyBuilder
+                    .AddRequirements(new AllowedManageCommentRequirement()));
+            configure.AddPolicy(
+                "CanDeleteComment",
+                policyBuilder => policyBuilder
+                    .AddRequirements(new AllowedDeleteCommentRequirement()));
+            configure.AddPolicy(
+                "CanLike",
+                policyBuilder => policyBuilder
+                    .AddRequirements(new AllowedSetLikeRequirement()));
+            configure.AddPolicy(
+                "CanUpdateUserProfile",
+                policyBuilder => policyBuilder
+                    .AddRequirements(new AllowedUpdateUserSettingsRequirement()));
+        });
+    }
+
+    public static void RegisterHandlers(this IServiceCollection services)
+    {
+        services.AddScoped<IAuthorizationHandler, IsPrivilegedUserHandler>();
+        services.AddScoped<IAuthorizationHandler, IsArticleOwnerHandler>();
+        services.AddScoped<IAuthorizationHandler, IsCommentOwnerHandler>();
+        services.AddScoped<IAuthorizationHandler, IsBannedUserHandler>();
+        services.AddScoped<IAuthorizationHandler, IsAuthorizedHandler>();
+        services.AddScoped<IAuthorizationHandler, OwnSettingsUpdateHandler>();
     }
 }

@@ -114,5 +114,7 @@ public interface IUserService
     /// Reset password using password reset token
     /// </summary>
     Task<IdentityResult> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest, CancellationToken cancellationToken);
+
+    Task<bool> IsBanned(Guid userId, CancellationToken cancellationToken);
 }
 

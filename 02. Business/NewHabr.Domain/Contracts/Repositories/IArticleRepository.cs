@@ -33,4 +33,6 @@ public interface IArticleRepository : IRepository<Article, Guid>
     Task<PagedList<ArticleModel>> GetAllByAuthorIdAsync(Guid authorId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken);
 
     Task<PagedList<ArticleModel>> GetUserLikedArticlesAsync(Guid userId, Guid whoAskingId, bool withComments, ArticleQueryParameters queryParams, CancellationToken cancellationToken);
+
+    Task<bool> IsAuthor(Guid articleId, Guid userId, CancellationToken cancellationToken);
 }

@@ -16,7 +16,7 @@ public interface IArticleService
 
     Task CreateAsync(ArticleCreateRequest request, Guid creatorId, CancellationToken cancellationToken);
 
-    Task UpdateAsync(Guid articleId, Guid modifierId, ArticleUpdateRequest articleToUpdate, CancellationToken cancellationToken);
+    Task UpdateAsync(Guid articleId, ArticleUpdateRequest articleToUpdate, CancellationToken cancellationToken);
 
     Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
 
@@ -44,4 +44,7 @@ public interface IArticleService
     /// Unsets 'Like' mark at article
     /// </summary>
     Task UnsetLikeAsync(Guid articleId, Guid userId, CancellationToken cancellationToken);
+
+    Task<bool> IsAuthor(Guid articleId, Guid userId, CancellationToken cancellationToken);
+
 }

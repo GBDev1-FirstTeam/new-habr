@@ -7,17 +7,18 @@ using NewHabr.WebApi.Extensions;
 
 namespace NewHabr.WebApi.Controllers;
 
-[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class CommentsController : ControllerBase
 {
     private readonly ICommentService _commentService;
+    private readonly IAuthorizationService _authorizationService;
     private readonly ILogger<CommentsController> _logger;
 
-    public CommentsController(ICommentService commentService, ILogger<CommentsController> logger)
+    public CommentsController(ICommentService commentService, IAuthorizationService authorizationService, ILogger<CommentsController> logger)
     {
         _commentService = commentService;
+        _authorizationService = authorizationService;
         _logger = logger;
     }
 
@@ -36,7 +37,7 @@ public class CommentsController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize]
+    [Authorize(Policy = "CanCreate")]
     public async Task<ActionResult> Create([FromBody] CommentCreateRequest newComment, CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
@@ -56,21 +57,23 @@ public class CommentsController : ControllerBase
         }
     }
 
-    [HttpPut("id")] //todo кто может изменять? автор
+    [HttpPut("{commentId}")]
     [Authorize]
-    public async Task<ActionResult> Update([FromRoute] Guid id,
-        [FromBody] CommentUpdateRequest updateComment,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult> Update([FromRoute] Guid commentId, [FromBody] CommentUpdateRequest updateComment, CancellationToken cancellationToken)
     {
-        var userId = User.GetUserId();
+        var authResult = await _authorizationService
+            .AuthorizeAsync(User, commentId, "CanManageComment");
+        if (!authResult.Succeeded)
+            return new ForbidResult();
+
         try
         {
-            await _commentService.UpdateAsync(id, userId, updateComment, cancellationToken);
+            await _commentService.UpdateAsync(commentId, updateComment, cancellationToken);
             return Ok();
         }
         catch (CommentNotFoundException ex)
         {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\ncommentId: {commentId}:"), commentId);
             return NotFound(ex.Message);
         }
         catch (UserBannedException ex)
@@ -79,33 +82,38 @@ public class CommentsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
+            _logger.LogError(ex, string.Concat(ex.Message, "\ncommentId: {commentId}:"), commentId);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
-    [HttpDelete("id")] //todo кто может удалять? автор, модератор, админ
+    [HttpDelete("{commentId}")]
     [Authorize]
-    public async Task<ActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult> Delete([FromRoute] Guid commentId, CancellationToken cancellationToken)
     {
+        var authResult = await _authorizationService
+            .AuthorizeAsync(User, commentId, "CanDeleteComment");
+        if (!authResult.Succeeded)
+            return new ForbidResult();
+
         try
         {
-            await _commentService.DeleteAsync(id, cancellationToken);
+            await _commentService.DeleteAsync(commentId, cancellationToken);
             return Ok();
         }
         catch (CommentNotFoundException ex)
         {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
+            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), commentId);
             return NotFound();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
+            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}:"), commentId);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
-    [Authorize]
+    [Authorize(Policy = "CanLike")]
     [HttpPut("{commentId}/like")]
     public async Task<IActionResult> SetLike([FromRoute] Guid commentId, CancellationToken cancellationToken)
     {
@@ -125,7 +133,7 @@ public class CommentsController : ControllerBase
         }
     }
 
-    [Authorize]
+    [Authorize(Policy = "CanLike")]
     [HttpPut("{commentId}/unlike")]
     public async Task<IActionResult> UnsetLike([FromRoute] Guid commentId, CancellationToken cancellationToken)
     {

@@ -113,4 +113,11 @@ public class UserRepository : RepositoryBase<User, Guid>, IUserRepository
         return await FindByCondition(readyToUnban, trackChanges)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<bool> IsBanned(Guid userId, CancellationToken cancellationToken)
+    {
+        return await FindByCondition(user => user.Id.Equals(userId), false)
+            .Select(user => user.Banned)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
 }

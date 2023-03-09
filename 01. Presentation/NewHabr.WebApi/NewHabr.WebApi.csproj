@@ -28,5 +28,13 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <None Remove="Microsoft.AspNetCore.Authentication.JwtBearer" />
+	  <None Remove="Authorization\" />
+	  <None Remove="Authorization\Requirements\" />
+	  <None Remove="Authorization\Handlers\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Authorization\" />
+	  <Folder Include="Authorization\Requirements\" />
+	  <Folder Include="Authorization\Handlers\" />
 	</ItemGroup>
 </Project>

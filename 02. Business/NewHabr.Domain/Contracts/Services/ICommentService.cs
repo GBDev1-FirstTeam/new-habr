@@ -18,10 +18,7 @@ public interface ICommentService
     /// <param name="data"></param>
     /// <returns></returns>
     /// <exception cref="CommentNotFoundException"></exception>
-    Task UpdateAsync(Guid commentId,
-        Guid modifierId,
-        CommentUpdateRequest updatedComment,
-        CancellationToken cancellationToken);
+    Task UpdateAsync(Guid commentId, CommentUpdateRequest updatedComment, CancellationToken cancellationToken);
 
     /// <summary>
     /// Deletes an existing in database Comment class 
@@ -63,4 +60,6 @@ public interface ICommentService
     /// Unsets 'Like' mark at comment
     /// </summary>
     Task UnsetLikeAsync(Guid commentId, Guid userId, CancellationToken cancellationToken);
+
+    Task<bool> IsAuthor(Guid commentId, Guid userId, CancellationToken cancellationToken);
 }
