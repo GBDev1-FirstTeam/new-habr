@@ -19,6 +19,7 @@ export interface Publication extends Like {
     ApproveState?: string;
     ImgURL: string;
     Username?: string;
+    CommentsCount?: number;
 }
 
 export interface PublicationUser extends Like {

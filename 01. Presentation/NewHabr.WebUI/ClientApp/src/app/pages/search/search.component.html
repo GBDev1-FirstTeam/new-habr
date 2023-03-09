@@ -21,7 +21,7 @@
             [post]="post"
             >
             <div class="info-bar">
-                <div>Комментарии <i class="bi bi-chat-left-dots-fill"></i> {{post?.Comments?.length}}</div>
+                <div>Комментарии <i class="bi bi-chat-left-dots-fill"></i> {{post?.CommentsCount}}</div>
                 <app-like [count]="post.LikesCount || 0" [isLiked]="post?.IsLiked || false" (doLike)="like($event, post)"></app-like>
             </div>
             <div class="link">
