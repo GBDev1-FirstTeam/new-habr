@@ -13,7 +13,6 @@
     <None Remove="ServiceModels\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Contracts\" />
     <Folder Include="ConfigurationModels\" />
     <Folder Include="ServiceModels\" />
   </ItemGroup>

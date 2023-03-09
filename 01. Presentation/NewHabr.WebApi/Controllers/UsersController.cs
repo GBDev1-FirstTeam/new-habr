@@ -1,8 +1,5 @@
-﻿using System;
-using System.Threading;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NewHabr.Business.Services;
 using NewHabr.Domain.Contracts.Services;
 using NewHabr.Domain.Dto;
 using NewHabr.Domain.Exceptions;
@@ -22,6 +19,43 @@ public class UsersController : ControllerBase
         _userService = userService;
     }
 
+
+    [HttpPost("requestRecovery")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ForgotPassword([FromBody] RecoveryRequest recoveryRequest, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return Ok(await _userService.ForgotPasswordAsync(recoveryRequest, cancellationToken));
+        }
+        catch (UserNotFoundException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    [HttpPut("resetPassword")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest resetPasswordRequest, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await _userService.ResetPasswordAsync(resetPasswordRequest, cancellationToken);
+            if (result.Succeeded)
+            {
+                return NoContent();
+            }
+            return BadRequest(result.Errors.Select(e => e.Description));
+        }
+        catch (UserNotFoundException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 
     [HttpGet]
     [Authorize(Roles = "Moderator,Administrator")]

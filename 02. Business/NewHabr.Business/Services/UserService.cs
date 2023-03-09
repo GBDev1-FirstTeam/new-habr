@@ -322,4 +322,41 @@ public class UserService : IUserService
         if (user!.Banned)
             throw new UserBannedException(user.BannedAt!.Value);
     }
+
+    public async Task<RecoveryResponse> ForgotPasswordAsync(RecoveryRequest recoveryRequest, CancellationToken cancellationToken)
+    {
+        var user = await _userManager.FindByNameAsync(recoveryRequest.UserName);
+
+        if (user is null)
+        {
+            throw new UserNotFoundException();
+        }
+        if (user.SecureQuestionId != recoveryRequest.SecureQuestionId || user.SecureAnswer != recoveryRequest.Answer)
+        {
+            await _userManager.AccessFailedAsync(user);
+            throw new UnauthorizedAccessException();
+        }
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+        var userDto = _mapper.Map<UserDto>(user);
+
+        return new RecoveryResponse()
+        {
+            Token = token,
+            User = userDto
+        };
+    }
+
+    public async Task<IdentityResult> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest, CancellationToken cancellationToken)
+    {
+        var user = await _userManager.FindByNameAsync(resetPasswordRequest.UserName);
+        if (user is null)
+        {
+            throw new UserNotFoundException();
+        }
+
+        var result = await _userManager.ResetPasswordAsync(user, resetPasswordRequest.Token, resetPasswordRequest.NewPassword);
+        return result;
+    }
 }

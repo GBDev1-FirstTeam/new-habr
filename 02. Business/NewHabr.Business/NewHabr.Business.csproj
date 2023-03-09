@@ -9,9 +9,6 @@
 		<ProjectReference Include="..\NewHabr.Domain\NewHabr.Domain.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<Folder Include="Services\" />
-	</ItemGroup>
-	<ItemGroup>
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.26.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.13" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
