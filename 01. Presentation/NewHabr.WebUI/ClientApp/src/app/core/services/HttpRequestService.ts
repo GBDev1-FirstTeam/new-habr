@@ -7,8 +7,7 @@ import { CommentRequest } from '../models/Commentary';
 import { Notification } from '../models/Notification';
 import { PutUserInfo, UserInfo } from '../models/User';
 import { ConfigurationService } from './ConfigurationService';
-import { Registration, RegistrationRequest } from '../models/Registration';
-import { Recovery, RecoveryChangePassword, RecoveryQuestion, RecoveryRequestAnswer, RecoveryRequestLogin } from '../models/Recovery';
+import { RecoveryRequest, RecoveryResponse, ResetPasswordRequest } from '../models/Recovery';
 import { Authorization, LoginRequest, RegisterRequest } from '../models/Authorization';
 import { SecureQuestion } from '../models/SecureQuestion';
 import { Category } from '../models/Category';
@@ -71,26 +70,6 @@ export class HttpRequestService {
 
   private getAuth = () => JSON.parse(localStorage.getItem(StorageKeys.AuthObject)!) as Authorization | null;
 
-  postRegistration(body: RegistrationRequest) {
-    const url = this.backend.baseURL + `/register`;
-    return this.post<RegistrationRequest, Registration>(url, body);
-  }
-
-  postRecoveryLogin(body: RecoveryRequestLogin) {
-    const url = this.backend.baseURL + `/recovery/login`;
-    return this.post<RecoveryRequestLogin, RecoveryQuestion>(url, body);
-  }
-
-  postRecoveryAnswer(body: RecoveryRequestAnswer) {
-    const url = this.backend.baseURL + `/recovery/answer`;
-    return this.post<RecoveryRequestAnswer, Recovery>(url, body);
-  }
-
-  postRecoveryChangePassword(body: RecoveryChangePassword) {
-    const url = this.backend.baseURL + `/recovery/password`;
-    return this.post<RecoveryChangePassword, any>(url, body);
-  }
-
   // #region /auth
   register(body: RegisterRequest) {
     const url = this.backend.baseURL + `/auth`;
@@ -141,6 +120,14 @@ export class HttpRequestService {
   getUserNotifications(id: string): Observable<Array<Notification>> {
     const url = this.backend.baseURL + `/Users/${id}/notifications`;
     return this.get<Array<Notification>>(url);
+  }
+  requestRecovery(body: RecoveryRequest): Observable<RecoveryResponse> {
+    const url = this.backend.baseURL + `/Users/requestRecovery`;
+    return this.post<RecoveryRequest, RecoveryResponse>(url, body);
+  }
+  requestResetPassword(body: ResetPasswordRequest): Observable<any> {
+    const url = this.backend.baseURL + `/Users/resetPassword`;
+    return this.put<ResetPasswordRequest, any>(url, body);
   }
   // #endregion
 

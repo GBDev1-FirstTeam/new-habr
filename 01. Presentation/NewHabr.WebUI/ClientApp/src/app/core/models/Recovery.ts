@@ -1,26 +1,18 @@
-import { User } from "./User";
+import { UserInfo } from "./User";
 
-export interface RecoveryRequestLogin {
-    Login: string;
-}
-
-export interface RecoveryQuestion {
-    Question: string;
-    TransactionId: string;
-}
-
-export interface RecoveryRequestAnswer {
+export interface RecoveryRequest {
+    UserName: string;
+    SecureQuestionId: number;
     Answer: string;
-    TransactionId: string;
 }
 
-export interface Recovery {
+export interface RecoveryResponse {
     Token: string;
-    RefreshToken: string;
-    User: User;
+    User: UserInfo;
 }
 
-export interface RecoveryChangePassword {
-    UserId: string;
-    Password: string;
+export interface ResetPasswordRequest {
+    Token: string;
+    UserName: string;
+    NewPassword: string;
 }

@@ -3,7 +3,6 @@ import { Publication } from "../models/Publication";
 import { createStore, withProps, Store, StoreDef, select } from '@ngneat/elf';
 import { Injectable } from "@angular/core";
 import { HttpRequestService } from "../services/HttpRequestService";
-import { RecoveryRequestAnswer } from "../models/Recovery";
 import { Authorization, LoginRequest, RegisterRequest } from "../models/Authorization";
 import { StorageKeys } from '../static/StorageKeys';
 import { UserRole } from '../static/UserRole';
@@ -105,14 +104,6 @@ export class AppStoreProvider {
             this.http.register(registerData).subscribe(auth => {
             this.authSubscribtion(auth);
             registerSubscribtion.unsubscribe();
-        });
-    }
-
-    recovery(recoveryData: RecoveryRequestAnswer) {
-        const recoverySubscribtion =
-            this.http.postRecoveryAnswer(recoveryData).subscribe(auth => {
-            // this.authSubscribtion(auth);
-            recoverySubscribtion.unsubscribe();
         });
     }
 

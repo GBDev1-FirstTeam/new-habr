@@ -1,6 +1,4 @@
-import { Like } from "./Like";
-
-export interface User extends Like {
+export interface User {
     Id: string;
     Login: string;
     FirstName: string;

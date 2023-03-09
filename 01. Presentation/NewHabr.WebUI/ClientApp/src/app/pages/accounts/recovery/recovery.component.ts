@@ -1,9 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { lastValueFrom, Subscription } from 'rxjs';
-import { Authorization } from 'src/app/core/models/Authorization';
+import { RecoveryResponse } from 'src/app/core/models/Recovery';
+import { SecureQuestion } from 'src/app/core/models/SecureQuestion';
 import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
-import { AppStoreProvider } from 'src/app/core/store/store';
 
 @Component({
   selector: 'app-recovery',
@@ -17,28 +17,29 @@ export class RecoveryComponent implements OnInit, OnDestroy {
 
   // step 1
   login: string;
-  question: string;
-  transationId: string;
   // step 2
+  activeQuestion: SecureQuestion;
+  questionsList: Array<SecureQuestion>;
   answer: string;
+  recoveryResponse: RecoveryResponse;
   // step 3
   password: string;
   repeatPassword: string;
 
   incorrectPasswords: boolean = false;
-  auth: Authorization;
+  succesfulChangePassword: boolean;
 
-  constructor(private store: AppStoreProvider, private router: Router, private http: HttpRequestService) { }
+  constructor(private router: Router, private http: HttpRequestService) { }
   
   ngOnInit(): void {
-    const authSubscribtion = this.store.getAuth().subscribe(auth => {
-      if (auth) {
-        this.auth = auth;
-        this.step = 3;
+    const questionsSubscribtion = this.http.getAllQuestions().subscribe(questions => {
+      if (questions) {
+        this.questionsList = questions;
+        this.activeQuestion = this.questionsList[0];
       }
     })
 
-    this.subscribtions.push(authSubscribtion);
+    this.subscribtions.push(questionsSubscribtion);
   }
 
   ngOnDestroy(): void {
@@ -47,23 +48,22 @@ export class RecoveryComponent implements OnInit, OnDestroy {
 
   getQuestion() {
     if (!!this.login) {
-      const loginSubscribtion = this.http.postRecoveryLogin({
-        Login: this.login
-      }).subscribe(response => {
-        this.question = response.Question;
-        this.transationId = response.TransactionId;
-
-        this.step = 2;
-        loginSubscribtion.unsubscribe();
-      })
+      this.step = 2;
     }
   }
 
   answerQuestion() {
     if (!!this.answer) {
-      this.store.recovery({
-        Answer: this.answer,
-        TransactionId: this.transationId
+      const recoveryRequestSubscribtion = this.http.requestRecovery({
+        UserName: this.login,
+        SecureQuestionId: this.activeQuestion.Id,
+        Answer: this.answer
+      }).subscribe(response => {
+        if (response) {
+          this.recoveryResponse = response;
+          this.step = 3;
+          recoveryRequestSubscribtion.unsubscribe();
+        }
       })
     }
   }
@@ -75,13 +75,14 @@ export class RecoveryComponent implements OnInit, OnDestroy {
         return;
       }
 
-      lastValueFrom(this.http.postRecoveryChangePassword({
-        UserId: this.auth.User.Id,
-        Password: this.password
-      }))
-
-      this.step = 1;
-      this.router.navigate(['accounts', this.auth.User.Id]);
+      lastValueFrom(this.http.requestResetPassword({
+        Token: this.recoveryResponse.Token,
+        UserName: this.recoveryResponse.User.UserName,
+        NewPassword: this.password
+      })).then(() => {
+        this.succesfulChangePassword = true;
+        setTimeout(() => this.router.navigate(['accounts', 'login']), 1000);
+      })
     }
   }
 }

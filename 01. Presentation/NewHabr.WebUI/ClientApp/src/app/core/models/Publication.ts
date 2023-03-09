@@ -1,10 +1,9 @@
 import { Category } from "./Category";
 import { Metadata, NameStruct } from "./Structures";
-import { Like } from "./Like";
 import { Tag } from "./Tag";
 import { Commentary } from "./Commentary";
 
-export interface Publication extends Like {
+export interface Publication {
     Id?: string;
     UserId?: string;
     Title: string;
@@ -20,9 +19,11 @@ export interface Publication extends Like {
     ImgURL: string;
     Username?: string;
     CommentsCount?: number;
+    IsLiked?: boolean;
+    LikesCount?: number;
 }
 
-export interface PublicationUser extends Like {
+export interface PublicationUser {
     Id?: string;
     Title: string;
     Categories: Array<Category>;

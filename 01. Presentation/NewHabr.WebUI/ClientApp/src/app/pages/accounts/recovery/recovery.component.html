@@ -2,24 +2,29 @@
     <h5>Введите свои учётные данные</h5>
 
     <form *ngIf="step === 1">
-        <div>Шаг 1 - получение контрольного вопроса, указанного при регистрации</div>
+        <div>Шаг 1 - Идентификация пользователя</div>
         <div class="form-group">
             <label for="login">Введите ваш логин</label>
             <input type="text" class="form-control" id="login" placeholder="Логин" [(ngModel)]="login" name="login">
         </div>
 
-        <button type="submit" class="btn btn-outline-dark" (click)="getQuestion()">Получить вопрос</button>
+        <button type="submit" class="btn btn-outline-dark" (click)="getQuestion()">Продолжить</button>
     </form>
 
     <form *ngIf="step === 2">
         <div>Шаг 2 - Ответ на контрольный вопрос</div>
-        <div>{{ question }}</div>
         <div class="form-group">
-            <label for="answer">Ваш ответ</label>
+            <label for="question">Выберите свой контрольный вопрос</label>
+            <select class="form-select" [(ngModel)]="activeQuestion">
+                <option *ngFor="let question of questionsList">{{ question.Question }}</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="answer">Ответ на вопрос</label>
             <input type="text" class="form-control" id="answer" placeholder="Ответ" [(ngModel)]="answer" name="answer">
         </div>
 
-        <button type="submit" class="btn btn-outline-dark" (click)="answerQuestion()">Ответить</button>
+        <button type="submit" class="btn btn-outline-dark" (click)="answerQuestion()">Продолжить</button>
     </form>
 
     <form *ngIf="step === 3">
@@ -39,3 +44,5 @@
         <button type="submit" class="btn btn-outline-dark" (click)="changePassword()">Сохранить</button>
     </form>
 </div>
+
+<app-succesful-send [(visible)]="succesfulChangePassword" [text]="'Пароль успешно изменён!'"></app-succesful-send>
