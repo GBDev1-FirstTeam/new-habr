@@ -19,7 +19,7 @@ public class UsersController : ControllerBase
         _userService = userService;
     }
 
-    [HttpPost]
+    [HttpPost("requestRecovery")]
     [AllowAnonymous]
     public async Task<IActionResult> ForgotPassword([FromBody] RecoveryRequest recoveryRequest, CancellationToken cancellationToken)
     {
@@ -37,21 +37,22 @@ public class UsersController : ControllerBase
         }
     }
 
-    [HttpPost]
+    [HttpPut("resetPassword")]
     [AllowAnonymous]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest resetPasswordRequest, CancellationToken cancellationToken)
     {
         try
         {
-            return Ok(await _userService.ResetPasswordAsync(resetPasswordRequest, cancellationToken));
+            var result = await _userService.ResetPasswordAsync(resetPasswordRequest, cancellationToken);
+            if (result.Succeeded)
+            {
+                return NoContent();
+            }
+            return BadRequest(result.Errors.Select(e => e.Description));
         }
         catch (UserNotFoundException ex)
         {
             return BadRequest(ex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 

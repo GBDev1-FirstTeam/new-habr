@@ -333,7 +333,7 @@ public class UserService : IUserService
         }
         if (user.SecureQuestionId != recoveryRequest.SecureQuestionId || user.SecureAnswer != recoveryRequest.Answer)
         {
-            user.AccessFailedCount++;
+            await _userManager.AccessFailedAsync(user);
             throw new UnauthorizedAccessException();
         }
 
