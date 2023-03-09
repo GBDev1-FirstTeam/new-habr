@@ -43,7 +43,7 @@ public class ArticeServiceTests
         _sut = new ArticleService(_repositoryManagerMock.Object, _mapper, _notificationServiceMock.Object);
     }
 
-    [Fact]
+    [Fact(Skip = "ban restrictions replaced to controller and centralized authorization service")]
     public async Task CreateAsync_UserBanned_CannotCreatesArticle()
     {
         // Arrange

@@ -7,12 +7,14 @@ using NewHabr.Domain.Contracts;
 using NewHabr.Domain.Dto;
 using NewHabr.WebApi.Controllers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 
 namespace UnitTests.Controllers;
 
 public class ArticlesControllerTests
 {
     private Mock<IArticleService> _articleServiceMock;
+    private readonly Mock<IAuthorizationService> _authorizationService;
     private Mock<ILogger<ArticlesController>> _loggerMock;
     private readonly ArticlesController _sut;
 
@@ -20,9 +22,14 @@ public class ArticlesControllerTests
     public ArticlesControllerTests()
     {
         _loggerMock = new();
+        _authorizationService = new Mock<IAuthorizationService>();
         _articleServiceMock = new();
 
-        _sut = new ArticlesController(_articleServiceMock.Object, _loggerMock.Object);
+        _authorizationService
+            .Setup(s => s.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<Guid>(), It.IsAny<string>()))
+            .ReturnsAsync(() => AuthorizationResult.Success());
+
+        _sut = new ArticlesController(_articleServiceMock.Object, _authorizationService.Object, _loggerMock.Object);
     }
 
 
