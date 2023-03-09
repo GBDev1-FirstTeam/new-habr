@@ -139,6 +139,6 @@ public interface IUserService
     /// <param name="resetPasswordRequest"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IdentityResult> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest, CancellationToken cancellationToken)
+    Task<IdentityResult> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest, CancellationToken cancellationToken);
 }
 
