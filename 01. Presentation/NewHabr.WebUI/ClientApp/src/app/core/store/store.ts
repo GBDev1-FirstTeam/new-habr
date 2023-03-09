@@ -144,7 +144,8 @@ export class AppStoreProvider {
     }
 
     loadUserInfo(id: string) {
-        if (this.store.getValue().userInfo == null) {
+        const values = this.store.getValue();
+        if (values.isAuth && !values.userInfo) {
             const userInfoSubscribtion = this.http.getUserInfo(id).subscribe(info => {
                 if (info) {
                     this.updateUserInfo(info);
@@ -168,7 +169,7 @@ export class AppStoreProvider {
     }
 
     private isAuth = (auth: Authorization | null) : boolean => !!auth?.User && !!auth?.Token;
-    private isUser = (auth: Authorization | null) : boolean => auth?.User?.Roles.includes(UserRole.User) || false;
-    private isAdmin = (auth: Authorization | null) : boolean => auth?.User?.Roles.includes(UserRole.Administrator) || false;
-    private isModerator = (auth: Authorization | null) : boolean => auth?.User?.Roles.includes(UserRole.Moderator) || false;
+    private isUser = (auth: Authorization | null) : boolean => auth?.User?.Roles?.includes(UserRole.User) || false;
+    private isAdmin = (auth: Authorization | null) : boolean => auth?.User?.Roles?.includes(UserRole.Administrator) || false;
+    private isModerator = (auth: Authorization | null) : boolean => auth?.User?.Roles?.includes(UserRole.Moderator) || false;
 }

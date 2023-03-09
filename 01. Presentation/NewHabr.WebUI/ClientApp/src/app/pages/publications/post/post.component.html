@@ -5,7 +5,7 @@
     <app-comment *ngFor="let comment of post?.Comments" [comment]="comment"></app-comment>
     <div *ngIf="post?.Comments!.length == 0" class="comments-banner">Список комментариев пуст!</div>
 
-    <ng-container *ngIf="isAuth">
+    <ng-container *ngIf="isAuth && !userInfo?.Banned">
         <h6>Добавление нового комментария:</h6>
         <div class="comment-container">
             <div class="input-group mb-3">

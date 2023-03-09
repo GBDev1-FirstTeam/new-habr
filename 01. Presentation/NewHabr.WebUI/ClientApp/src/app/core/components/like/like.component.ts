@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { Subscription } from 'rxjs';
 import { Authorization } from '../../models/Authorization';
 import { LikeData } from '../../models/Like';
+import { UserInfo } from '../../models/User';
 import { AppStoreProvider } from '../../store/store';
 
 @Component({
@@ -15,6 +16,7 @@ export class LikeComponent implements OnInit, OnDestroy {
   
   auth: Authorization | null;
   isAuth: boolean;
+  userInfo: UserInfo | null;
 
   @Input() isLiked: boolean;
   @Input() count: number;
@@ -26,9 +28,15 @@ export class LikeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const authSubscribtion = this.store.getAuth().subscribe(auth => this.auth = auth);
     const isAuthSubscribtion = this.store.getIsAuth().subscribe(isAuth => this.isAuth = isAuth);
+    const userSubscribtion = this.store.getUserInfo().subscribe(userInfo => {
+      if (userInfo) {
+        this.userInfo = userInfo;
+      }
+    })
 
     this.subscribtions.push(authSubscribtion);
     this.subscribtions.push(isAuthSubscribtion);
+    this.subscribtions.push(userSubscribtion);
   }
 
   ngOnDestroy(): void {
@@ -36,7 +44,7 @@ export class LikeComponent implements OnInit, OnDestroy {
   }
 
   like() {
-    if (!this.isAuth) return;
+    if (!this.isAuth || this.userInfo?.Banned) return;
 
     this.count = this.isLiked ? this.count - 1 : this.count + 1;
     this.isLiked = !this.isLiked;

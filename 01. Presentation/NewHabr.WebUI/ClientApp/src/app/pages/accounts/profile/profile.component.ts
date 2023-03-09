@@ -29,7 +29,6 @@ export class ProfileComponent implements OnInit {
   ngOnInit(): void {
     const paramsSubscribtion = this.activeRoute.parent!.params.subscribe(params => {
       this.userId = params.id;
-      this.store.loadUserInfo(this.userId);
     });
 
     const userSubscribtion = this.store.getUserInfo().subscribe(user => {
@@ -40,6 +39,8 @@ export class ProfileComponent implements OnInit {
           month: "2-digit",
           day: "2-digit"
         } as Intl.DateTimeFormatOptions);
+      } else {
+        this.store.loadUserInfo(this.userId);
       }
     })
 

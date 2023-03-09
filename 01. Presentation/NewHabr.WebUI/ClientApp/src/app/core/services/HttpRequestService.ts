@@ -3,10 +3,10 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Backend } from '../models/Configuration';
 import { Publication, PublicationRequest, PublicationsResponse, PublicationsResponseUser } from '../models/Publication';
-import { Commentary, CommentRequest } from '../models/Commentary';
-import { PutUserInfo, User, UserInfo } from '../models/User';
+import { CommentRequest } from '../models/Commentary';
+import { Notification } from '../models/Notification';
+import { PutUserInfo, UserInfo } from '../models/User';
 import { ConfigurationService } from './ConfigurationService';
-import { LikeRequest } from '../models/Like';
 import { Registration, RegistrationRequest } from '../models/Registration';
 import { Recovery, RecoveryChangePassword, RecoveryQuestion, RecoveryRequestAnswer, RecoveryRequestLogin } from '../models/Recovery';
 import { Authorization, LoginRequest, RegisterRequest } from '../models/Authorization';
@@ -59,17 +59,17 @@ export class HttpRequestService {
     });
   }
 
+  private delete(url: string): Observable<Object> {
+    const auth = this.getAuth();
+
+    return this.http.delete(url, {
+      headers: {
+        "Authorization": `Bearer ${auth?.Token}`
+      }
+    });
+  }
+
   private getAuth = () => JSON.parse(localStorage.getItem(StorageKeys.AuthObject)!) as Authorization | null;
-  
-  getUserById(id: string): Observable<User> {
-    const url = this.backend.baseURL + `/users/${id}`;
-    return this.get<User>(url);
-  }
-  
-  getCommentsByPostId(id: string): Observable<Array<Commentary>> {
-    const url = this.backend.baseURL + `/comments/${id}`;
-    return this.get<Array<Commentary>>(url);
-  }
 
   postRegistration(body: RegistrationRequest) {
     const url = this.backend.baseURL + `/register`;
@@ -89,18 +89,6 @@ export class HttpRequestService {
   postRecoveryChangePassword(body: RecoveryChangePassword) {
     const url = this.backend.baseURL + `/recovery/password`;
     return this.post<RecoveryChangePassword, any>(url, body);
-  }
-  
-  postComment(body: Commentary) {
-    const url = this.backend.baseURL + `/comments/add`;
-    return this.post<Commentary, any>(url, body);
-  }
-   
-  
-  
-  postLike(body: LikeRequest, path: string) {
-    let url = this.backend.baseURL + `/${path}/like`;
-    return this.post<LikeRequest, any>(url, body);
   }
 
   // #region /auth
@@ -149,6 +137,10 @@ export class HttpRequestService {
   getUserPublications(id: string): Observable<PublicationsResponseUser> {
     const url = this.backend.baseURL + `/Users/${id}/articles`;
     return this.get<PublicationsResponseUser>(url);
+  }
+  getUserNotifications(id: string): Observable<Array<Notification>> {
+    const url = this.backend.baseURL + `/Users/${id}/notifications`;
+    return this.get<Array<Notification>>(url);
   }
   // #endregion
 
@@ -230,6 +222,14 @@ export class HttpRequestService {
   addComment(body: CommentRequest) {
     const url = this.backend.baseURL + `/Comments`;
     return this.post<CommentRequest, any>(url, body);
+  }
+  // #endregion
+
+  // #region /Notifications
+  deleteNotification(id: string) {
+    const url = this.backend.baseURL + `/Notifications/${id}`;
+    // return this.put<any, any>(url, null);
+    return this.delete(url);
   }
   // #endregion
 }
