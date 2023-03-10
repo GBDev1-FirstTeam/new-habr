@@ -60,6 +60,11 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             query = query.Where(article => article.Categories.Any(category => category.Id == queryParams.Category));
         }
 
+        if (queryParams.Tag > 0)
+        {
+            query = query.Where(article => article.Tags.Any(tag => tag.Id == queryParams.Tag));
+        }
+
         query = query.OrderByType(article => article.PublishedAt, queryParams.OrderBy);
         return await GetManyAsync(query, whoAskingId, withComments, queryParams, cancellationToken);
     }

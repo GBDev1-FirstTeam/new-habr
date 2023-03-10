@@ -25,5 +25,8 @@ public class ArticleQueryParametersDto : QueryParameters
     public int Category { get; set; }
 
     [FromQuery]
+    public int Tag { get; set; }
+
+    [FromQuery]
     public QueryParametersDefinitions.RatingOrderBy ByRating { get; set; } = QueryParametersDefinitions.RatingOrderBy.None;
 }

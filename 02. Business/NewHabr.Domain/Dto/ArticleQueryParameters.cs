@@ -17,5 +17,7 @@ public class ArticleQueryParameters : QueryParameters
 
     public int Category { get; set; }
 
+    public int Tag { get; set; }
+
     public RatingOrderBy ByRating { get; set; }
 }
