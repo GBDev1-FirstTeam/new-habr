@@ -55,6 +55,11 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
             query = query.Where(article => article.Title.ToLower().Contains(queryParams.Search.ToLower()));
         }
 
+        if (queryParams.Category > 0)
+        {
+            query = query.Where(article => article.Categories.Any(category => category.Id == queryParams.Category));
+        }
+
         query = query.OrderByType(article => article.PublishedAt, queryParams.OrderBy);
         return await GetManyAsync(query, whoAskingId, withComments, queryParams, cancellationToken);
     }
