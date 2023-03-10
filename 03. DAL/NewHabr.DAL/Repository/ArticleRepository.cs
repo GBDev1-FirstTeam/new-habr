@@ -52,7 +52,7 @@ public class ArticleRepository : RepositoryBase<Article, Guid>, IArticleReposito
 
         if (!string.IsNullOrEmpty(queryParams.Search))
         {
-            query = query.Where(article => article.Title.Contains(queryParams.Search));
+            query = query.Where(article => article.Title.ToLower().Contains(queryParams.Search.ToLower()));
         }
 
         query = query.OrderByType(article => article.PublishedAt, queryParams.OrderBy);
