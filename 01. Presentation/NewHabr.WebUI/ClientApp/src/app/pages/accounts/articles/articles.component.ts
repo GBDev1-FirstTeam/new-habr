@@ -22,6 +22,7 @@ export class ArticlesComponent implements OnInit {
   succesfulModerate: boolean = false;
   succesfulPublicate: boolean = false;
   succesfulUnPublicate: boolean = false;
+  succesfulDelete: boolean = false;
 
   constructor(
     private http: HttpRequestService,
@@ -67,6 +68,13 @@ export class ArticlesComponent implements OnInit {
       post.Published = false;
     });
   };
+
+  deletePost = (post: PublicationUser) => {
+    lastValueFrom(this.http.deletePost(post.Id!)).then(() => {
+      this.publications = this.publications.filter(p => p.Id !== post.Id);
+      this.succesfulDelete = true;
+    });
+  }
 
   mayBePublish = (post: PublicationUser) => !post.Published && post.ApproveState !== ArticleState.WaitApproval;
   mayBeUnPublish = (post: PublicationUser) => post.Published;

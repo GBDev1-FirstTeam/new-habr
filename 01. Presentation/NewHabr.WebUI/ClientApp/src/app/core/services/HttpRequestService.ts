@@ -185,6 +185,10 @@ export class HttpRequestService {
     const url = this.backend.baseURL + `/Articles/${id}/${mode}`;
     return this.put<any, any>(url, null);
   }
+  deletePost(id: string): Observable<any> {
+    const url = this.backend.baseURL + `/Articles/${id}`;
+    return this.delete(url);
+  }
   // #endregion
 
   // #region /Categories
