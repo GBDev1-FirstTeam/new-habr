@@ -280,12 +280,12 @@ public class ArticleService : IArticleService
     /// If one of them doesn't contains in repository, throw exception.
     /// </remarks>
     /// <exception cref="CategoryNotFoundException"></exception>
-    private async Task UpdateCategoresAsync(Article article, CategoryUpdateRequest[] categoresDto, CancellationToken cancellationToken)
+    private async Task UpdateCategoresAsync(Article article, ICollection<CategoryUpdateRequest> categoresDto, CancellationToken cancellationToken)
     {
-        if (article.Categories.Count != 0)
-        {
-            article.Categories.Clear();
-        }
+        if (categoresDto is null)
+            return;
+
+        article.Categories = new List<Category>();
 
         var existsCategories = await _repositoryManager
             .CategoryRepository
@@ -312,12 +312,12 @@ public class ArticleService : IArticleService
     /// In proccess of adding <paramref name="tagsDto"/>, comparing them with existing in tags repository.
     /// If one of them doesn't contains in repository, adding to both (Articles, Tags).
     /// </remarks>
-    private async Task UpdateTagsAsync(Article article, TagCreateRequest[] tagsDto, CancellationToken cancellationToken)
+    private async Task UpdateTagsAsync(Article article, ICollection<TagCreateRequest> tagsDto, CancellationToken cancellationToken)
     {
-        if (article.Tags.Count != 0)
-        {
-            article.Tags.Clear();
-        }
+        if (tagsDto is null)
+            return;
+
+        article.Tags = new List<Tag>();
 
         tagsDto = tagsDto
             .DistinctBy(t => t.Name)
