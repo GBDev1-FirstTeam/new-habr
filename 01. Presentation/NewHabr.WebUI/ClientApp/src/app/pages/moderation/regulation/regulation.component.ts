@@ -20,6 +20,7 @@ export class RegulationComponent implements OnInit {
   isAdmin: boolean;
 
   succesfulBan: boolean = false;
+  succesfulUnban: boolean = false;
   succesfulSetRole: boolean = false;
 
   constructor(private store: AppStoreProvider, private http: HttpRequestService, private cdr: ChangeDetectorRef) { }
@@ -50,7 +51,12 @@ export class RegulationComponent implements OnInit {
     }
   }
 
-  disableBan = (user: UserInfo) => { }
+  disableBan = (user: UserInfo) => {
+    lastValueFrom(this.http.unbanUser(user.Id)).then(() => {
+      this.succesfulUnban = true;
+      user.Banned = false;
+    })
+  }
 
   changeSelection(event: any) {
     switch (event.target.value) {

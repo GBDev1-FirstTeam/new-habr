@@ -101,9 +101,13 @@ export class HttpRequestService {
     const url = this.backend.baseURL + `/Users`;
     return this.get<Array<UserInfo>>(url);
   }
-  banUser(id: string, body: BanStruct): Observable<Array<UserInfo>> {
+  banUser(id: string, body: BanStruct): Observable<any> {
     const url = this.backend.baseURL + `/Users/${id}/ban`;
     return this.put<BanStruct, any>(url, body);
+  }
+  unbanUser(id: string): Observable<any> {
+    const url = this.backend.baseURL + `/Users/${id}/unban`;
+    return this.put<any, any>(url, null);
   }
   setUserRole(id: string, body: RoleStruct): Observable<any> {
     const url = this.backend.baseURL + `/Users/${id}/setroles`;
