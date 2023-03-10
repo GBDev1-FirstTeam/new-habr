@@ -6,6 +6,8 @@ export interface Commentary {
     Text: string;
     CreatedAt?: number;
     ModifiedAt: number;
+    IsLiked?: boolean;
+    LikesCount?: number;
 }
 
 export interface CommentRequest {

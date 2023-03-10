@@ -22,7 +22,7 @@
             >
             <div class="info-bar">
                 <div>Комментарии <i class="bi bi-chat-left-dots-fill"></i> {{post?.CommentsCount}}</div>
-                <app-like [count]="post.LikesCount || 0" [isLiked]="post?.IsLiked || false" (doLike)="like($event, post)"></app-like>
+                <app-like [count]="post.LikesCount || 0" [isLiked]="post?.IsLiked || false" [likedObject]="post" (doLike)="like($event, post)"></app-like>
             </div>
             <div class="link">
                 <button type="button" class="btn btn-outline-dark" (click)="navigate(post?.Id)">Читать далее...</button>

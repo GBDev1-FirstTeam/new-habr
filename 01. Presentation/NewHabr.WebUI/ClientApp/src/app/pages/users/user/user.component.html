@@ -14,4 +14,6 @@
         </div>
         <span>{{ user?.Description }}</span>
     </div>
+
+    <app-like [count]="user?.LikesCount || 0" [isLiked]="user?.IsLiked || false" [likedObject]="user" (doLike)="like($event)"></app-like>
 </div>

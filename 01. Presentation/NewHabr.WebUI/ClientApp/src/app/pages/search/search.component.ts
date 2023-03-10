@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { lastValueFrom } from 'rxjs';
 import { LikeData } from 'src/app/core/models/Like';
 import { Publication } from 'src/app/core/models/Publication';
 import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
+import { LikeService } from 'src/app/core/services/LikeService';
 
 @Component({
   selector: 'app-search',
@@ -15,18 +15,11 @@ export class SearchComponent {
   publications: Array<Publication>;
   isLoading: boolean = false;
 
-  constructor(private http: HttpRequestService, private router: Router) { }
+  constructor(private http: HttpRequestService, private router: Router, private likeService: LikeService) { }
 
   navigate = (id: string | undefined) => this.router.navigate(['publications', id]);
 
-  like(likeData: LikeData, post: Publication) {
-    if(likeData.isLiked) {
-      lastValueFrom(this.http.likeArticle(post.Id || '', 'like'))
-    }
-    else {
-      lastValueFrom(this.http.likeArticle(post.Id || '', 'unlike'))
-    }
-  }
+  like = (likeData: LikeData, post: Publication) => this.likeService.like(likeData, post.Id, this.http.likeArticle.bind(this.http));
 
   searchArticles(input: HTMLInputElement) {
     this.isLoading = true;

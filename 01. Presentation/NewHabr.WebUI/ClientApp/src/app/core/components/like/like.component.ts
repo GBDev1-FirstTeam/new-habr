@@ -20,6 +20,7 @@ export class LikeComponent implements OnInit, OnDestroy {
 
   @Input() isLiked: boolean;
   @Input() count: number;
+  @Input() likedObject: any;
 
   @Output() doLike: EventEmitter<LikeData> = new EventEmitter<LikeData>()
 
@@ -45,6 +46,8 @@ export class LikeComponent implements OnInit, OnDestroy {
 
   like() {
     if (!this.isAuth || this.userInfo?.Banned) return;
+    if (this.likedObject?.UserId === this.userInfo?.Id) return;
+    if (this.likedObject?.Id === this.userInfo?.Id) return;
 
     this.count = this.isLiked ? this.count - 1 : this.count + 1;
     this.isLiked = !this.isLiked;

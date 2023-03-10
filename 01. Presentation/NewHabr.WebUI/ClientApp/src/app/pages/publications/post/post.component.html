@@ -1,9 +1,9 @@
 <app-post-container [post]="post">
-    <app-like [count]="post.LikesCount || 0" [isLiked]="post?.IsLiked || false" (doLike)="like($event)"></app-like>
+    <app-like [count]="post?.LikesCount || 0" [isLiked]="post?.IsLiked || false" [likedObject]="post" (doLike)="like($event)"></app-like>
 
     <h6>Комментарии:</h6>
     <app-comment *ngFor="let comment of post?.Comments" [comment]="comment"></app-comment>
-    <div *ngIf="post?.Comments!.length == 0" class="comments-banner">Список комментариев пуст!</div>
+    <div *ngIf="post?.Comments && post?.Comments!.length == 0" class="comments-banner">Список комментариев пуст!</div>
 
     <ng-container *ngIf="isAuth && !userInfo?.Banned">
         <h6>Добавление нового комментария:</h6>

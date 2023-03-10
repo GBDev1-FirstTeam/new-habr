@@ -129,6 +129,10 @@ export class HttpRequestService {
     const url = this.backend.baseURL + `/Users/resetPassword`;
     return this.put<ResetPasswordRequest, any>(url, body);
   }
+  likeUser(id: string, mode: string): Observable<any> {
+    const url = this.backend.baseURL + `/Users/${id}/${mode}`;
+    return this.put<any, any>(url, null);
+  }
   // #endregion
 
   // #region /Articles
@@ -209,6 +213,10 @@ export class HttpRequestService {
   addComment(body: CommentRequest) {
     const url = this.backend.baseURL + `/Comments`;
     return this.post<CommentRequest, any>(url, body);
+  }
+  likeComment(id: string, mode: string): Observable<any> {
+    const url = this.backend.baseURL + `/Comments/${id}/${mode}`;
+    return this.put<any, any>(url, null);
   }
   // #endregion
 
