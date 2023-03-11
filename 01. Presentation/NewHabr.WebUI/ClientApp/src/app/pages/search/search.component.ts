@@ -69,7 +69,7 @@ export class SearchComponent implements AfterViewInit {
     let query: any = { }
     if (text)
       query = { ...query, search: text }
-    if (this.activeCategory.Id === -1)
+    if (this.activeCategory.Id !== -1)
       query = { ...query, Category: this.activeCategory.Id }
     if (category)
       query = { ...query, Category: category }
