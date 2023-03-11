@@ -29,4 +29,6 @@ export interface ArticleQueryParameters {
     byRating?: number;
     pageNumber?: number;
     pageSize?: number;
+    Category?: number;
+    Tag?: number;
 }

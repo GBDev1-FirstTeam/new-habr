@@ -1,10 +1,16 @@
 <div class="main-container">
     <div class="plug"></div>
     <div class="search-container">
+        <div class="form-group">
+            <label class="form-label">Поиск по категории</label>
+            <select class="form-select" (change)="changeCategory($event)">
+                <option *ngFor="let category of categoriesList">{{ category.Name }}</option>
+            </select>
+        </div>
         <div class="form-floating form-floating-content">
             <div class="input-group mt-3 mb-3">
                 <input type="text" class="form-control" placeholder="Введите наименование статьи" #search>
-                <button class="btn btn-outline-secondary form-control tag-btn" type="button" (click)="searchArticles(search)">Найти хабры</button>
+                <button class="btn btn-outline-secondary form-control tag-btn" type="button" (click)="searchArticles(search.value)">Найти хабры</button>
             </div>
         </div>
     </div>

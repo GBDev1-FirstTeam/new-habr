@@ -28,4 +28,12 @@ export class PostContainerComponent implements AfterViewInit {
   }
 
   navigate = (id: string | undefined) => this.router.navigate(['users', id]);
+
+  categoryNavigate(id: number | undefined) {
+    this.router.navigate(['search'], { queryParams: { Category: id }})
+  }
+
+  tagNavigate(id: number | undefined) {
+    this.router.navigate(['search'], { queryParams: { Tag: id }})
+  }
 }
