@@ -13,8 +13,8 @@ public abstract class ArticleManipulationDto
 
     public string ImgURL { get; set; }
 
-    public CategoryUpdateRequest[] Categories { get; set; } = Array.Empty<CategoryUpdateRequest>();
+    public ICollection<CategoryUpdateRequest> Categories { get; set; }
 
-    public TagCreateRequest[] Tags { get; set; } = Array.Empty<TagCreateRequest>();
+    public ICollection<TagCreateRequest> Tags { get; set; }
 
 }
