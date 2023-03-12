@@ -1,8 +1,9 @@
 ﻿namespace NewHabr.Domain.Exceptions;
 
-public class ArticleIsNotApproveException : Exception
+public class ArticleNotApprovedException : Exception
 {
-    public ArticleIsNotApproveException() : base($"Article is not approve.")
+    public ArticleNotApprovedException(Guid articleId)
+        : base($"Article with id '{articleId}' is not approved.")
     {
     }
 }

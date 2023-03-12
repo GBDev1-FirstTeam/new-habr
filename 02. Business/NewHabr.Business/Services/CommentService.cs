@@ -32,7 +32,7 @@ public class CommentService : ICommentService
             .GetByIdAsync(data.ArticleId, true, cancellationToken);
 
         if (article is null)
-            throw new ArticleNotFoundException();
+            throw new ArticleNotFoundException(data.ArticleId);
 
         var newComment = _mapper.Map<Comment>(data);
         newComment.UserId = CreatorId;
@@ -52,7 +52,7 @@ public class CommentService : ICommentService
         var deleteComment = await _repositoryManager.CommentRepository.GetByIdAsync(id, true, cancellationToken);
         if (deleteComment is null)
         {
-            throw new CommentNotFoundException();
+            throw new CommentNotFoundException(id);
         }
 
         _repositoryManager.CommentRepository.Delete(deleteComment);
@@ -79,7 +79,7 @@ public class CommentService : ICommentService
 
         if (comment is null)
         {
-            throw new CommentNotFoundException();
+            throw new CommentNotFoundException(commentId);
         }
 
         if (comment.UserId == userId)
@@ -98,7 +98,7 @@ public class CommentService : ICommentService
 
         if (comment is null)
         {
-            throw new CommentNotFoundException();
+            throw new CommentNotFoundException(commentId);
         }
 
         if (comment.UserId == userId)
@@ -115,7 +115,7 @@ public class CommentService : ICommentService
 
         if (comment is null)
         {
-            throw new CommentNotFoundException();
+            throw new CommentNotFoundException(commentId);
         }
 
         _mapper.Map(updatedComment, comment);

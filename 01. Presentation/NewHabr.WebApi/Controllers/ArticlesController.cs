@@ -29,65 +29,29 @@ public class ArticlesController : ControllerBase
     public async Task<ActionResult<ArticleDto>> GetById([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var authUserId = User.GetUserIdOrDefault();
-        try
-        {
-            return Ok(await _articleService.GetByIdAsync(id, authUserId, cancellationToken));
-        }
-        catch (EntityNotFoundException ex)
-        {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"), id);
-            return NotFound(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}"), id);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        return Ok(await _articleService.GetByIdAsync(id, authUserId, cancellationToken));
+
     }
 
     [HttpGet]
     public async Task<ActionResult<ArticlesGetResponse>> GetPublished([FromQuery] ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken)
     {
         var authUserId = User.GetUserIdOrDefault();
-        try
-        {
-            return Ok(await _articleService.GetPublishedAsync(authUserId, queryParamsDto, cancellationToken));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        return Ok(await _articleService.GetPublishedAsync(authUserId, queryParamsDto, cancellationToken));
     }
 
     [HttpGet("unpublished")]
     [Authorize(Roles = "Moderator,Administrator")]
     public async Task<ActionResult<ArticlesGetResponse>> GetUnpublished([FromQuery] ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken)
     {
-        try
-        {
-            return Ok(await _articleService.GetUnpublishedAsync(queryParamsDto, cancellationToken));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        return Ok(await _articleService.GetUnpublishedAsync(queryParamsDto, cancellationToken));
     }
 
     [HttpGet("deleted")]
     [Authorize(Roles = "Moderator,Administrator")]
     public async Task<ActionResult<ArticlesGetResponse>> GetDeleted([FromQuery] ArticleQueryParametersDto queryParamsDto, CancellationToken cancellationToken)
     {
-        try
-        {
-            return Ok(await _articleService.GetDeletedAsync(queryParamsDto, cancellationToken));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        return Ok(await _articleService.GetDeletedAsync(queryParamsDto, cancellationToken));
     }
 
     [HttpPost]
@@ -95,25 +59,8 @@ public class ArticlesController : ControllerBase
     public async Task<ActionResult> Create([FromBody] ArticleCreateRequest request, CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
-        try
-        {
-            await _articleService.CreateAsync(request, userId, cancellationToken);
-            return Ok();
-        }
-        catch (EntityNotFoundException ex)
-        {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
-            return BadRequest(ex.Message);
-        }
-        catch (UserBannedException ex)
-        {
-            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        await _articleService.CreateAsync(request, userId, cancellationToken);
+        return Ok();
     }
 
     [HttpPut("{id}")]
@@ -124,25 +71,9 @@ public class ArticlesController : ControllerBase
             .AuthorizeAsync(User, id, "CanManageArticle");
         if (!authResult.Succeeded)
             return new ForbidResult();
-        try
-        {
-            await _articleService.UpdateAsync(id, request, cancellationToken);
-            return Ok();
-        }
-        catch (EntityNotFoundException ex)
-        {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
-            return NotFound(ex.Message);
-        }
-        catch (UserBannedException ex)
-        {
-            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+
+        await _articleService.UpdateAsync(id, request, cancellationToken);
+        return Ok();
     }
 
     [HttpPut("{id}/publish")]
@@ -154,26 +85,8 @@ public class ArticlesController : ControllerBase
         if (!authResult.Succeeded)
             return new ForbidResult();
 
-        try
-        {
-            await _articleService.PublishAsync(id, true, cancellationToken);
-            return NoContent();
-        }
-        catch (EntityNotFoundException ex)
-        {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"), id);
-            return NotFound(ex.Message);
-        }
-        catch (ArticleIsNotApproveException ex)
-        {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"), id);
-            return BadRequest(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}:"), id);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        await _articleService.PublishAsync(id, true, cancellationToken);
+        return NoContent();
     }
 
     [HttpPut("{id}/unpublish")]
@@ -185,63 +98,25 @@ public class ArticlesController : ControllerBase
         if (!authResult.Succeeded)
             return new ForbidResult();
 
-        try
-        {
-            await _articleService.PublishAsync(id, false, cancellationToken);
-            return NoContent();
-        }
-        catch (EntityNotFoundException ex)
-        {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"), id);
-            return NotFound(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}"), id);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        await _articleService.PublishAsync(id, false, cancellationToken);
+        return NoContent();
+
     }
 
     [HttpPut("{id}/approve")]
     [Authorize(Roles = "Moderator,Administrator")]
     public async Task<ActionResult> SetApproveState([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        try
-        {
-            await _articleService.SetApproveStateAsync(id, cancellationToken);
-            return NoContent();
-        }
-        catch (EntityNotFoundException ex)
-        {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"), id);
-            return NotFound(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}"), id);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        await _articleService.SetApproveStateAsync(id, cancellationToken);
+        return NoContent();
     }
 
     [HttpPut("{id}/disapprove")]
     [Authorize(Roles = "Moderator,Administrator")]
     public async Task<ActionResult> SetDisapproveState([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        try
-        {
-            await _articleService.SetDisapproveStateAsync(id, cancellationToken);
-            return NoContent();
-        }
-        catch (EntityNotFoundException ex)
-        {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"), id);
-            return NotFound(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}"), id);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        await _articleService.SetDisapproveStateAsync(id, cancellationToken);
+        return NoContent();
     }
 
     [Authorize(Policy = "CanLike")]
@@ -249,19 +124,8 @@ public class ArticlesController : ControllerBase
     public async Task<IActionResult> SetLike([FromRoute] Guid articleId, CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
-        try
-        {
-            await _articleService.SetLikeAsync(articleId, userId, cancellationToken);
-            return NoContent();
-        }
-        catch (ArticleNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
-        catch (UserBannedException ex)
-        {
-            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
-        }
+        await _articleService.SetLikeAsync(articleId, userId, cancellationToken);
+        return NoContent();
     }
 
     [Authorize(Policy = "CanLike")]
@@ -269,15 +133,8 @@ public class ArticlesController : ControllerBase
     public async Task<IActionResult> UnsetLike([FromRoute] Guid articleId, CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
-        try
-        {
-            await _articleService.UnsetLikeAsync(articleId, userId, cancellationToken);
-            return NoContent();
-        }
-        catch (ArticleNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
+        await _articleService.UnsetLikeAsync(articleId, userId, cancellationToken);
+        return NoContent();
     }
 
     [HttpDelete("{id}")]
@@ -288,20 +145,7 @@ public class ArticlesController : ControllerBase
         if (!authResult.Succeeded)
             return new ForbidResult();
 
-        try
-        {
-            await _articleService.DeleteByIdAsync(id, cancellationToken);
-            return Ok();
-        }
-        catch (EntityNotFoundException ex)
-        {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"), id);
-            return NotFound(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}"), id);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        await _articleService.DeleteByIdAsync(id, cancellationToken);
+        return Ok();
     }
 }

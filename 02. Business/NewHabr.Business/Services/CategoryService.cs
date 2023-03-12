@@ -31,7 +31,7 @@ public class CategoryService : ICategoryService
 
         if (category is not null)
         {
-            throw new CategoryAlreadyExistsException();
+            throw new CategoryAlreadyExistsException(request.Name);
         }
 
         var newCategory = _mapper.Map<Category>(request);
@@ -45,7 +45,7 @@ public class CategoryService : ICategoryService
 
         if (targetCategory is null)
         {
-            throw new CategoryNotFoundException();
+            throw new CategoryNotFoundException(id);
         }
 
         var categoryWithSameName = await _repositoryManager
@@ -54,7 +54,7 @@ public class CategoryService : ICategoryService
 
         if (categoryWithSameName is not null)
         {
-            throw new CategoryAlreadyExistsException();
+            throw new CategoryAlreadyExistsException(categoryToUpdate.Name);
         }
 
         _mapper.Map(categoryToUpdate, targetCategory);
@@ -68,7 +68,7 @@ public class CategoryService : ICategoryService
 
         if (category is null)
         {
-            throw new CategoryNotFoundException();
+            throw new CategoryNotFoundException(id);
         }
 
         _repositoryManager.CategoryRepository.Delete(category);

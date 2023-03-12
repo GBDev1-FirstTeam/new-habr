@@ -73,7 +73,7 @@ public class SecureQuestionsService : ISecureQuestionsService
             .SecureQuestionsRepository
             .GetByIdAsync(id, true, cancellationToken);
         if (sq is null)
-            throw new SecureQuestionNotFoundException();
+            throw new SecureQuestionNotFoundException(id);
 
         // users count using secure question with id
         var usersCount = await _repositoryManager

@@ -158,7 +158,7 @@ public class UserService : IUserService
             .GetUserInfoAsync(userId, authUserId, cancellationToken);
 
         if (user is null)
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(userId);
 
         var userDto = _mapper.Map<UserProfileDto>(user);
         userDto.ReceivedLikes = await _repositoryManager
@@ -180,7 +180,7 @@ public class UserService : IUserService
             .GetByIdWithLikesAsync(userId, true, cancellationToken);
 
         if (likeReceiverUser is null)
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(userId);
 
         var likeSenderUser = await _repositoryManager
             .UserRepository
@@ -200,7 +200,7 @@ public class UserService : IUserService
             .GetByIdWithLikesAsync(userId, true, cancellationToken);
 
         if (likeReceiverUser is null)
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(userId);
 
         var likeSenderUser = await _repositoryManager
             .UserRepository
@@ -214,7 +214,7 @@ public class UserService : IUserService
     { // при смене юзернейма, claim username в токене останется прежним
         var user = await _userManager.FindByIdAsync(userId.ToString());
         if (user is null)
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(userId);
 
         var result = await _userManager.SetUserNameAsync(user, request.Username);
         return result;
@@ -224,7 +224,7 @@ public class UserService : IUserService
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
         if (user is null)
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(userId);
 
         var result = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
         return result;
@@ -298,7 +298,7 @@ public class UserService : IUserService
 
         if (user is null)
         {
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(id);
         }
 
         return user;
@@ -336,7 +336,7 @@ public class UserService : IUserService
 
         if (user is null)
         {
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(recoveryRequest.UserName);
         }
         if (user.SecureQuestionId != recoveryRequest.SecureQuestionId || user.SecureAnswer != recoveryRequest.Answer)
         {
@@ -360,7 +360,7 @@ public class UserService : IUserService
         var user = await _userManager.FindByNameAsync(resetPasswordRequest.UserName);
         if (user is null)
         {
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(resetPasswordRequest.UserName);
         }
 
         var result = await _userManager.ResetPasswordAsync(user, resetPasswordRequest.Token, resetPasswordRequest.NewPassword);

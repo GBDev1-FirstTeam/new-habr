@@ -85,6 +85,8 @@ public class Program
         var app = builder.Build();
         UpdateDatabase(app);
 
+        app.ConfigureExceptionHandler(app.Logger);
+
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {

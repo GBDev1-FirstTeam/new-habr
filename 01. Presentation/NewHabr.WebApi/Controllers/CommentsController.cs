@@ -25,15 +25,7 @@ public class CommentsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<CommentDto>>> GetAll(CancellationToken cancellationToken)
     {
-        try
-        {
-            return Ok(await _commentService.GetAllAsync(cancellationToken));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        return Ok(await _commentService.GetAllAsync(cancellationToken));
     }
 
     [HttpPost]
@@ -41,20 +33,8 @@ public class CommentsController : ControllerBase
     public async Task<ActionResult> Create([FromBody] CommentCreateRequest newComment, CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
-        try
-        {
-            await _commentService.CreateAsync(userId, newComment, cancellationToken);
-            return Ok();
-        }
-        catch (UserBannedException ex)
-        {
-            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nuser id: {id}:"), userId);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        await _commentService.CreateAsync(userId, newComment, cancellationToken);
+        return Ok();
     }
 
     [HttpPut("{commentId}")]
@@ -66,25 +46,9 @@ public class CommentsController : ControllerBase
         if (!authResult.Succeeded)
             return new ForbidResult();
 
-        try
-        {
-            await _commentService.UpdateAsync(commentId, updateComment, cancellationToken);
-            return Ok();
-        }
-        catch (CommentNotFoundException ex)
-        {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\ncommentId: {commentId}:"), commentId);
-            return NotFound(ex.Message);
-        }
-        catch (UserBannedException ex)
-        {
-            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, string.Concat(ex.Message, "\ncommentId: {commentId}:"), commentId);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        await _commentService.UpdateAsync(commentId, updateComment, cancellationToken);
+        return Ok();
+
     }
 
     [HttpDelete("{commentId}")]
@@ -96,21 +60,9 @@ public class CommentsController : ControllerBase
         if (!authResult.Succeeded)
             return new ForbidResult();
 
-        try
-        {
-            await _commentService.DeleteAsync(commentId, cancellationToken);
-            return Ok();
-        }
-        catch (CommentNotFoundException ex)
-        {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}:"), commentId);
-            return NotFound();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}:"), commentId);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        await _commentService.DeleteAsync(commentId, cancellationToken);
+        return Ok();
+
     }
 
     [Authorize(Policy = "CanLike")]
@@ -118,19 +70,9 @@ public class CommentsController : ControllerBase
     public async Task<IActionResult> SetLike([FromRoute] Guid commentId, CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
-        try
-        {
-            await _commentService.SetLikeAsync(commentId, userId, cancellationToken);
-            return NoContent();
-        }
-        catch (CommentNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
-        catch (UserBannedException ex)
-        {
-            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
-        }
+        await _commentService.SetLikeAsync(commentId, userId, cancellationToken);
+        return NoContent();
+
     }
 
     [Authorize(Policy = "CanLike")]
@@ -138,14 +80,8 @@ public class CommentsController : ControllerBase
     public async Task<IActionResult> UnsetLike([FromRoute] Guid commentId, CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
-        try
-        {
-            await _commentService.UnsetLikeAsync(commentId, userId, cancellationToken);
-            return NoContent();
-        }
-        catch (CommentNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
+        await _commentService.UnsetLikeAsync(commentId, userId, cancellationToken);
+        return NoContent();
+
     }
 }

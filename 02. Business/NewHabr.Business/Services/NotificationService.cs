@@ -77,7 +77,7 @@ public class NotificationService : INotificationService
 
         if (notification is null)
         {
-            throw new NotificationNotFoundException();
+            throw new NotificationNotFoundException(notificationId);
         }
 
         return notification;

@@ -2,9 +2,15 @@
 
 namespace NewHabr.Domain.Exceptions;
 
-public class CategoryNotFoundException : EntityNotFoundException
+public class CategoryNotFoundException : NotFoundException
 {
-    public CategoryNotFoundException() : base(typeof(Category))
+    public CategoryNotFoundException(int categoryId)
+        : base($"Category with id: '{categoryId}' not found")
+    {
+    }
+
+    public CategoryNotFoundException(string name)
+        : base($"Category with name: '{name}' not found")
     {
     }
 }
