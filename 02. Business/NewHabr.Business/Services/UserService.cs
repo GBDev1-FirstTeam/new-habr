@@ -161,7 +161,7 @@ public class UserService : IUserService
             throw new UserNotFoundException();
 
         var userDto = _mapper.Map<UserProfileDto>(user);
-        userDto.ReceivedLikes = await _repositoryManager
+        userDto.LikesCount = await _repositoryManager
             .UserRepository
             .GetReceivedLikesCountAsync(userId, false, cancellationToken);
 

@@ -22,7 +22,6 @@ export interface UserInfo {
     UserName: string;
     Age: number;
     Banned: boolean;
-    ReceivedLikes: number;
     FirstName: string;
     LastName: string;
     Patronymic: string;
@@ -33,6 +32,9 @@ export interface UserInfo {
     BannedAt: number;
     BanExpiratonDate: number;
     BanReason: number;
+
+    IsLiked?: boolean;
+    LikesCount?: number;
 }
 
 export interface AuthUser {

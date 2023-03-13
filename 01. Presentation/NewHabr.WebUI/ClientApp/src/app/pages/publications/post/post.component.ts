@@ -8,6 +8,7 @@ import { Authorization } from 'src/app/core/models/Authorization';
 import { AppStoreProvider } from 'src/app/core/store/store';
 import { LikeData } from 'src/app/core/models/Like';
 import { UserInfo } from 'src/app/core/models/User';
+import { LikeService } from 'src/app/core/services/LikeService';
 
 @Component({
   selector: 'app-post',
@@ -28,7 +29,8 @@ export class PostComponent implements OnInit, OnDestroy {
   constructor(
     private http: HttpRequestService,
     private activeRoute: ActivatedRoute,
-    private store: AppStoreProvider) { }
+    private store: AppStoreProvider,
+    private likeService: LikeService) { }
 
   ngOnInit(): void {
     this.activeRoute.params.subscribe(params => {
@@ -36,16 +38,17 @@ export class PostComponent implements OnInit, OnDestroy {
       const postSubscribtion = this.http.getPublicationById(this.postId).subscribe(p => {
         if (p) {
           this.post = p;
-          postSubscribtion.unsubscribe();
         }
       })
 
       const userSubscribtion = this.store.getUserInfo().subscribe(userInfo => {
         if (userInfo) {
           this.userInfo = userInfo;
-          userSubscribtion.unsubscribe();
         }
       })
+
+      this.subscribtions.push(postSubscribtion);
+      this.subscribtions.push(userSubscribtion);
     })
 
     const authSubscribtion = this.store.getAuth().subscribe(auth => this.auth = auth);
@@ -83,12 +86,5 @@ export class PostComponent implements OnInit, OnDestroy {
     this.commentText = '';
   }
 
-  like(likeData: LikeData) {
-    if(likeData.isLiked) {
-      lastValueFrom(this.http.likeArticle(this.postId || '', 'like'))
-    }
-    else {
-      lastValueFrom(this.http.likeArticle(this.postId || '', 'unlike'))
-    }
-  }
+  like = (likeData: LikeData) => this.likeService.like(likeData, this.postId, this.http.likeArticle.bind(this.http));
 }

@@ -101,9 +101,13 @@ export class HttpRequestService {
     const url = this.backend.baseURL + `/Users`;
     return this.get<Array<UserInfo>>(url);
   }
-  banUser(id: string, body: BanStruct): Observable<Array<UserInfo>> {
+  banUser(id: string, body: BanStruct): Observable<any> {
     const url = this.backend.baseURL + `/Users/${id}/ban`;
     return this.put<BanStruct, any>(url, body);
+  }
+  unbanUser(id: string): Observable<any> {
+    const url = this.backend.baseURL + `/Users/${id}/unban`;
+    return this.put<any, any>(url, null);
   }
   setUserRole(id: string, body: RoleStruct): Observable<any> {
     const url = this.backend.baseURL + `/Users/${id}/setroles`;
@@ -128,6 +132,10 @@ export class HttpRequestService {
   requestResetPassword(body: ResetPasswordRequest): Observable<any> {
     const url = this.backend.baseURL + `/Users/resetPassword`;
     return this.put<ResetPasswordRequest, any>(url, body);
+  }
+  likeUser(id: string, mode: string): Observable<any> {
+    const url = this.backend.baseURL + `/Users/${id}/${mode}`;
+    return this.put<any, any>(url, null);
   }
   // #endregion
 
@@ -181,6 +189,10 @@ export class HttpRequestService {
     const url = this.backend.baseURL + `/Articles/${id}/${mode}`;
     return this.put<any, any>(url, null);
   }
+  deletePost(id: string): Observable<any> {
+    const url = this.backend.baseURL + `/Articles/${id}`;
+    return this.delete(url);
+  }
   // #endregion
 
   // #region /Categories
@@ -209,6 +221,10 @@ export class HttpRequestService {
   addComment(body: CommentRequest) {
     const url = this.backend.baseURL + `/Comments`;
     return this.post<CommentRequest, any>(url, body);
+  }
+  likeComment(id: string, mode: string): Observable<any> {
+    const url = this.backend.baseURL + `/Comments/${id}/${mode}`;
+    return this.put<any, any>(url, null);
   }
   // #endregion
 

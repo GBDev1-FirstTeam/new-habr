@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { LikeData } from 'src/app/core/models/Like';
 import { UserInfo } from 'src/app/core/models/User';
 import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
+import { LikeService } from 'src/app/core/services/LikeService';
 
 @Component({
   selector: 'app-user',
@@ -14,8 +16,8 @@ export class UserComponent implements OnInit {
 
   constructor(
     private http: HttpRequestService,
-    private router: Router,
-    private activeRoute: ActivatedRoute) { }
+    private activeRoute: ActivatedRoute,
+    private likeService: LikeService) { }
 
   ngOnInit(): void {
     this.activeRoute.params.subscribe(params => {
@@ -27,4 +29,6 @@ export class UserComponent implements OnInit {
       })
     })
   }
+  
+  like = (likeData: LikeData) => this.likeService.like(likeData, this.user.Id, this.http.likeUser.bind(this.http));
 }

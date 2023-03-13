@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { Publication, PublicationUser } from 'src/app/core/models/Publication';
 
@@ -8,7 +8,7 @@ import { Publication, PublicationUser } from 'src/app/core/models/Publication';
   styleUrls: ['./post-container.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class PostContainerComponent implements AfterViewInit {
+export class PostContainerComponent implements OnChanges {
 
   userId?: string;
   userName?: string;
@@ -19,13 +19,23 @@ export class PostContainerComponent implements AfterViewInit {
   
   constructor(private router: Router) { }
 
-  ngAfterViewInit() {
-    setTimeout(() => {
-      this.userId = (this.post as Publication)?.UserId;
-      this.userName = (this.post as Publication)?.Username;
-      this.viewMe.nativeElement.innerHTML = (this.post as Publication)?.Content;
-    }, 100)
+  ngOnChanges(changes: SimpleChanges): void {
+    const post = changes['post'].currentValue;
+
+    if (post) {
+      this.userId = (post as Publication)?.UserId;
+      this.userName = (post as Publication)?.Username;
+      this.viewMe.nativeElement.innerHTML = (post as Publication)?.Content;
+    }
   }
 
   navigate = (id: string | undefined) => this.router.navigate(['users', id]);
+
+  categoryNavigate(id: number | undefined) {
+    this.router.navigate(['search'], { queryParams: { Category: id }})
+  }
+
+  tagNavigate(id: number | undefined) {
+    this.router.navigate(['search'], { queryParams: { Tag: id }})
+  }
 }

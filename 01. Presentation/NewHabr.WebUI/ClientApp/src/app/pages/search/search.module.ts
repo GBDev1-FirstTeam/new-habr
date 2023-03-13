@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { SearchComponent } from './search.component';
 import { RouterModule, Routes } from '@angular/router';
 import { ComponentsLibraryModule } from 'src/app/core/components/components-library.module';
+import { FormsModule } from '@angular/forms';
 
 const routes: Routes = [
   {
@@ -17,6 +18,7 @@ const routes: Routes = [
   ],
   imports: [
     CommonModule,
+    FormsModule,
     RouterModule.forChild(routes),
     ComponentsLibraryModule
   ]
