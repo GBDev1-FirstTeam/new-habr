@@ -12,6 +12,7 @@ import { ArticlesComponent } from './articles/articles.component';
 import { ArticleComponent } from './article/article.component';
 import { ComponentsLibraryModule } from 'src/app/core/components/components-library.module';
 import { RecoveryComponent } from './recovery/recovery.component';
+import { PaginationModule, PaginationConfig } from 'ngx-bootstrap/pagination';
 
 @Injectable()
 class LoginGuard implements CanActivate {
@@ -83,10 +84,12 @@ const routes: Routes = [
     CommonModule,
     RouterModule.forChild(routes),
     FormsModule,
-    ComponentsLibraryModule
+    ComponentsLibraryModule,
+    PaginationModule
   ],
   providers: [{
     provide: LoginGuard
-  }]
+  },
+    PaginationConfig]
 })
 export class AccountsModule { }

@@ -117,8 +117,13 @@ export class HttpRequestService {
     const url = this.backend.baseURL + `/Users/${id}`;
     return this.get<UserInfo>(url);
   }
-  getUserPublications(id: string): Observable<PublicationsResponseUser> {
-    const url = this.backend.baseURL + `/Users/${id}/articles`;
+  getUserPublications(id: string, queryParams: ArticleQueryParameters): Observable<PublicationsResponseUser> {
+    let endpoint = `/Users/${id}/articles?`;
+    for (let key in queryParams) {
+      endpoint = endpoint.concat(key, '=', (queryParams as any)[key], '&')
+    }
+
+    const url = this.backend.baseURL + endpoint;
     return this.get<PublicationsResponseUser>(url);
   }
   getUserNotifications(id: string): Observable<Array<Notification>> {
