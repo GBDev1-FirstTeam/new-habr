@@ -17,11 +17,12 @@
             background-color: white;
             border: 1px solid lightgray;
             position: sticky;
-            top: 61px;
+            height: min-content;
 
             .user-container {
                 padding: 10px;
                 text-align: center;
+                top: 61px;
 
                 .info {
                     text-align: center;
@@ -41,7 +42,28 @@
                 font-weight: bold;
             }
 
-            height: min-content;
+            .title {
+                display: block;
+                text-align: center;
+                font-weight: bold;
+            }
+
+            .unit {
+                display: block;
+                text-align: left;
+
+                .raiting {
+                    font-weight: bold;
+                    margin-right: 10px;
+                    margin-left: 10px;
+                }
+
+                .link {
+                    cursor: pointer;
+                    text-decoration: underline;
+                    display: flex;
+                }
+            }
         }
 
         .content-area {
