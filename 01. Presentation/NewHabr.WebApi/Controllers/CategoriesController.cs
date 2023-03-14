@@ -22,36 +22,15 @@ public class CategoriesController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAll(CancellationToken cancellationToken)
     {
-        try
-        {
-            return Ok(await _categoryService.GetAllAsync(cancellationToken));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-
+        return Ok(await _categoryService.GetAllAsync(cancellationToken));
     }
 
     [HttpPost]
     public async Task<ActionResult> Create([FromBody] CategoryCreateRequest request, CancellationToken cancellationToken)
     {
-        try
-        {
-            await _categoryService.CreateAsync(request, cancellationToken);
-            return Ok();
-        }
-        catch (CategoryAlreadyExistsException ex)
-        {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
-            return BadRequest(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        await _categoryService.CreateAsync(request, cancellationToken);
+        return Ok();
+
     }
 
     [HttpPut("{id}")]
@@ -60,45 +39,14 @@ public class CategoriesController : ControllerBase
         [FromBody] CategoryUpdateRequest categoryToUpdate,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            await _categoryService.UpdateAsync(id, categoryToUpdate, cancellationToken);
-            return Ok();
-        }
-        catch (CategoryNotFoundException ex)
-        {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\ncategoryToUpdate: {@categoryToUpdate}"), categoryToUpdate);
-            return NotFound(ex.Message);
-        }
-        catch (CategoryAlreadyExistsException ex)
-        {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\ncategoryToUpdate: {@categoryToUpdate}"), categoryToUpdate);
-            return BadRequest(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, string.Concat(ex.Message, "\ncategoryToUpdate: {@categoryToUpdate}"), categoryToUpdate);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        await _categoryService.UpdateAsync(id, categoryToUpdate, cancellationToken);
+        return Ok();
     }
 
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteById([FromRoute, Range(1, int.MaxValue)] int id, CancellationToken cancellationToken)
     {
-        try
-        {
-            await _categoryService.DeleteByIdAsync(id, cancellationToken);
-            return Ok();
-        }
-        catch (CategoryNotFoundException ex)
-        {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"), id);
-            return NotFound(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}"), id);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        await _categoryService.DeleteByIdAsync(id, cancellationToken);
+        return Ok();
     }
 }

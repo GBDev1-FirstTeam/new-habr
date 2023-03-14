@@ -25,15 +25,9 @@ public class NotificationsController : ControllerBase
     public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
-        try
-        {
-            var notification = await _notificationService.GetByIdAsync(id, userId, cancellationToken);
-            return Ok(notification);
-        }
-        catch (NotificationNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
+        var notification = await _notificationService.GetByIdAsync(id, userId, cancellationToken);
+        return Ok(notification);
+
     }
 
     [HttpPut("{id}/markAsRead")]
@@ -41,16 +35,10 @@ public class NotificationsController : ControllerBase
     public async Task<IActionResult> MarkAsRead([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
-        try
-        {
-            var notification = await _notificationService.GetByIdAsync(id, userId, cancellationToken);
-            await _notificationService.MarkAsReadAsync(id, userId, cancellationToken);
-            return NoContent();
-        }
-        catch (NotificationNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
+        var notification = await _notificationService.GetByIdAsync(id, userId, cancellationToken);
+        await _notificationService.MarkAsReadAsync(id, userId, cancellationToken);
+        return NoContent();
+
     }
 
     [HttpDelete("{id}")]
@@ -58,14 +46,8 @@ public class NotificationsController : ControllerBase
     public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
-        try
-        {
-            await _notificationService.DeleteAsync(id, userId, cancellationToken);
-            return NoContent();
-        }
-        catch (NotificationNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
+        await _notificationService.DeleteAsync(id, userId, cancellationToken);
+        return NoContent();
+
     }
 }

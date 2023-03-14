@@ -30,7 +30,7 @@ public class TagService : ITagService
 
         if (tag is not null)
         {
-            throw new TagAlreadyExistsException();
+            throw new TagAlreadyExistsException(request.Name);
         }
 
         var newTag = _mapper.Map<Tag>(request);
@@ -43,7 +43,7 @@ public class TagService : ITagService
 
         if (targetTag is null)
         {
-            throw new TagNotFoundException();
+            throw new TagNotFoundException(id);
         }
 
         var tagWithSameName = await _repositoryManager
@@ -52,7 +52,7 @@ public class TagService : ITagService
 
         if (tagWithSameName is not null)
         {
-            throw new TagAlreadyExistsException();
+            throw new TagAlreadyExistsException(tagToUpdate.Name);
         }
 
         _mapper.Map(tagToUpdate, targetTag);
@@ -66,7 +66,7 @@ public class TagService : ITagService
 
         if (tag is null)
         {
-            throw new TagNotFoundException();
+            throw new TagNotFoundException(id);
         }
 
         _repositoryManager.TagRepository.Delete(tag);

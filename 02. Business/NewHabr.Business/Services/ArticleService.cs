@@ -32,7 +32,7 @@ public class ArticleService : IArticleService
 
         if (article is null)
         {
-            throw new ArticleNotFoundException();
+            throw new ArticleNotFoundException(articleId);
         }
 
         return _mapper.Map<ArticleDto>(article);
@@ -106,7 +106,7 @@ public class ArticleService : IArticleService
 
         if (article is null)
         {
-            throw new ArticleNotFoundException();
+            throw new ArticleNotFoundException(articleId);
         }
 
         await UpdateCategoresAsync(article, articleToUpdate.Categories, cancellationToken);
@@ -128,7 +128,7 @@ public class ArticleService : IArticleService
 
         if (article is null)
         {
-            throw new ArticleNotFoundException();
+            throw new ArticleNotFoundException(id);
         }
 
         article.Deleted = true;
@@ -146,7 +146,7 @@ public class ArticleService : IArticleService
 
         if (article is null)
         {
-            throw new ArticleNotFoundException();
+            throw new ArticleNotFoundException(articleId);
         }
         else if (article.Published == publicationStatus)
         {
@@ -211,7 +211,7 @@ public class ArticleService : IArticleService
             .GetArticleWithLikesAsync(articleId, true, cancellationToken);
 
         if (article is null)
-            throw new ArticleNotFoundException();
+            throw new ArticleNotFoundException(articleId);
 
         if (article.UserId == userId)
             return;
@@ -234,7 +234,7 @@ public class ArticleService : IArticleService
             .GetArticleWithLikesAsync(articleId, true, cancellationToken);
 
         if (article is null)
-            throw new ArticleNotFoundException();
+            throw new ArticleNotFoundException(articleId);
 
         if (article.UserId == userId)
             return;
@@ -266,7 +266,7 @@ public class ArticleService : IArticleService
 
         if (article is null)
         {
-            throw new ArticleNotFoundException();
+            throw new ArticleNotFoundException(articleId);
         }
 
         return article;
@@ -298,7 +298,7 @@ public class ArticleService : IArticleService
 
             if (category is null)
             {
-                throw new CategoryNotFoundException();
+                throw new CategoryNotFoundException(categoryDto.Name);
             }
 
             article.Categories.Add(category);
@@ -366,7 +366,7 @@ public class ArticleService : IArticleService
             .GetByIdAsync(article.UserId, true, cancellationToken);
 
         if (user is null)
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(article.UserId);
 
         var notification = new NotificationCreateRequest
         {

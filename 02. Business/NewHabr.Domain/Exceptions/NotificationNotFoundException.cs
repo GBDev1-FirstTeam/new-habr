@@ -1,11 +1,13 @@
 ﻿using System;
+using System.ComponentModel.Design;
 using NewHabr.Domain.Models;
 
 namespace NewHabr.Domain.Exceptions;
 
-public class NotificationNotFoundException : EntityNotFoundException
+public class NotificationNotFoundException : NotFoundException
 {
-    public NotificationNotFoundException() : base(typeof(Notification))
+    public NotificationNotFoundException(Guid notifId)
+        : base($"Notification with id: '{notifId}' not found")
     {
     }
 }

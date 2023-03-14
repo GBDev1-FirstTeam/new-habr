@@ -22,35 +22,14 @@ public class TagsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<TagDto>>> GetAll(CancellationToken cancellationToken)
     {
-        try
-        {
-            return Ok(await _tagService.GetAllAsync(cancellationToken));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        return Ok(await _tagService.GetAllAsync(cancellationToken));
     }
 
     [HttpPost]
     public async Task<ActionResult> Create([FromBody] TagCreateRequest request, CancellationToken cancellationToken)
     {
-        try
-        {
-            await _tagService.CreateAsync(request, cancellationToken);
-            return Ok();
-        }
-        catch (TagAlreadyExistsException ex)
-        {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
-            return BadRequest(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nrequest: {@request}"), request);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        await _tagService.CreateAsync(request, cancellationToken);
+        return Ok();
     }
 
     [HttpPut("{id}")]
@@ -59,45 +38,14 @@ public class TagsController : ControllerBase
         [FromBody] TagUpdateRequest tagToUpdate,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            await _tagService.UpdateAsync(id, tagToUpdate, cancellationToken);
-            return Ok();
-        }
-        catch (TagNotFoundException ex)
-        {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\ntagToUpdate: {@tagToUpdate}"), tagToUpdate);
-            return NotFound(ex.Message);
-        }
-        catch (TagAlreadyExistsException ex)
-        {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\ntagToUpdate: {@tagToUpdate}"), tagToUpdate);
-            return BadRequest(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, string.Concat(ex.Message, "\ntagToUpdate: {@tagToUpdate}"), tagToUpdate);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        await _tagService.UpdateAsync(id, tagToUpdate, cancellationToken);
+        return Ok();
     }
 
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteById([FromRoute, Range(1, int.MaxValue)] int id, CancellationToken cancellationToken)
     {
-        try
-        {
-            await _tagService.DeleteByIdAsync(id, cancellationToken);
-            return Ok();
-        }
-        catch (TagNotFoundException ex)
-        {
-            _logger.LogInformation(ex, string.Concat(ex.Message, "\nid: {id}"), id);
-            return NotFound(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, string.Concat(ex.Message, "\nid: {id}"), id);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        await _tagService.DeleteByIdAsync(id, cancellationToken);
+        return Ok();
     }
 }

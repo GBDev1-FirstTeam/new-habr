@@ -31,61 +31,21 @@ public class SecureQuestionsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateQuestion(SecureQuestionCreateRequest request, CancellationToken cancellationToken)
     {
-        try
-        {
-            await _secureQuestionsService.CreateAsync(request, cancellationToken);
-            return StatusCode(StatusCodes.Status201Created);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-
+        await _secureQuestionsService.CreateAsync(request, cancellationToken);
+        return StatusCode(StatusCodes.Status201Created);
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateQuestion([FromRoute] int id, [FromBody] SecureQuestionUpdateRequest request, CancellationToken cancellationToken)
     {
-        try
-        {
-            await _secureQuestionsService.UpdateAsync(id, request, cancellationToken);
-        }
-        catch (SecureQuestionNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-
+        await _secureQuestionsService.UpdateAsync(id, request, cancellationToken);
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteQuestion([FromRoute] int id, CancellationToken cancellationToken)
     {
-        try
-        {
-            await _secureQuestionsService.DeleteAsync(id, cancellationToken);
-        }
-        catch (SecureQuestionNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-
+        await _secureQuestionsService.DeleteAsync(id, cancellationToken);
         return NoContent();
     }
 }

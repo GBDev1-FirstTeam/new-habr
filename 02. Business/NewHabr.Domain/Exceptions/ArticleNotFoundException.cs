@@ -2,9 +2,10 @@
 
 namespace NewHabr.Domain.Exceptions;
 
-public class ArticleNotFoundException : EntityNotFoundException
+public class ArticleNotFoundException : NotFoundException
 {
-    public ArticleNotFoundException() : base(typeof(Article))
+    public ArticleNotFoundException(Guid articleId)
+        : base($"Article with id: '{articleId}' not found")
     {
     }
 }

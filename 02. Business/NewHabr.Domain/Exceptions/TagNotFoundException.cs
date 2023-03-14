@@ -2,9 +2,10 @@
 
 namespace NewHabr.Domain.Exceptions;
 
-public class TagNotFoundException : EntityNotFoundException
+public class TagNotFoundException : NotFoundException
 {
-    public TagNotFoundException() : base(typeof(Tag))
+    public TagNotFoundException(int tagId)
+        : base($"Tag with id: '{tagId}' not found")
     {
     }
 }

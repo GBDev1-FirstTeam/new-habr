@@ -26,152 +26,78 @@ public class UsersController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> ForgotPassword([FromBody] RecoveryRequest recoveryRequest, CancellationToken cancellationToken)
     {
-        try
-        {
-            return Ok(await _userService.ForgotPasswordAsync(recoveryRequest, cancellationToken));
-        }
-        catch (UserNotFoundException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        return Ok(await _userService.ForgotPasswordAsync(recoveryRequest, cancellationToken));
     }
 
     [HttpPut("resetPassword")]
     [AllowAnonymous]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest resetPasswordRequest, CancellationToken cancellationToken)
     {
-        try
+        var result = await _userService.ResetPasswordAsync(resetPasswordRequest, cancellationToken);
+        if (result.Succeeded)
         {
-            var result = await _userService.ResetPasswordAsync(resetPasswordRequest, cancellationToken);
-            if (result.Succeeded)
-            {
-                return NoContent();
-            }
-            return BadRequest(result.Errors.Select(e => e.Description));
+            return NoContent();
         }
-        catch (UserNotFoundException ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        return BadRequest(result.Errors.Select(e => e.Description));
     }
 
     [HttpGet]
     [Authorize(Roles = "Moderator,Administrator")]
     public async Task<IActionResult> GetUsers(CancellationToken cancellationToken)
     {
-        try
-        {
-            return Ok(await _userService.GetUsers(cancellationToken));
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        return Ok(await _userService.GetUsers(cancellationToken));
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetUserDetails([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var authUserId = User.GetUserIdOrDefault();
-        try
-        {
-            var response = await _userService
-                .GetUserInfoAsync(id, authUserId, cancellationToken);
-            return Ok(response);
-        }
-        catch (UserNotFoundException ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        var response = await _userService
+            .GetUserInfoAsync(id, authUserId, cancellationToken);
+        return Ok(response);
     }
 
     [HttpGet("{id}/articles")]
     public async Task<IActionResult> GetUserArticles([FromRoute] Guid id, [FromQuery] ArticleQueryParametersDto queryParametersDto, CancellationToken cancellationToken)
     {
         var authUserId = User.GetUserIdOrDefault();
-        try
-        {
-            var articles = await _userService.GetUserArticlesAsync(id, authUserId, queryParametersDto, cancellationToken);
-            return Ok(articles);
-        }
-        catch (UserNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
+        var articles = await _userService.GetUserArticlesAsync(id, authUserId, queryParametersDto, cancellationToken);
+        return Ok(articles);
     }
 
     [HttpGet("{id}/comments")]
     public async Task<IActionResult> GetUserComments([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        try
-        {
-            var comments = await _userService.GetUserCommentsAsync(id, cancellationToken);
-            return Ok(comments);
-        }
-        catch (UserNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
+        var comments = await _userService.GetUserCommentsAsync(id, cancellationToken);
+        return Ok(comments);
     }
 
     [HttpGet("{id}/notifications")]
     public async Task<IActionResult> GetUserNotifications([FromRoute] Guid id, CancellationToken cancellationToken, [FromQuery] bool? unread = false)
     {
-        try
-        {
-            var notification = await _userService.GetUserNotificationsAsync(id, unread ?? false, cancellationToken);
-            return Ok(notification);
-        }
-        catch (UserNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
+        var notification = await _userService.GetUserNotificationsAsync(id, unread ?? false, cancellationToken);
+        return Ok(notification);
     }
 
     [HttpGet("{id}/likedArticles")]
     public async Task<IActionResult> GetUserLikedArticles([FromRoute] Guid id, [FromQuery] ArticleQueryParametersDto queryParametersDto, CancellationToken cancellationToken)
     {
-        try
-        {
-            var response = await _userService.GetUserLikedArticlesAsync(id, queryParametersDto, cancellationToken);
-            return Ok(response);
-        }
-        catch (UserNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
+        var response = await _userService.GetUserLikedArticlesAsync(id, queryParametersDto, cancellationToken);
+        return Ok(response);
     }
 
     [HttpGet("{id}/likedComments")]
     public async Task<IActionResult> GetUserLikedComments([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        try
-        {
-            var response = await _userService.GetUserLikedCommentsAsync(id, cancellationToken);
-            return Ok(response);
-        }
-        catch (UserNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
+        var response = await _userService.GetUserLikedCommentsAsync(id, cancellationToken);
+        return Ok(response);
     }
 
     [HttpGet("{id}/likedUsers")]
     public async Task<IActionResult> GetUserLikedUsers([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        try
-        {
-            var response = await _userService.GetUserLikedUsersAsync(id, cancellationToken);
-            return Ok(response);
-        }
-        catch (UserNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
+        var response = await _userService.GetUserLikedUsersAsync(id, cancellationToken);
+        return Ok(response);
     }
 
 
@@ -183,19 +109,8 @@ public class UsersController : ControllerBase
         if (!authResult.Succeeded)
             return new ForbidResult();
 
-        try
-        {
-            await _userService.UpdateUserProfileAsync(userId, userDto, cancellationToken);
-            return NoContent();
-        }
-        catch (UserNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        await _userService.UpdateUserProfileAsync(userId, userDto, cancellationToken);
+        return NoContent();
     }
 
 
@@ -203,22 +118,7 @@ public class UsersController : ControllerBase
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> SetRoles([FromRoute] Guid id, [FromBody] UserAssignRolesRequest request, CancellationToken cancellationToken)
     {
-        try
-        {
-            await _userService.SetUserRolesAsync(id, request, cancellationToken);
-        }
-        catch (UserNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        await _userService.SetUserRolesAsync(id, request, cancellationToken);
         return NoContent();
     }
 
@@ -226,19 +126,7 @@ public class UsersController : ControllerBase
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> GetRoles([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        UserAssignRolesResponse response;
-        try
-        {
-            response = await _userService.GetUserRolesAsync(id, cancellationToken);
-        }
-        catch (UserNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        var response = await _userService.GetUserRolesAsync(id, cancellationToken);
         return Ok(response);
     }
 
@@ -246,18 +134,7 @@ public class UsersController : ControllerBase
     [Authorize(Roles = "Moderator,Administrator")]
     public async Task<IActionResult> SetBanOnUser([FromRoute] Guid id, [FromBody] UserBanDto userBanDto, CancellationToken cancellationToken)
     {
-        try
-        {
-            await _userService.SetBanOnUserAsync(id, userBanDto, cancellationToken);
-        }
-        catch (UserNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        await _userService.SetBanOnUserAsync(id, userBanDto, cancellationToken);
         return NoContent();
     }
 
@@ -265,18 +142,7 @@ public class UsersController : ControllerBase
     [Authorize(Roles = "Moderator,Administrator")]
     public async Task<IActionResult> UnBanOnUser([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        try
-        {
-            await _userService.UnBanUserAsync(id, cancellationToken);
-        }
-        catch (UserNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        await _userService.UnBanUserAsync(id, cancellationToken);
         return NoContent();
     }
 
@@ -286,19 +152,8 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> SetLike([FromRoute] Guid userId, CancellationToken cancellationToken)
     {
         var authUserId = User.GetUserId();
-        try
-        {
-            await _userService.SetLikeAsync(userId, authUserId, cancellationToken);
-            return NoContent();
-        }
-        catch (CommentNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
-        catch (UserBannedException ex)
-        {
-            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
-        }
+        await _userService.SetLikeAsync(userId, authUserId, cancellationToken);
+        return NoContent();
     }
 
     [Authorize(Policy = "CanLike")]
@@ -306,15 +161,8 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> UnsetLike([FromRoute] Guid userId, CancellationToken cancellationToken)
     {
         var authUserId = User.GetUserId();
-        try
-        {
-            await _userService.UnsetLikeAsync(userId, authUserId, cancellationToken);
-            return NoContent();
-        }
-        catch (CommentNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
+        await _userService.UnsetLikeAsync(userId, authUserId, cancellationToken);
+        return NoContent();
     }
 
     [Authorize]
@@ -325,19 +173,12 @@ public class UsersController : ControllerBase
         if (userId != authUserId)
             return BadRequest();
 
-        try
+        var result = await _userService.ChangeUsername(authUserId, request, cancellationToken);
+        if (result.Succeeded)
         {
-            var result = await _userService.ChangeUsername(authUserId, request, cancellationToken);
-            if (result.Succeeded)
-            {
-                return NoContent();
-            }
-            return BadRequest(result.Errors.Select(e => e.Description));
+            return NoContent();
         }
-        catch (UserNotFoundException ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        return BadRequest(result.Errors.Select(e => e.Description));
     }
 
     [Authorize]
@@ -348,18 +189,11 @@ public class UsersController : ControllerBase
         if (userId != authUserId)
             return BadRequest();
 
-        try
+        var result = await _userService.ChangePassword(authUserId, request, cancellationToken);
+        if (result.Succeeded)
         {
-            var result = await _userService.ChangePassword(authUserId, request, cancellationToken);
-            if (result.Succeeded)
-            {
-                return NoContent();
-            }
-            return BadRequest(result.Errors.Select(e => e.Description));
+            return NoContent();
         }
-        catch (UserNotFoundException ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        return BadRequest(result.Errors.Select(e => e.Description));
     }
 }
