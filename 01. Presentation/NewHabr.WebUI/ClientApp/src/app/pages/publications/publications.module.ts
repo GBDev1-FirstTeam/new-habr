@@ -5,6 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { PostComponent } from './post/post.component';
 import { ComponentsLibraryModule } from 'src/app/core/components/components-library.module';
 import { FormsModule } from '@angular/forms';
+import { PaginationModule, PaginationConfig } from 'ngx-bootstrap/pagination';
 
 const routes: Routes = [
   {
@@ -26,8 +27,10 @@ const routes: Routes = [
     CommonModule,
     RouterModule.forChild(routes),
     ComponentsLibraryModule,
-    FormsModule
+    FormsModule,
+    PaginationModule
   ],
-  schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  providers: [PaginationConfig]
 })
 export class PublicationsModule { }

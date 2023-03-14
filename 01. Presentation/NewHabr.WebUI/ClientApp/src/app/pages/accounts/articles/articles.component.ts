@@ -5,6 +5,7 @@ import { PublicationUser } from 'src/app/core/models/Publication';
 import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
 import { ArticleState } from 'src/app/core/static/ArticleState';
 import * as _ from 'lodash';
+import { Metadata } from '../../../core/models/Structures';
 
 @Component({
   selector: 'app-articles',
@@ -24,6 +25,13 @@ export class ArticlesComponent implements OnInit {
   succesfulUnPublicate: boolean = false;
   succesfulDelete: boolean = false;
 
+  metaData = {
+    CurrentPage: 1,
+    PageSize: 10,
+    TotalCount: 1,
+    TotalPages: 1
+  } as Metadata;
+
   constructor(
     private http: HttpRequestService,
     private router: Router,
@@ -32,18 +40,28 @@ export class ArticlesComponent implements OnInit {
   ngOnInit(): void {
     this.activeRoute.parent?.params.subscribe(params => {
       this.accountId = params.id;
-       const publicationsSubscribtion = this.http.getUserPublications(this.accountId).subscribe(p => {
-        if (p) {
-          this.publications = _.orderBy(p.Articles, ['CreatedAt'], ['desc']);
-        }
-      })
-
-      this.subscribtions.push(publicationsSubscribtion);
+      this.loadItems();
     })
   }
 
   ngOnDestroy(): void {
     this.subscribtions.forEach(element => element.unsubscribe());
+  }
+
+  loadItems() {
+    const publicationsSubscribtion = this.http.getUserPublications(this.accountId, { pageNumber: this.metaData.CurrentPage, pageSize: this.metaData.PageSize }).subscribe(p => {
+      if (p) {
+        this.publications = _.orderBy(p.Articles, ['CreatedAt'], ['desc']);
+        this.metaData = p.Metadata;
+        publicationsSubscribtion.unsubscribe();
+      }
+    });
+  }
+
+  pageChanged(event: any) {
+    this.metaData.CurrentPage = event.page;
+    this.metaData.PageSize = event.itemsPerPage;
+    this.loadItems();
   }
 
   edit = (postId: string | undefined) => this.router.navigate(['accounts', this.accountId, 'articles', 'edit', postId]);

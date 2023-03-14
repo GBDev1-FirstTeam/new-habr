@@ -1,28 +1,32 @@
 <div class="create-container">
-    <button type="button" class="btn btn-outline-dark" (click)="create()">Создать хабр</button>
+  <button type="button" class="btn btn-outline-dark" (click)="create()">Создать хабр</button>
 </div>
 
-<app-post-container
-    *ngFor="let post of publications"
-    [post]="post"
-    >
-    <div class="status-container">
-        <p>Статус статьи:</p>
-        <span [class.a-status-1]="post.ApproveState === 'NotApproved'"><i class="bi bi-x-circle-fill"></i> Не одобрено</span>
-        <span [class.a-status-2]="post.ApproveState === 'WaitApproval'"><i class="bi bi-hourglass-split"></i> Ожидает модерации</span>
-        <span [class.a-status-3]="post.ApproveState === 'Approved' && !post.Published"><i class="bi bi-patch-check"></i> Доступно к публикации</span>
-        <span [class.a-status-4]="post.ApproveState === 'Approved' && post.Published"><i class="bi bi-patch-check-fill"></i> Опубликовано</span>
-    </div>
-    <div class="buttons-container">
-        <button type="button" class="btn btn-outline-dark" (click)="edit(post?.Id)">Редактировать</button>
-        <button *ngIf="mayBePublish(post)"
-            type="button" class="btn btn-outline-dark" (click)="publish(post)">Опубликовать</button>
-        <button *ngIf="mayBeUnPublish(post)"
-            type="button" class="btn btn-outline-dark" (click)="unpublish(post)">Снять с публикации</button>
-        <button
-            type="button" class="btn btn-outline-danger" (click)="deletePost(post)">Удалить пост</button>
-    </div>
+<app-post-container *ngFor="let post of publications" [post]="post">
+  <div class="status-container">
+    <p>Статус статьи:</p>
+    <span [class.a-status-1]="post.ApproveState === 'NotApproved'"><i class="bi bi-x-circle-fill"></i> Не одобрено</span>
+    <span [class.a-status-2]="post.ApproveState === 'WaitApproval'"><i class="bi bi-hourglass-split"></i> Ожидает модерации</span>
+    <span [class.a-status-3]="post.ApproveState === 'Approved' && !post.Published"><i class="bi bi-patch-check"></i> Доступно к публикации</span>
+    <span [class.a-status-4]="post.ApproveState === 'Approved' && post.Published"><i class="bi bi-patch-check-fill"></i> Опубликовано</span>
+  </div>
+  <div class="buttons-container">
+    <button type="button" class="btn btn-outline-dark" (click)="edit(post?.Id)">Редактировать</button>
+    <button *ngIf="mayBePublish(post)"
+            type="button" class="btn btn-outline-dark" (click)="publish(post)">
+      Опубликовать
+    </button>
+    <button *ngIf="mayBeUnPublish(post)"
+            type="button" class="btn btn-outline-dark" (click)="unpublish(post)">
+      Снять с публикации
+    </button>
+    <button type="button" class="btn btn-outline-danger" (click)="deletePost(post)">
+      Удалить пост
+    </button>
+  </div>
 </app-post-container>
+
+<pagination [boundaryLinks]="true" [totalItems]="metaData.TotalCount" [itemsPerPage]="metaData.PageSize" (pageChanged)="pageChanged($event)" [firstText]="'<<'" [lastText]="'>>'" [nextText]="'>'" [previousText]="'<'" [rotate]="true"></pagination>
 
 <app-succesful-send [(visible)]="succesfulModerate" [text]="'Ваша статья отправлена модератору'"></app-succesful-send>
 <app-succesful-send [(visible)]="succesfulUnPublicate" [text]="'Статья снята с публикации'"></app-succesful-send>
