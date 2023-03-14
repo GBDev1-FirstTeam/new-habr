@@ -8,6 +8,7 @@ import { Notification } from 'src/app/core/models/Notification';
 import { ConvertDatePipe } from 'src/app/core/pipes/convert-date.pipe';
 import { HttpRequestService } from 'src/app/core/services/HttpRequestService';
 import { AppStoreProvider } from 'src/app/core/store/store';
+import { Publication } from '../../core/models/Publication';
 
 @Component({
   selector: 'app-main',
@@ -54,6 +55,7 @@ export class MainComponent {
   notifyPos: string = 'neutral';
   notifications: Array<Notification> = [];
   notificationsTimer: NodeJS.Timer;
+  publications: Array<Publication>;
   
   menu = [
     {
@@ -105,12 +107,18 @@ export class MainComponent {
         this.store.loadUserInfo(this.auth!.User.Id);
       }
     });
+      const publicationsSubscribtion = this.http.getPublications({ pageNumber: 1, pageSize: 10, byRating: 'Descending' }).subscribe(p => {
+          if (p) {
+              this.publications = p.Articles;
+          }
+      });
 
     this.subscribtions.push(authSubscribtion);
     this.subscribtions.push(isAuthSubscribtion);
     this.subscribtions.push(isModeratorSubscribtion);
     this.subscribtions.push(isAdminSubscribtion);
     this.subscribtions.push(userInfoSubscribtion);
+    this.subscribtions.push(publicationsSubscribtion);
 
     this.animateNotify();
   }
@@ -161,5 +169,6 @@ export class MainComponent {
     this.notifications = this.notifications.filter(n => n.Id !== notificationId);
 
     lastValueFrom(this.http.deleteNotification(notificationId));
-  }
+    }
+
 }

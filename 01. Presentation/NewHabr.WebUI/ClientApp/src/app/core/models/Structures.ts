@@ -26,7 +26,7 @@ export interface ArticleQueryParameters {
     to?: number;
     orderBy?: number;
     search?: string;
-    byRating?: number;
+    byRating?: number | string;
     pageNumber?: number;
     pageSize?: number;
     Category?: number;
