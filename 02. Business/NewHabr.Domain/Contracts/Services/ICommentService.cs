@@ -10,7 +10,7 @@ public interface ICommentService
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>    
-    Task CreateAsync(Guid creatorId, CommentCreateRequest data, CancellationToken cancellationToken);
+    Task<CommentDto> CreateAsync(Guid creatorId, CommentCreateRequest data, CancellationToken cancellationToken);
 
     /// <summary>
     /// Updates an existing in database Comment class
@@ -34,6 +34,8 @@ public interface ICommentService
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<IReadOnlyCollection<CommentDto>> GetAllAsync(CancellationToken cancellationToken);
+
+    Task<CommentDto> GetByIdAsync(Guid commentId, CancellationToken cancellationToken);
 
     ///// <summary>
     ///// Returns a list of existing in database Comments classes matched to User.Id

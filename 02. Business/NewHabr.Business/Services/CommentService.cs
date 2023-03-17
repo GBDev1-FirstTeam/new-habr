@@ -25,7 +25,7 @@ public class CommentService : ICommentService
         _userManager = userManager;
     }
 
-    public async Task CreateAsync(Guid CreatorId, CommentCreateRequest data, CancellationToken cancellationToken)
+    public async Task<CommentDto> CreateAsync(Guid CreatorId, CommentCreateRequest data, CancellationToken cancellationToken)
     {
         var article = await _repositoryManager
             .ArticleRepository
@@ -45,6 +45,8 @@ public class CommentService : ICommentService
         await _repositoryManager.SaveAsync(cancellationToken);
 
         await CreateNotificationIfMentionSomeoneAsync(article, newComment, cancellationToken);
+
+        return _mapper.Map<CommentDto>(newComment);
     }
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
@@ -64,6 +66,18 @@ public class CommentService : ICommentService
 
         var comments = await _repositoryManager.CommentRepository.GetAllAsync(false, cancellationToken);
         return _mapper.Map<List<CommentDto>>(comments);
+    }
+
+    public async Task<CommentDto> GetByIdAsync(Guid commentId, CancellationToken cancellationToken)
+    {
+        var comment = await _repositoryManager
+            .CommentRepository
+            .GetByIdAsync(commentId, false, cancellationToken);
+
+        if (comment is null)
+            throw new CommentNotFoundException(commentId);
+
+        return _mapper.Map<CommentDto>(comment);
     }
 
     public async Task<bool> IsAuthor(Guid commentId, Guid userId, CancellationToken cancellationToken)
