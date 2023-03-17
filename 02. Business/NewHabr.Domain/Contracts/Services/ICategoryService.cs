@@ -5,9 +5,11 @@ namespace NewHabr.Domain.Contracts;
 
 public interface ICategoryService
 {
+    Task<CategoryDto> GetByIdAsync(int categoryId, CancellationToken cancellationToken);
+
     Task<IReadOnlyCollection<CategoryDto>> GetAllAsync(CancellationToken cancellationToken);
 
-    Task CreateAsync(CategoryCreateRequest request, CancellationToken cancellationToken);
+    Task<CategoryDto> CreateAsync(CategoryCreateRequest request, CancellationToken cancellationToken);
 
     Task UpdateAsync(int id, CategoryUpdateRequest categoryToUpdate, CancellationToken cancellationToken);
 

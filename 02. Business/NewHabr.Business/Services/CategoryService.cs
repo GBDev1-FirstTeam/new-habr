@@ -11,10 +11,24 @@ public class CategoryService : ICategoryService
     private readonly IRepositoryManager _repositoryManager;
     private readonly IMapper _mapper;
 
+
     public CategoryService(IRepositoryManager repositoryManager, IMapper mapper)
     {
         _repositoryManager = repositoryManager;
         _mapper = mapper;
+    }
+
+
+    public async Task<CategoryDto> GetByIdAsync(int categoryId, CancellationToken cancellationToken)
+    {
+        var category = await _repositoryManager
+            .CategoryRepository
+            .GetByIdAsync(categoryId, false, cancellationToken);
+
+        if (category is null)
+            throw new CategoryNotFoundException(categoryId);
+
+        return _mapper.Map<CategoryDto>(category);
     }
 
     public async Task<IReadOnlyCollection<CategoryDto>> GetAllAsync(CancellationToken cancellationToken)
@@ -23,7 +37,7 @@ public class CategoryService : ICategoryService
         return _mapper.Map<List<CategoryDto>>(categories);
     }
 
-    public async Task CreateAsync(CategoryCreateRequest request, CancellationToken cancellationToken)
+    public async Task<CategoryDto> CreateAsync(CategoryCreateRequest request, CancellationToken cancellationToken)
     {
         var category = await _repositoryManager
             .CategoryRepository
@@ -37,6 +51,8 @@ public class CategoryService : ICategoryService
         var newCategory = _mapper.Map<Category>(request);
         _repositoryManager.CategoryRepository.Create(newCategory);
         await _repositoryManager.SaveAsync(cancellationToken);
+
+        return _mapper.Map<CategoryDto>(newCategory);
     }
 
     public async Task UpdateAsync(int id, CategoryUpdateRequest categoryToUpdate, CancellationToken cancellationToken)
