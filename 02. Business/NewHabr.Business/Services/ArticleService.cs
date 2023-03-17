@@ -82,7 +82,7 @@ public class ArticleService : IArticleService
         };
     }
 
-    public async Task CreateAsync(ArticleCreateRequest request, Guid creatorId, CancellationToken cancellationToken)
+    public async Task<ArticleDto> CreateAsync(ArticleCreateRequest request, Guid creatorId, CancellationToken cancellationToken)
     {
         var creationDateTime = DateTimeOffset.UtcNow;
         var article = _mapper.Map<Article>(request);
@@ -96,6 +96,8 @@ public class ArticleService : IArticleService
         _repositoryManager.ArticleRepository.Create(article);
         await _repositoryManager.SaveAsync(cancellationToken);
         await CreateNotificationIfMentionSomeoneAsync(article, cancellationToken);
+
+        return _mapper.Map<ArticleDto>(article);
     }
 
     public async Task UpdateAsync(Guid articleId, ArticleUpdateRequest articleToUpdate, CancellationToken cancellationToken)
