@@ -8,6 +8,7 @@ using NewHabr.Domain.Dto;
 using NewHabr.WebApi.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
+using NewHabr.Domain;
 
 namespace UnitTests.Controllers;
 
@@ -54,13 +55,20 @@ public class ArticlesControllerTests
         {
             HttpContext = new DefaultHttpContext { User = user }
         };
+        var articleDto = new ArticleDto();
+        _articleServiceMock
+            .Setup(s => s.CreateAsync(request, It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(articleDto);
 
         // Act
         var response = await _sut.Create(request, default);
 
         // Assert
-        Assert.IsType<StatusCodeResult>(response);
-        Assert.Equal(201, ((StatusCodeResult)response).StatusCode);
+        Assert.IsAssignableFrom<ActionResult<ArticleDto>>(response);
+
+        Assert.IsAssignableFrom<ObjectResult>(response.Result);
+        Assert.Equal(StatusCodes.Status201Created, ((ObjectResult)response.Result!).StatusCode);
+
         _articleServiceMock.Verify(service => service.CreateAsync(It.IsAny<ArticleCreateRequest>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 }
