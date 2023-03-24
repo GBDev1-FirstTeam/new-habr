@@ -1,6 +1,5 @@
 ﻿using NewHabr.Domain.Dto;
-using NewHabr.Domain.Exceptions;
-using NewHabr.Domain.Models;
+using NewHabr.Domain.ServiceModels;
 
 namespace NewHabr.Domain.Contracts;
 
@@ -14,7 +13,7 @@ public interface IArticleService
 
     Task<ArticlesGetResponse> GetDeletedAsync(ArticleQueryParametersDto queryParams, CancellationToken cancellationToken);
 
-    Task CreateAsync(ArticleCreateRequest request, Guid creatorId, CancellationToken cancellationToken);
+    Task<ArticleDto> CreateAsync(ArticleCreateRequest request, Guid creatorId, CancellationToken cancellationToken);
 
     Task UpdateAsync(Guid articleId, ArticleUpdateRequest articleToUpdate, CancellationToken cancellationToken);
 

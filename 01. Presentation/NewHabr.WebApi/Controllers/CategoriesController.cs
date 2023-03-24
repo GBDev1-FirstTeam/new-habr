@@ -19,6 +19,14 @@ public class CategoriesController : ControllerBase
         _logger = logger;
     }
 
+    [HttpGet("{categoryId}")]
+    public async Task<ActionResult<CategoryDto>> GetById([FromRoute] int categoryId, CancellationToken cancellationToken)
+    {
+        var category = await _categoryService
+            .GetByIdAsync(categoryId, cancellationToken);
+        return Ok(category);
+    }
+
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAll(CancellationToken cancellationToken)
     {
@@ -26,11 +34,10 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> Create([FromBody] CategoryCreateRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<CategoryDto>> Create([FromBody] CategoryCreateRequest request, CancellationToken cancellationToken)
     {
-        await _categoryService.CreateAsync(request, cancellationToken);
-        return Ok();
-
+        var category = await _categoryService.CreateAsync(request, cancellationToken);
+        return CreatedAtAction(nameof(GetById), new { categoryId = category.Id }, category);
     }
 
     [HttpPut("{id}")]

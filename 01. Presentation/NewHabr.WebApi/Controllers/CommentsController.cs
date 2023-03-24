@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using NewHabr.Domain.Contracts.Services;
 using NewHabr.Domain.Dto;
-using NewHabr.Domain.Exceptions;
 using NewHabr.WebApi.Extensions;
 
 namespace NewHabr.WebApi.Controllers;
@@ -15,11 +14,21 @@ public class CommentsController : ControllerBase
     private readonly IAuthorizationService _authorizationService;
     private readonly ILogger<CommentsController> _logger;
 
+
     public CommentsController(ICommentService commentService, IAuthorizationService authorizationService, ILogger<CommentsController> logger)
     {
         _commentService = commentService;
         _authorizationService = authorizationService;
         _logger = logger;
+    }
+
+
+    [HttpGet("{commentId}")]
+    public async Task<ActionResult<CommentDto>> GetById([FromRoute] Guid commentId, CancellationToken cancellationToken)
+    {
+        var comment = await _commentService
+            .GetByIdAsync(commentId, cancellationToken);
+        return Ok(comment);
     }
 
     [HttpGet]
@@ -30,11 +39,11 @@ public class CommentsController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "CanCreate")]
-    public async Task<ActionResult> Create([FromBody] CommentCreateRequest newComment, CancellationToken cancellationToken)
+    public async Task<ActionResult<CommentDto>> Create([FromBody] CommentCreateRequest newComment, CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
-        await _commentService.CreateAsync(userId, newComment, cancellationToken);
-        return Ok();
+        var comment = await _commentService.CreateAsync(userId, newComment, cancellationToken);
+        return CreatedAtAction(nameof(GetById), new { commentId = comment.Id }, comment);
     }
 
     [HttpPut("{commentId}")]

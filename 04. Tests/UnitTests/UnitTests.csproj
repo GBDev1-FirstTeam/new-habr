@@ -43,7 +43,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Services\" />
-    <Folder Include="Controllers\" />
     <Folder Include="Repository\" />
     <Folder Include="Mocks\" />
   </ItemGroup>

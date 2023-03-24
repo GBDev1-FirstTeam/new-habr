@@ -30,7 +30,6 @@ public class ArticlesController : ControllerBase
     {
         var authUserId = User.GetUserIdOrDefault();
         return Ok(await _articleService.GetByIdAsync(id, authUserId, cancellationToken));
-
     }
 
     [HttpGet]
@@ -56,11 +55,11 @@ public class ArticlesController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "CanCreate")]
-    public async Task<ActionResult> Create([FromBody] ArticleCreateRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<ArticleDto>> Create([FromBody] ArticleCreateRequest request, CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
-        await _articleService.CreateAsync(request, userId, cancellationToken);
-        return Ok();
+        var article = await _articleService.CreateAsync(request, userId, cancellationToken);
+        return new CreatedAtActionResult(nameof(GetById), "Articles", new { Id = article.Id }, article);
     }
 
     [HttpPut("{id}")]
@@ -100,7 +99,6 @@ public class ArticlesController : ControllerBase
 
         await _articleService.PublishAsync(id, false, cancellationToken);
         return NoContent();
-
     }
 
     [HttpPut("{id}/approve")]

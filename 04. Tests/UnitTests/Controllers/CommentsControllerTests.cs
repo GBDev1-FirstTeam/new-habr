@@ -11,6 +11,7 @@ using NewHabr.WebApi.Extensions;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
+using AutoFixture;
 
 namespace UnitTests.Controllers;
 
@@ -24,6 +25,7 @@ public class CommentsControllerTests
     private readonly Mock<IAuthorizationService> _authorizationService;
     private readonly Comment _comment;
     private readonly User _user;
+    private readonly Fixture _fixture = new Fixture();
 
 
     public CommentsControllerTests()
@@ -68,14 +70,21 @@ public class CommentsControllerTests
     [Fact]
     public async Task Create_ShouldCall_CreateAsync_From_Service_Once()
     {
-        //Arrange        
-        //Act
+        // Arrange
+        var commentCreateRequest = _fixture
+            .Create<CommentCreateRequest>();
+        _commentServiceMock
+            .Setup(s => s.CreateAsync(It.IsAny<Guid>(), commentCreateRequest, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new CommentDto());
+        
+        // Act
         var result = await _commentsController
-            .Create(It.IsAny<CommentCreateRequest>(), It.IsAny<CancellationToken>());
-        var okResult = result as OkResult;
+            .Create(commentCreateRequest, default);
+
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(200, okResult.StatusCode);
+        Assert.IsAssignableFrom<ObjectResult>(result.Result);
+        Assert.Equal(StatusCodes.Status201Created, ((ObjectResult)result.Result!).StatusCode);
 
         _commentServiceMock.Verify(service => service.CreateAsync(_user.Id,
             It.IsAny<CommentCreateRequest>(),
@@ -86,8 +95,9 @@ public class CommentsControllerTests
     [Fact]
     public async Task Update_ShouldCall_UpdateAsync_From_Service_Once()
     {
-        //Arrange               
-        //Act
+        // Arrange
+
+        // Act
         var result = await _commentsController.Update(_comment.Id,
             It.IsAny<CommentUpdateRequest>(),
             It.IsAny<CancellationToken>());
@@ -107,8 +117,9 @@ public class CommentsControllerTests
     [Fact]
     public async Task Delete_ShouldCall_DeleteAsync_From_Service_Once()
     {
-        //Arrange        
-        //Act
+        // Arrange
+
+        // Act
         var result = await _commentsController
             .Delete(_comment.Id, It.IsAny<CancellationToken>());
         var okResult = result as OkResult;
@@ -122,8 +133,9 @@ public class CommentsControllerTests
     [Fact]
     public async Task SetLike_ShouldCall_SetLikeAsync_From_Service_Once()
     {
-        //Arrange       
-        //Act
+        // Arrange
+
+        // Act
         var result = await _commentsController
             .SetLike(_comment.Id, It.IsAny<CancellationToken>());
         var okResult = result as NoContentResult;
@@ -143,8 +155,9 @@ public class CommentsControllerTests
     [Fact]
     public async Task UnsetLike_ShouldCall_UnsetLikeAsync_From_Service_Once()
     {
-        //Arrange
-        //Act
+        // Arrange
+
+        // Act
         var result = await _commentsController
             .UnsetLike(_comment.Id, It.IsAny<CancellationToken>());
         var okResult = result as NoContentResult;
@@ -161,225 +174,84 @@ public class CommentsControllerTests
     }
 
     [Fact]
-    public async Task Create_WhenUserBanned_Returns403()
+    public async Task Update_WhenCommentNotFound_Throws_CommentNotFoundException()
     {
-        //Arrange
-        _commentServiceMock.Setup(s =>
-            s.CreateAsync(
-                _user.Id,
-                It.IsAny<CommentCreateRequest>(),
-                It.IsAny<CancellationToken>()))
-            .Throws(new UserBannedException(DateTimeOffset.Now));
-
-        //Act
-        var result = await _commentsController
-            .Create(It.IsAny<CommentCreateRequest>(), It.IsAny<CancellationToken>());
-        var okResult = result as ObjectResult;
-
-        //Assert        
-        Assert.NotNull(okResult);
-        Assert.Equal(403, okResult.StatusCode);
-    }
-
-    [Fact]
-    public async Task Update_WhenUserBanned_Returns403()
-    {
-        //Arrange        
-        _commentServiceMock.Setup(s =>
-            s.UpdateAsync(_comment.Id,
-                It.IsAny<CommentUpdateRequest>(),
-                It.IsAny<CancellationToken>()))
-            .Throws(new UserBannedException(DateTimeOffset.Now));
-
-        //Act
-        var result = await _commentsController.Update(
-            _comment.Id,
-            It.IsAny<CommentUpdateRequest>(),
-            It.IsAny<CancellationToken>());
-        var okResult = result as ObjectResult;
-
-        //Assert        
-        Assert.NotNull(okResult);
-        Assert.Equal(403, okResult.StatusCode);
-    }
-
-    [Fact]
-    public async Task SetLike_WhenUserBanned_Returns403()
-    {
-        //Arrange        
-        _commentServiceMock
-            .Setup(s => s.SetLikeAsync(_comment.Id, _user.Id, It.IsAny<CancellationToken>()))
-            .Throws(new UserBannedException(DateTimeOffset.Now));
-
-        //Act
-        var result = await _commentsController.SetLike(_comment.Id, It.IsAny<CancellationToken>());
-        var okResult = result as ObjectResult;
-
-        //Assert        
-        Assert.NotNull(okResult);
-        Assert.Equal(403, okResult.StatusCode);
-    }
-
-    [Fact]
-    public async Task Update_WhenCommentNotFound_Returns404()
-    {
-        //Arrange        
+        // Arrange
         _commentServiceMock.Setup(s =>
             s.UpdateAsync(
                 _comment.Id,
                 It.IsAny<CommentUpdateRequest>(),
                 It.IsAny<CancellationToken>()))
-            .Throws(new CommentNotFoundException());
+            .Throws(new CommentNotFoundException(_comment.Id));
 
-        //Act
-        var result = await _commentsController.Update(
+        // Act
+        var Act = async () => await _commentsController.Update(
             _comment.Id,
             It.IsAny<CommentUpdateRequest>(),
             It.IsAny<CancellationToken>());
-        var okResult = result as NotFoundObjectResult;
 
-        //Assert        
-        Assert.NotNull(okResult);
-        Assert.Equal(404, okResult.StatusCode);
+        // Assert
+        await Assert.ThrowsAsync<CommentNotFoundException>(Act);
     }
 
     [Fact]
-    public async Task Delete_WhenCommentNotFound_Returns404()
+    public async Task Delete_WhenCommentNotFound_Throws_CommentNotFoundException()
     {
-        //Arrange        
+        // Arrange
         _commentServiceMock.Setup(s =>
             s.DeleteAsync(
                 _comment.Id,
                 It.IsAny<CancellationToken>()))
-            .Throws(new CommentNotFoundException());
+            .Throws(new CommentNotFoundException(_comment.Id));
 
-        //Act
-        var result = await _commentsController.Delete(
+        // Act
+        var Act = async () => await _commentsController.Delete(
             _comment.Id,
             It.IsAny<CancellationToken>());
-        var okResult = result as NotFoundResult;
 
-        //Assert        
-        Assert.NotNull(okResult);
-        Assert.Equal(404, okResult.StatusCode);
+        // Assert
+        await Assert.ThrowsAsync<CommentNotFoundException>(Act);
     }
 
     [Fact]
-    public async Task SetLike_WhenCommentNotFound_Returns404()
+    public async Task SetLike_WhenCommentNotFound_Throws_CommentNotFoundException()
     {
-        //Arrange        
+        // Arrange
         _commentServiceMock.Setup(s =>
             s.SetLikeAsync(
                 _comment.Id,
                 _user.Id,
                 It.IsAny<CancellationToken>()))
-            .Throws(new CommentNotFoundException());
+            .Throws(new CommentNotFoundException(_comment.Id));
 
-        //Act
-        var result = await _commentsController.SetLike(
+        // Act
+        var Act = async () => await _commentsController.SetLike(
             _comment.Id,
             It.IsAny<CancellationToken>());
-        var okResult = result as NotFoundObjectResult;
 
-        //Assert        
-        Assert.NotNull(okResult);
-        Assert.Equal(404, okResult.StatusCode);
+        // Assert
+        await Assert.ThrowsAsync<CommentNotFoundException>(Act);
     }
 
     [Fact]
-    public async Task UnsetLike_WhenCommentNotFound_Returns404()
+    public async Task UnsetLike_WhenCommentNotFound_Throws_CommentNotFoundException()
     {
-        //Arrange        
+        // Arrange
         _commentServiceMock
             .Setup(s =>
                 s.UnsetLikeAsync(
                     _comment.Id,
                     _user.Id,
                     It.IsAny<CancellationToken>()))
-            .Throws(new CommentNotFoundException());
+            .Throws(new CommentNotFoundException(_comment.Id));
 
-        //Act
-        var result = await _commentsController
+        // Act
+        var Act = async () => await _commentsController
             .UnsetLike(
                 _comment.Id,
                 It.IsAny<CancellationToken>());
-        var okResult = result as NotFoundObjectResult;
 
-        //Assert        
-        Assert.NotNull(okResult);
-        Assert.Equal(404, okResult.StatusCode);
-    }
-
-    [Fact]
-    public async Task GetAll_WhenAnyException_Returns500()
-    {
-        //Arrange
-        _commentServiceMock
-            .Setup(s => s.GetAllAsync(It.IsAny<CancellationToken>()))
-            .Throws(new Exception());
-
-        //Act
-        var result = await _commentsController.GetAll(It.IsAny<CancellationToken>());
-
-        var okResult = result.Result as StatusCodeResult;
-
-        //Assert
-        Assert.NotNull(okResult);
-        Assert.Equal(500, okResult.StatusCode);
-    }
-
-    [Fact]
-    public async Task Create_WhenAnyException_Returns500()
-    {
-        //Arrange
-        _commentServiceMock
-            .Setup(s =>
-                s.CreateAsync(_user.Id,
-                    It.IsAny<CommentCreateRequest>(),
-                    It.IsAny<CancellationToken>()))
-            .Throws(new Exception());
-
-        //Act
-        var result = await _commentsController.Create(It.IsAny<CommentCreateRequest>(), It.IsAny<CancellationToken>());
-
-        var okResult = result as StatusCodeResult;
-
-        //Assert
-        Assert.NotNull(okResult);
-        Assert.Equal(500, okResult.StatusCode);
-    }
-
-    [Fact]
-    public async Task Update_WhenAnyException_Returns500()
-    {
-        //Arrange
-        _commentServiceMock
-            .Setup(s => s.UpdateAsync(_comment.Id, It.IsAny<CommentUpdateRequest>(), It.IsAny<CancellationToken>()))
-            .Throws(new Exception());
-
-        //Act
-        var result = await _commentsController.Update(_comment.Id, It.IsAny<CommentUpdateRequest>(), It.IsAny<CancellationToken>());
-        var okResult = result as StatusCodeResult;
-
-        //Assert
-        Assert.NotNull(okResult);
-        Assert.Equal(500, okResult.StatusCode);
-    }
-
-    [Fact]
-    public async Task Delete_WhenAnyException_Returns500()
-    {
-        //Arrange
-        _commentServiceMock
-            .Setup(s => s.DeleteAsync(_comment.Id, It.IsAny<CancellationToken>()))
-            .Throws(new Exception());
-
-        //Act
-        var result = await _commentsController.Delete(_comment.Id, It.IsAny<CancellationToken>());
-        var okResult = result as StatusCodeResult;
-
-        //Assert
-        Assert.NotNull(okResult);
-        Assert.Equal(500, okResult.StatusCode);
+        // Assert
+        await Assert.ThrowsAsync<CommentNotFoundException>(Act);
     }
 }
