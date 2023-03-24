@@ -46,6 +46,7 @@ public class ArticleRepositoryTests
     public async Task GetPublishedAsync_ReturnsPublishedOnly()
     {
         // Arrange
+        _context.Set<Article>().Add(Helper.CreateArticle());
         var article = Helper.CreateArticle();
         _context.Set<Article>().Add(article);
 
