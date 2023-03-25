@@ -78,7 +78,8 @@ public class Program
         services.Configure<AppSettings>(builder.Configuration.GetSection(AppSettings.Section));
 
         services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
+
+        services.ConfigureSwaggerGen();
 
         services.ConfigureAutoMapper(typeof(ArticleProfile).Assembly);
 

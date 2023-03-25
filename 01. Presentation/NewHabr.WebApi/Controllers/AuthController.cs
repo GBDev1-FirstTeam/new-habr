@@ -26,8 +26,11 @@ public class AuthController : ControllerBase
     }
 
 
+    /// <summary>
+    /// Registers a new user
+    /// </summary>
     [HttpPost]
-    public async Task<IActionResult> RegisterUser([FromBody] RegistrationRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<AuthorizationResponse>> RegisterUser([FromBody] RegistrationRequest request, CancellationToken cancellationToken)
     {
         var result = await _authenticationService.RegisterUserAndCreateToken(request, cancellationToken);
 
@@ -38,8 +41,11 @@ public class AuthController : ControllerBase
         return Ok(result.Value);
     }
 
+    /// <summary>
+    /// Authenticates a user
+    /// </summary>
     [HttpPost("login")]
-    public async Task<IActionResult> Authenticate([FromBody] AuthorizationRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<AuthorizationResponse>> Authenticate([FromBody] AuthorizationRequest request, CancellationToken cancellationToken)
     {
         if (!await _authenticationService.ValidateUser(request, cancellationToken))
         {

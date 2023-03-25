@@ -7,6 +7,7 @@ using NewHabr.WebApi.Extensions;
 namespace NewHabr.WebApi.Controllers;
 
 [Route("api/[controller]")]
+[Produces("application/json")]
 [ApiController]
 public class CommentsController : ControllerBase
 {
@@ -22,8 +23,12 @@ public class CommentsController : ControllerBase
         _logger = logger;
     }
 
-
+    /// <summary>
+    /// Retrieves a specific Comment
+    /// </summary>
     [HttpGet("{commentId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CommentDto>> GetById([FromRoute] Guid commentId, CancellationToken cancellationToken)
     {
         var comment = await _commentService
@@ -31,13 +36,21 @@ public class CommentsController : ControllerBase
         return Ok(comment);
     }
 
+    /// <summary>
+    /// Retrieves all comments
+    /// </summary>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<List<CommentDto>>> GetAll(CancellationToken cancellationToken)
     {
         return Ok(await _commentService.GetAllAsync(cancellationToken));
     }
 
+    /// <summary>
+    /// Creates a new comment on article
+    /// </summary>
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [Authorize(Policy = "CanCreate")]
     public async Task<ActionResult<CommentDto>> Create([FromBody] CommentCreateRequest newComment, CancellationToken cancellationToken)
     {
@@ -46,7 +59,13 @@ public class CommentsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { commentId = comment.Id }, comment);
     }
 
+    /// <summary>
+    /// Updates a specific comment
+    /// </summary>
     [HttpPut("{commentId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [Authorize]
     public async Task<ActionResult> Update([FromRoute] Guid commentId, [FromBody] CommentUpdateRequest updateComment, CancellationToken cancellationToken)
     {
@@ -60,7 +79,13 @@ public class CommentsController : ControllerBase
 
     }
 
+    /// <summary>
+    /// Deletes a specific comment
+    /// </summary>
     [HttpDelete("{commentId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [Authorize]
     public async Task<ActionResult> Delete([FromRoute] Guid commentId, CancellationToken cancellationToken)
     {
@@ -74,9 +99,14 @@ public class CommentsController : ControllerBase
 
     }
 
-    [Authorize(Policy = "CanLike")]
+    /// <summary>
+    /// Mark a specific comment as Liked
+    /// </summary>
     [HttpPut("{commentId}/like")]
-    public async Task<IActionResult> SetLike([FromRoute] Guid commentId, CancellationToken cancellationToken)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(Policy = "CanLike")]
+    public async Task<ActionResult> SetLike([FromRoute] Guid commentId, CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
         await _commentService.SetLikeAsync(commentId, userId, cancellationToken);
@@ -84,9 +114,14 @@ public class CommentsController : ControllerBase
 
     }
 
+    /// <summary>
+    /// Clears 'Liked' mark on specific comment
+    /// </summary>
     [Authorize(Policy = "CanLike")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpPut("{commentId}/unlike")]
-    public async Task<IActionResult> UnsetLike([FromRoute] Guid commentId, CancellationToken cancellationToken)
+    public async Task<ActionResult> UnsetLike([FromRoute] Guid commentId, CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
         await _commentService.UnsetLikeAsync(commentId, userId, cancellationToken);

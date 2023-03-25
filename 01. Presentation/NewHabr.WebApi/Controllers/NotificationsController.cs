@@ -2,12 +2,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NewHabr.Domain.Contracts.Services;
+using NewHabr.Domain.Dto;
 using NewHabr.Domain.Exceptions;
 using NewHabr.WebApi.Extensions;
 
 namespace NewHabr.WebApi.Controllers;
 
 [ApiController]
+[Produces("application/json")]
 [Route("api/[controller]")]
 public class NotificationsController : ControllerBase
 {
@@ -20,9 +22,14 @@ public class NotificationsController : ControllerBase
     }
 
 
+    /// <summary>
+    /// Retrieves a specific Notification
+    /// </summary>
     [HttpGet("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [Authorize]
-    public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<NotificationDto>> GetById([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
         var notification = await _notificationService.GetByIdAsync(id, userId, cancellationToken);
@@ -30,9 +37,14 @@ public class NotificationsController : ControllerBase
 
     }
 
+    /// <summary>
+    /// Marks a specific Notification as read
+    /// </summary>
     [HttpPut("{id}/markAsRead")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [Authorize]
-    public async Task<IActionResult> MarkAsRead([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult> MarkAsRead([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
         var notification = await _notificationService.GetByIdAsync(id, userId, cancellationToken);
@@ -41,9 +53,14 @@ public class NotificationsController : ControllerBase
 
     }
 
+    /// <summary>
+    /// Deletes a specific Notification
+    /// </summary>
     [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [Authorize]
-    public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
         await _notificationService.DeleteAsync(id, userId, cancellationToken);

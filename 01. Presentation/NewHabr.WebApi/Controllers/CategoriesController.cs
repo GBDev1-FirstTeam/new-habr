@@ -19,6 +19,9 @@ public class CategoriesController : ControllerBase
         _logger = logger;
     }
 
+    /// <summary>
+    /// Retrieves a specific category
+    /// </summary>
     [HttpGet("{categoryId}")]
     public async Task<ActionResult<CategoryDto>> GetById([FromRoute] int categoryId, CancellationToken cancellationToken)
     {
@@ -27,12 +30,18 @@ public class CategoriesController : ControllerBase
         return Ok(category);
     }
 
+    /// <summary>
+    /// Retrieves all categories
+    /// </summary>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAll(CancellationToken cancellationToken)
     {
         return Ok(await _categoryService.GetAllAsync(cancellationToken));
     }
 
+    /// <summary>
+    /// Creates a new category
+    /// </summary>
     [HttpPost]
     public async Task<ActionResult<CategoryDto>> Create([FromBody] CategoryCreateRequest request, CancellationToken cancellationToken)
     {
@@ -40,6 +49,9 @@ public class CategoriesController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { categoryId = category.Id }, category);
     }
 
+    /// <summary>
+    /// Updates a specific category
+    /// </summary>
     [HttpPut("{id}")]
     public async Task<ActionResult> Update(
         [FromRoute, Range(1, int.MaxValue)] int id,
@@ -50,6 +62,9 @@ public class CategoriesController : ControllerBase
         return Ok();
     }
 
+    /// <summary>
+    /// Deletes a specific category
+    /// </summary>
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteById([FromRoute, Range(1, int.MaxValue)] int id, CancellationToken cancellationToken)
     {

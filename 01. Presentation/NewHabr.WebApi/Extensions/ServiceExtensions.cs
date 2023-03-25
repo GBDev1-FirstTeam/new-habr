@@ -12,6 +12,7 @@ using NewHabr.Domain;
 using NewHabr.WebApi.Authorization.Requirements;
 using Microsoft.AspNetCore.Authorization;
 using NewHabr.WebApi.Authorization.Handlers;
+using Microsoft.OpenApi.Models;
 
 namespace NewHabr.WebApi.Extensions;
 
@@ -121,5 +122,28 @@ public static class ServiceExtensions
         services.AddScoped<IAuthorizationHandler, IsBannedUserHandler>();
         services.AddScoped<IAuthorizationHandler, IsAuthorizedHandler>();
         services.AddScoped<IAuthorizationHandler, OwnSettingsUpdateHandler>();
+    }
+
+    public static void ConfigureSwaggerGen(this IServiceCollection services)
+    {
+        services.AddSwaggerGen(options =>
+        {
+            options.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Version = "v1",
+                Title = "New Habr API",
+                Description = "An ASP.NET Core Web Api for new habr backend application",
+                Contact = new OpenApiContact
+                {
+                    Name = "John Dow",
+                    Email = "dont@email.me"
+                }
+            });
+
+            var xmlFileName = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFileName));
+
+            options.CustomOperationIds(desc => desc.ActionDescriptor.RouteValues["action"]);
+        });
     }
 }
