@@ -1,0 +1,31 @@
+version: '3.4'
+
+services:
+  api:
+    container_name: api
+    image: new_habr
+    build:
+      context: .
+      dockerfile: 01_Presentation/NewHabr.WebApi/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - SQLServerProvider=PostgreSQL
+      - ConnectionStrings__PostgreSQL=Server=db;Database=habrdb;User Id=postgresuser;Password=postgresPass
+    networks:
+      - v-net
+    ports:
+      - "5000:80"
+    depends_on:
+      - db
+  db:
+    container_name: db
+    image: postgres
+    networks:
+      - v-net
+    environment:
+      - POSTGRES_DB=habrdb
+      - POSTGRES_USER=postgresuser
+      - POSTGRES_PASSWORD=postgresPass
+
+networks:
+  v-net:
