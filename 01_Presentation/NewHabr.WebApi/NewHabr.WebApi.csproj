@@ -18,13 +18,13 @@
 	<ItemGroup>
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\..\03. DAL\NewHabr.MSSQL\NewHabr.MSSQL.csproj" />
-		<ProjectReference Include="..\..\03. DAL\NewHabr.PostgreSQL\NewHabr.PostgreSQL.csproj" />
-		<ProjectReference Include="..\..\02. Business\NewHabr.Business\NewHabr.Business.csproj">
+		<ProjectReference Include="..\..\03_DAL\NewHabr.MSSQL\NewHabr.MSSQL.csproj" />
+		<ProjectReference Include="..\..\03_DAL\NewHabr.PostgreSQL\NewHabr.PostgreSQL.csproj" />
+		<ProjectReference Include="..\..\02_Business\NewHabr.Business\NewHabr.Business.csproj">
 			<GlobalPropertiesToRemove>
 			</GlobalPropertiesToRemove>
 		</ProjectReference>
-		<ProjectReference Include="..\..\03. DAL\NewHabr.DAL\NewHabr.DAL.csproj">
+		<ProjectReference Include="..\..\03_DAL\NewHabr.DAL\NewHabr.DAL.csproj">
 		  <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
 		</ProjectReference>
 	</ItemGroup>

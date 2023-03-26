@@ -25,9 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\01. Presentation\NewHabr.WebApi\NewHabr.WebApi.csproj" />
-    <ProjectReference Include="..\..\02. Business\NewHabr.Business\NewHabr.Business.csproj" />
-    <ProjectReference Include="..\..\01. Presentation\NewHabr.WebApi\NewHabr.WebApi.csproj" />
+    <ProjectReference Include="..\..\01_Presentation\NewHabr.WebApi\NewHabr.WebApi.csproj" />
+    <ProjectReference Include="..\..\02_Business\NewHabr.Business\NewHabr.Business.csproj" />
+    <ProjectReference Include="..\..\01_Presentation\NewHabr.WebApi\NewHabr.WebApi.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Moq" />

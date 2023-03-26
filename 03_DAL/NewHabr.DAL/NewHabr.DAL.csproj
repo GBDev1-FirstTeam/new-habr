@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\02. Business\NewHabr.Domain\NewHabr.Domain.csproj" />
+    <ProjectReference Include="..\..\02_Business\NewHabr.Domain\NewHabr.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
